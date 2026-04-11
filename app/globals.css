@@ -1,0 +1,108 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+body {
+  font-family: 'Inter', 'Roboto', system-ui, sans-serif;
+  background: #ffffff;
+  color: #1f2730;
+  min-height: 100vh;
+  line-height: 1.65;
+  letter-spacing: 0.01em;
+  scroll-behavior: smooth;
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(31, 39, 48, 0.08);
+  box-shadow: 0 24px 60px rgba(31, 39, 48, 0.12);
+  backdrop-filter: blur(12px);
+}
+
+.container-wide {
+  max-width: 1600px;
+  margin: 0 auto;
+  padding: 0 1.25rem;
+}
+
+.gradient-text {
+  background: linear-gradient(120deg, #8bc53f, #6aa12f 50%, #1f2730 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.card-hover {
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-5px);
+  border-color: rgba(139, 197, 63, 0.25);
+  box-shadow: 0 16px 40px rgba(139, 197, 63, 0.16);
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 9999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  background: linear-gradient(120deg, rgba(139, 197, 63, 0.12), rgba(31, 39, 48, 0.06));
+  color: #1f2730;
+  border: 1px solid rgba(139, 197, 63, 0.2);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.2rem;
+  border-radius: 14px;
+  background: linear-gradient(120deg, #8bc53f, #6aa12f 70%, #5c8b27);
+  color: #0f1a10;
+  font-weight: 700;
+  border: 1px solid rgba(139, 197, 63, 0.35);
+  transition: transform 150ms ease, box-shadow 200ms ease;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 45px rgba(139, 197, 63, 0.28);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.85rem 1.1rem;
+  border-radius: 14px;
+  border: 1px solid rgba(31, 39, 48, 0.12);
+  color: #1f2730;
+  background: rgba(139, 197, 63, 0.08);
+}
+
+@keyframes pulse-soft {
+  0% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.45);
+  }
+  70% {
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 14px rgba(243, 156, 18, 0);
+  }
+  100% {
+    transform: translateY(0);
+    box-shadow: 0 0 0 0 rgba(243, 156, 18, 0);
+  }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2.5s infinite;
+}

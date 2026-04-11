@@ -1,0 +1,171 @@
+{
+  "company": {
+    "name": "DNR Techno Services",
+    "tagline": "Your Service Partner",
+    "address": "27-A, Parda Bagh, Darya Ganj, New Delhi - 110002, India",
+    "phones": [
+      "9711196735",
+      "9911399919"
+    ],
+    "email": "dnr.techservices@gmail.com",
+    "website": "www.dnrtechnoservices.com",
+    "about": "Engineer-owned company based in New Delhi focused on customer satisfaction and intelligent machining solutions with efficient pre and post sales support."
+  },
+  "brand": {
+    "primary_colors": [
+      "lime green",
+      "charcoal gray",
+      "white",
+      "light gray"
+    ]
+  },
+  "coverage": [
+    "Andhra Pradesh",
+    "Gujarat",
+    "Haryana",
+    "Jammu",
+    "Kolkata",
+    "Madhya Pradesh",
+    "Maharashtra",
+    "New Delhi",
+    "Punjab",
+    "Rajasthan",
+    "Telangana",
+    "Uttar Pradesh",
+    "Uttarakhand"
+  ],
+  "product_categories": [
+    {
+      "name": "Pressure Die Casting Machine",
+      "subtypes": [
+        {
+          "name": "Cold Chamber Die Casting Machine",
+          "range": "150 to 1200 Ton",
+          "page": 6,
+          "image": "images/page_06.png"
+        },
+        {
+          "name": "Hot Chamber Die Casting Machine",
+          "range": "12 to 400 Ton",
+          "page": 7,
+          "image": "images/page_07.png"
+        },
+        {
+          "name": "Vertical Squeeze Casting Machine",
+          "range": "150 to 2200 Ton",
+          "page": 8,
+          "image": "images/page_08.png"
+        }
+      ],
+      "overview_page": 5
+    },
+    {
+      "name": "Complete Range for Foundry",
+      "page": 9,
+      "image": "images/page_09.png"
+    },
+    {
+      "name": "Aluminum Gravity Die Casting Machine",
+      "page": 10,
+      "image": "images/page_10.png"
+    },
+    {
+      "name": "Brass Gravity Die Casting Machine",
+      "page": 11,
+      "image": "images/page_11.png"
+    },
+    {
+      "name": "Sand Core Shooting Machine",
+      "subtypes": [
+        {
+          "name": "Single Head Core Shooter",
+          "page": 12,
+          "image": "images/page_12.png"
+        },
+        {
+          "name": "Double Head Core Shooter",
+          "page": 12,
+          "image": "images/page_12.png"
+        }
+      ]
+    },
+    {
+      "name": "Sand Making Machine",
+      "page": 13,
+      "image": "images/page_13.png"
+    },
+    {
+      "name": "Automatic Moulding Machine",
+      "page": 13,
+      "image": "images/page_13.png"
+    },
+    {
+      "name": "Samples",
+      "page": 14,
+      "image": "images/page_14.png"
+    },
+    {
+      "name": "CNC Machines",
+      "page": 15,
+      "image": "images/page_15.png"
+    },
+    {
+      "name": "CNC with Live Tooling Option",
+      "pages": [
+        16,
+        17
+      ],
+      "images": [
+        "images/page_16.png",
+        "images/page_17.png"
+      ]
+    },
+    {
+      "name": "Complete Range of Machining Centers",
+      "page": 18,
+      "image": "images/page_18.png"
+    },
+    {
+      "name": "Vertical Machining Centre (VMC)",
+      "page": 19,
+      "image": "images/page_19.png"
+    },
+    {
+      "name": "Vertical Turning Lathe (VTL)",
+      "page": 20,
+      "image": "images/page_20.png"
+    },
+    {
+      "name": "Heavy Duty CNC Turning Machine",
+      "page": 21,
+      "image": "images/page_21.png"
+    },
+    {
+      "name": "Rotary Transfer Machine",
+      "page": 22,
+      "image": "images/page_22.png"
+    },
+    {
+      "name": "Fiber Laser Marking Machine",
+      "page": 23,
+      "image": "images/page_23.png"
+    },
+    {
+      "name": "Grinding/Peeling Machine",
+      "details": "4, 6, 8, 10, 12 Spindle Machine",
+      "page": 24
+    },
+    {
+      "name": "Auto Polishing Machine",
+      "details": "4 Station Machine, 2 Station Machine",
+      "pages": [
+        25,
+        26
+      ]
+    },
+    {
+      "name": "Water Leakage Testing Machine",
+      "page": 27
+    }
+  ]
+}

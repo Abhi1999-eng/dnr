@@ -1,0 +1,7 @@
+node_modules
+.next
+.env.local
+.DS_Store
+public/uploads
+id_ed25519_github_dnr
+id_ed25519_github_dnr.pub
