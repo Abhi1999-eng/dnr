@@ -14,29 +14,29 @@ type CoveragePoint = {
 };
 
 const MAP_POINTS: Record<string, CoveragePoint & { offsetX?: number; offsetY?: number }> = {
-  jammu: { key: 'jammu', label: 'Jammu', x: 32, y: 8, region: 'Jammu & Kashmir', offsetY: -10 },
-  punjab: { key: 'punjab', label: 'Punjab', x: 35, y: 18 },
-  haryana: { key: 'haryana', label: 'Haryana', x: 38, y: 22, offsetY: -8 },
-  'new delhi': { key: 'new delhi', label: 'Delhi NCR', x: 40, y: 24, offsetY: -10 },
-  uttarakhand: { key: 'uttarakhand', label: 'Uttarakhand', x: 42, y: 20, offsetY: -10 },
-  'uttar pradesh': { key: 'uttar pradesh', label: 'Uttar Pradesh', x: 52, y: 28 },
-  rajasthan: { key: 'rajasthan', label: 'Rajasthan', x: 30, y: 32 },
-  gujarat: { key: 'gujarat', label: 'Gujarat', x: 25, y: 38 },
-  'madhya pradesh': { key: 'madhya pradesh', label: 'Madhya Pradesh', x: 43, y: 46 },
-  maharashtra: { key: 'maharashtra', label: 'Maharashtra', x: 36, y: 58 },
-  telangana: { key: 'telangana', label: 'Telangana', x: 48, y: 60 },
-  'andhra pradesh': { key: 'andhra pradesh', label: 'Andhra Pradesh', x: 52, y: 68, offsetY: 8 },
-  kolkata: { key: 'kolkata', label: 'Kolkata / West Bengal', x: 70, y: 36, region: 'West Bengal', offsetX: 10 },
-  'west bengal': { key: 'west bengal', label: 'West Bengal', x: 68, y: 38 },
-  bihar: { key: 'bihar', label: 'Bihar', x: 60, y: 34, offsetY: -8 },
-  chhattisgarh: { key: 'chhattisgarh', label: 'Chhattisgarh', x: 55, y: 46 },
-  goa: { key: 'goa', label: 'Goa', x: 34, y: 66, offsetY: 10 },
-  'himachal pradesh': { key: 'himachal pradesh', label: 'Himachal Pradesh', x: 38, y: 14, offsetY: -12 },
-  jharkhand: { key: 'jharkhand', label: 'Jharkhand', x: 63, y: 40 },
-  karnataka: { key: 'karnataka', label: 'Karnataka', x: 44, y: 70 },
-  kerala: { key: 'kerala', label: 'Kerala', x: 40, y: 78, offsetY: 10 },
-  odisha: { key: 'odisha', label: 'Odisha', x: 62, y: 50 },
-  'tamil nadu': { key: 'tamil nadu', label: 'Tamil Nadu', x: 48, y: 82, offsetY: 12 },
+  jammu: { key: 'jammu', label: 'Jammu', x: 47, y: 8, region: 'Jammu & Kashmir', offsetY: -12 },
+  'himachal pradesh': { key: 'himachal pradesh', label: 'Himachal Pradesh', x: 48, y: 14, offsetY: -8 },
+  punjab: { key: 'punjab', label: 'Punjab', x: 44, y: 18, offsetY: -6 },
+  haryana: { key: 'haryana', label: 'Haryana', x: 48, y: 22, offsetY: -6 },
+  'new delhi': { key: 'new delhi', label: 'Delhi NCR', x: 49, y: 25, offsetY: -10 },
+  uttarakhand: { key: 'uttarakhand', label: 'Uttarakhand', x: 52, y: 20, offsetY: -8 },
+  'uttar pradesh': { key: 'uttar pradesh', label: 'Uttar Pradesh', x: 58, y: 30, offsetY: -4 },
+  rajasthan: { key: 'rajasthan', label: 'Rajasthan', x: 38, y: 35, offsetY: -2 },
+  gujarat: { key: 'gujarat', label: 'Gujarat', x: 30, y: 47 },
+  'madhya pradesh': { key: 'madhya pradesh', label: 'Madhya Pradesh', x: 52, y: 45 },
+  maharashtra: { key: 'maharashtra', label: 'Maharashtra', x: 50, y: 60, offsetY: 2 },
+  telangana: { key: 'telangana', label: 'Telangana', x: 56, y: 58, offsetY: 2 },
+  'andhra pradesh': { key: 'andhra pradesh', label: 'Andhra Pradesh', x: 62, y: 68, offsetY: 10 },
+  kolkata: { key: 'kolkata', label: 'Kolkata / West Bengal', x: 74, y: 40, region: 'West Bengal', offsetX: 10, offsetY: -4 },
+  'west bengal': { key: 'west bengal', label: 'West Bengal', x: 72, y: 42, offsetX: 8 },
+  bihar: { key: 'bihar', label: 'Bihar', x: 64, y: 34, offsetY: -6 },
+  chhattisgarh: { key: 'chhattisgarh', label: 'Chhattisgarh', x: 62, y: 50 },
+  goa: { key: 'goa', label: 'Goa', x: 46, y: 68, offsetY: 10 },
+  jharkhand: { key: 'jharkhand', label: 'Jharkhand', x: 66, y: 40, offsetY: -2 },
+  karnataka: { key: 'karnataka', label: 'Karnataka', x: 52, y: 72, offsetY: 4 },
+  kerala: { key: 'kerala', label: 'Kerala', x: 50, y: 82, offsetY: 10 },
+  odisha: { key: 'odisha', label: 'Odisha', x: 69, y: 52, offsetY: 2 },
+  'tamil nadu': { key: 'tamil nadu', label: 'Tamil Nadu', x: 58, y: 86, offsetY: 12 },
 };
 
 const indiaPath =
@@ -103,12 +103,12 @@ export function Coverage({ states }: { states: string[] }) {
                         <span className="relative h-2 w-2 rounded-full bg-primary" />
                       </span>
                       <motion.span
-                        className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold ${
-                          active ? 'bg-primary text-secondary' : 'bg-white/90 text-secondary border border-secondary/10'
-                        } shadow-sm`}
+                        className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
+                          active ? 'bg-primary text-secondary' : 'bg-white/90 text-secondary border border-secondary/10 opacity-0'
+                        }`}
                         style={{ transform: `translate(calc(-50% + ${labelX}px), ${labelY}px)` }}
                         initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: 1, y: 0 }}
+                        animate={{ opacity: active ? 1 : 0, y: active ? 0 : 4 }}
                         exit={{ opacity: 0, y: 6 }}
                       >
                         {p.label}
