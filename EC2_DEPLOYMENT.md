@@ -9,8 +9,6 @@ This project deploys to Ubuntu EC2 at `/home/ubuntu/dnr` and runs as a full-stac
 - Nginx as a reverse proxy to port `3000`
 - GitHub Actions for auto-deploy on push to `main`
 
-This guide assumes the deploy target path stays `/home/ubuntu/dnr`.
-
 ## 1. Generate a deploy key on EC2 for GitHub repo access
 
 SSH into the server:
