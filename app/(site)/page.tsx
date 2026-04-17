@@ -27,11 +27,11 @@ const FALLBACK_COVERAGE = [
   'Andhra Pradesh',
   'Gujarat',
   'Haryana',
-  'Jammu',
-  'Kolkata',
+  'Jammu and Kashmir',
+  'West Bengal',
   'Madhya Pradesh',
   'Maharashtra',
-  'New Delhi',
+  'Delhi',
   'Punjab',
   'Rajasthan',
   'Telangana',
@@ -46,7 +46,6 @@ const FALLBACK_COVERAGE = [
   'Kerala',
   'Odisha',
   'Tamil Nadu',
-  'West Bengal',
 ];
 
 export default async function HomePage() {

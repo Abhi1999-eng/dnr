@@ -1,150 +1,263 @@
 "use client";
 
 import { useMemo, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { SectionTitle } from './SectionTitle';
-import Image from 'next/image';
+import { simplemapsIndiaMapinfo } from '@/lib/simplemaps-india';
 
-type CoveragePoint = {
-  key: string;
-  label: string;
-  x: number; // percent
-  y: number; // percent
-  region?: string;
+const MAP_NAMES = simplemapsIndiaMapinfo.names as Record<string, string>;
+const MAP_PATHS = simplemapsIndiaMapinfo.paths as Record<string, string>;
+const MAP_BBOX = simplemapsIndiaMapinfo.state_bbox_array as Record<
+  string,
+  { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number }
+>;
+
+const CANONICAL_COVERAGE = [
+  { mapName: 'Andhra Pradesh', uiLabel: 'Andhra Pradesh' },
+  { mapName: 'Gujarat', uiLabel: 'Gujarat' },
+  { mapName: 'Haryana', uiLabel: 'Haryana' },
+  { mapName: 'Jammu and Kashmir', uiLabel: 'Jammu and Kashmir' },
+  { mapName: 'West Bengal', uiLabel: 'West Bengal' },
+  { mapName: 'Madhya Pradesh', uiLabel: 'Madhya Pradesh' },
+  { mapName: 'Maharashtra', uiLabel: 'Maharashtra' },
+  { mapName: 'Delhi', uiLabel: 'Delhi NCR' },
+  { mapName: 'Punjab', uiLabel: 'Punjab' },
+  { mapName: 'Rajasthan', uiLabel: 'Rajasthan' },
+  { mapName: 'Telangana', uiLabel: 'Telangana' },
+  { mapName: 'Uttar Pradesh', uiLabel: 'Uttar Pradesh' },
+  { mapName: 'Uttarakhand', uiLabel: 'Uttarakhand' },
+  { mapName: 'Bihar', uiLabel: 'Bihar' },
+  { mapName: 'Chhattisgarh', uiLabel: 'Chhattisgarh' },
+  { mapName: 'Goa', uiLabel: 'Goa' },
+  { mapName: 'Himachal Pradesh', uiLabel: 'Himachal Pradesh' },
+  { mapName: 'Jharkhand', uiLabel: 'Jharkhand' },
+  { mapName: 'Karnataka', uiLabel: 'Karnataka' },
+  { mapName: 'Kerala', uiLabel: 'Kerala' },
+  { mapName: 'Odisha', uiLabel: 'Odisha' },
+  { mapName: 'Tamil Nadu', uiLabel: 'Tamil Nadu' },
+] as const;
+
+const STATE_SUMMARIES: Record<string, string> = {
+  'Andhra Pradesh': 'Support for coastal manufacturing, machining, and automation programs.',
+  Gujarat: 'Coverage across casting, foundry, and machine tool clusters.',
+  Haryana: 'Fast access to OEM belts and maintenance-heavy industrial sites.',
+  'Jammu and Kashmir': 'Regional support through partner-led response coverage.',
+  'West Bengal': 'Eastern coverage for processing, fabrication, and plant engineering.',
+  'Madhya Pradesh': 'Central India response for machining and industrial support needs.',
+  Maharashtra: 'Strong footprint across automotive, tooling, and manufacturing plants.',
+  Delhi: 'Commercial, technical, and rapid-response access for NCR customers.',
+  Punjab: 'Industrial support for machine shops, fabrication, and component plants.',
+  Rajasthan: 'Coverage for process industries, castings, and factory projects.',
+  Telangana: 'Support across Hyderabad-region machining and automation demand.',
+  'Uttar Pradesh': 'Large manufacturing corridor support with field-service reach.',
+  Uttarakhand: 'Access to hill-state industrial hubs and OEM supply chains.',
+  Bihar: 'Coverage through eastern network partners and service coordination.',
+  Chhattisgarh: 'Central-east support for heavy industry and engineering sites.',
+  Goa: 'Small-footprint coastal support tied to west-region response teams.',
+  'Himachal Pradesh': 'North-zone service access for dispersed production locations.',
+  Jharkhand: 'Coverage for metals, fabrication, and heavy engineering customers.',
+  Karnataka: 'Support for precision machining, OEM supply, and industrial automation.',
+  Kerala: 'Southern response coverage for plant maintenance and project support.',
+  Odisha: 'East-coast service support for engineering and processing sectors.',
+  'Tamil Nadu': 'Coverage for OEMs, machining clusters, and production plants.',
 };
 
-const MAP_POINTS: Record<string, CoveragePoint & { offsetX?: number; offsetY?: number }> = {
-  jammu: { key: 'jammu', label: 'Jammu', x: 47, y: 8, region: 'Jammu & Kashmir', offsetY: -12 },
-  'himachal pradesh': { key: 'himachal pradesh', label: 'Himachal Pradesh', x: 48, y: 14, offsetY: -8 },
-  punjab: { key: 'punjab', label: 'Punjab', x: 44, y: 18, offsetY: -6 },
-  haryana: { key: 'haryana', label: 'Haryana', x: 48, y: 22, offsetY: -6 },
-  'new delhi': { key: 'new delhi', label: 'Delhi NCR', x: 49, y: 25, offsetY: -10 },
-  uttarakhand: { key: 'uttarakhand', label: 'Uttarakhand', x: 52, y: 20, offsetY: -8 },
-  'uttar pradesh': { key: 'uttar pradesh', label: 'Uttar Pradesh', x: 58, y: 30, offsetY: -4 },
-  rajasthan: { key: 'rajasthan', label: 'Rajasthan', x: 38, y: 35, offsetY: -2 },
-  gujarat: { key: 'gujarat', label: 'Gujarat', x: 30, y: 47 },
-  'madhya pradesh': { key: 'madhya pradesh', label: 'Madhya Pradesh', x: 52, y: 45 },
-  maharashtra: { key: 'maharashtra', label: 'Maharashtra', x: 50, y: 60, offsetY: 2 },
-  telangana: { key: 'telangana', label: 'Telangana', x: 56, y: 58, offsetY: 2 },
-  'andhra pradesh': { key: 'andhra pradesh', label: 'Andhra Pradesh', x: 62, y: 68, offsetY: 10 },
-  kolkata: { key: 'kolkata', label: 'Kolkata / West Bengal', x: 74, y: 40, region: 'West Bengal', offsetX: 10, offsetY: -4 },
-  'west bengal': { key: 'west bengal', label: 'West Bengal', x: 72, y: 42, offsetX: 8 },
-  bihar: { key: 'bihar', label: 'Bihar', x: 64, y: 34, offsetY: -6 },
-  chhattisgarh: { key: 'chhattisgarh', label: 'Chhattisgarh', x: 62, y: 50 },
-  goa: { key: 'goa', label: 'Goa', x: 46, y: 68, offsetY: 10 },
-  jharkhand: { key: 'jharkhand', label: 'Jharkhand', x: 66, y: 40, offsetY: -2 },
-  karnataka: { key: 'karnataka', label: 'Karnataka', x: 52, y: 72, offsetY: 4 },
-  kerala: { key: 'kerala', label: 'Kerala', x: 50, y: 82, offsetY: 10 },
-  odisha: { key: 'odisha', label: 'Odisha', x: 69, y: 52, offsetY: 2 },
-  'tamil nadu': { key: 'tamil nadu', label: 'Tamil Nadu', x: 58, y: 86, offsetY: 12 },
+function slugifyState(value: string) {
+  return value
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+const INPUT_NORMALIZATION: Record<string, string> = {
+  'andhra pradesh': 'Andhra Pradesh',
+  gujarat: 'Gujarat',
+  haryana: 'Haryana',
+  jammu: 'Jammu and Kashmir',
+  'jammu and kashmir': 'Jammu and Kashmir',
+  'west bengal': 'West Bengal',
+  kolkata: 'West Bengal',
+  'kolkata west bengal': 'West Bengal',
+  'kolkata / west bengal': 'West Bengal',
+  'madhya pradesh': 'Madhya Pradesh',
+  maharashtra: 'Maharashtra',
+  'new delhi': 'Delhi',
+  delhi: 'Delhi',
+  'delhi ncr': 'Delhi',
+  punjab: 'Punjab',
+  rajasthan: 'Rajasthan',
+  telangana: 'Telangana',
+  'uttar pradesh': 'Uttar Pradesh',
+  uttarakhand: 'Uttarakhand',
+  uttaranchal: 'Uttarakhand',
+  bihar: 'Bihar',
+  chhattisgarh: 'Chhattisgarh',
+  goa: 'Goa',
+  'himachal pradesh': 'Himachal Pradesh',
+  jharkhand: 'Jharkhand',
+  karnataka: 'Karnataka',
+  kerala: 'Kerala',
+  odisha: 'Odisha',
+  orissa: 'Odisha',
+  'tamil nadu': 'Tamil Nadu',
 };
 
-const indiaPath =
-  'M140 10 160 40 150 60 165 80 160 100 175 120 170 140 150 170 145 200 130 220 115 240 100 260 90 280 70 300 60 320 50 340 40 360 60 360 80 350 100 340 120 330 140 320 150 300 165 280 170 260 185 240 200 220 210 200 220 180 230 160 240 140 245 120 240 100 230 80 210 60 190 50 180 40 170 20 Z';
+function canonicalFromInput(value: string) {
+  return INPUT_NORMALIZATION[slugifyState(value)];
+}
 
-function normalizeKey(name: string) {
-  return name.toLowerCase().trim();
+function canonicalFromMapName(value: string) {
+  const normalized = slugifyState(value);
+  return INPUT_NORMALIZATION[normalized] || value;
 }
 
 export function Coverage({ states }: { states: string[] }) {
-  const mapped = useMemo(() => {
-    return states.map((s) => {
-      const key = normalizeKey(s);
-      return MAP_POINTS[key] || { key, label: s, x: 55, y: 55 };
-    });
+  const stateEntries = useMemo(() => {
+    const canonicalSet = new Set(
+      (states.length ? states : CANONICAL_COVERAGE.map((item) => item.mapName))
+        .map(canonicalFromInput)
+        .filter(Boolean)
+    );
+
+    return CANONICAL_COVERAGE.map((item) => {
+      if (!canonicalSet.has(item.mapName)) return null;
+
+      const id = Object.entries(MAP_NAMES).find(([, name]) => canonicalFromMapName(name) === item.mapName)?.[0];
+      if (!id || !MAP_PATHS[id] || !MAP_BBOX[id]) return null;
+
+      const bbox = MAP_BBOX[id];
+      return {
+        id,
+        mapName: item.mapName,
+        uiLabel: item.uiLabel,
+        description: STATE_SUMMARIES[item.mapName],
+        path: MAP_PATHS[id],
+        bbox,
+      };
+    }).filter(Boolean) as Array<{
+      id: string;
+      mapName: string;
+      uiLabel: string;
+      description: string;
+      path: string;
+      bbox: { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number };
+    }>;
   }, [states]);
 
-  const [activeKey, setActiveKey] = useState<string>(mapped[0]?.key || '');
+  const [activeStateId, setActiveStateId] = useState(stateEntries[0]?.id ?? '');
+
+  const activeState = stateEntries.find((entry) => entry.id === activeStateId) || stateEntries[0];
 
   return (
-    <section id="coverage" className="container-wide mt-16 space-y-8">
-      <SectionTitle title="Pan-India coverage" kicker="Rapid response, installs, service, and partner support across key hubs." />
-      <p className="text-xs text-secondary/60">Debug: rendering {mapped.length} coverage locations</p>
-      <div className="rounded-3xl border border-secondary/10 bg-gradient-to-br from-white via-muted/40 to-white p-6 md:p-8 shadow-xl shadow-secondary/10">
-        <div className="grid lg:grid-cols-[1.2fr,0.9fr] gap-8 items-center">
-          <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden bg-white border border-secondary/10 shadow-lg shadow-secondary/15">
-            <Image
-              src="/india-map.png"
-              alt="India coverage map"
-              fill
-              className="object-contain p-6"
-              sizes="(max-width: 768px) 100vw, 60vw"
-              priority
-            />
-            {/* markers */}
-            <div className="absolute inset-6">
-              <AnimatePresence>
-                {mapped.map((p, idx) => {
-                  const active = activeKey === p.key;
-                  const labelX = p.offsetX ?? 0;
-                  const labelY = p.offsetY ?? -14;
+    <section id="coverage" className="container-wide mt-16 space-y-6">
+      <SectionTitle
+        title="Pan-India coverage"
+        kicker="Coverage across key manufacturing belts, with install, service, and partner support where DNR customers operate."
+      />
+
+      <div className="rounded-[2rem] border border-secondary/10 bg-gradient-to-br from-white via-muted/30 to-white p-6 shadow-xl shadow-secondary/10 md:p-8">
+        <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
+          <div className="rounded-[1.75rem] border border-secondary/10 bg-white p-4 shadow-lg shadow-secondary/10 md:p-6">
+            <div className="mb-4 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/55">Coverage map</p>
+                <p className="text-lg font-semibold text-secondary">SimpleMaps India layer with live state highlighting</p>
+              </div>
+              <div className="rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-secondary">
+                {stateEntries.length} active states
+              </div>
+            </div>
+
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-secondary/10 bg-[radial-gradient(circle_at_top,#f4f8ef,transparent_48%),linear-gradient(180deg,#ffffff,#f6f7f3)] p-4">
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(135,225,38,0.08),transparent_40%,rgba(24,32,45,0.04))]" />
+              <svg viewBox="0 0 1000 1000" className="relative z-10 h-full w-full" role="img" aria-label="India coverage map">
+                {Object.entries(MAP_PATHS).map(([id, path], index) => {
+                  const isCovered = stateEntries.some((entry) => entry.id === id);
+                  const isActive = activeStateId === id;
+                  const name = MAP_NAMES[id];
+
                   return (
-                    <motion.button
-                      key={p.key}
-                      className="group absolute"
-                      style={{ top: `${p.y}%`, left: `${p.x}%`, transform: 'translate(-50%, -50%)' }}
-                      initial={{ opacity: 0, scale: 0.6 }}
-                      whileInView={{ opacity: 1, scale: 1, transition: { delay: idx * 0.04, type: 'spring', stiffness: 240, damping: 18 } }}
-                      whileHover={{ scale: 1.08 }}
-                      onMouseEnter={() => setActiveKey(p.key)}
-                      onFocus={() => setActiveKey(p.key)}
-                      onClick={() => setActiveKey(p.key)}
-                    >
-                      <span
-                        className={`relative flex h-9 w-9 items-center justify-center rounded-full border-2 ${
-                          active ? 'border-primary bg-white shadow-lg shadow-primary/40' : 'border-secondary/20 bg-white shadow-md'
-                        }`}
-                      >
-                        <span
-                          className={`absolute inset-0 rounded-full ${
-                            active ? 'bg-primary/15 animate-ping' : 'bg-primary/10 opacity-60'
-                          }`}
-                        />
-                        <span className="relative h-2 w-2 rounded-full bg-primary" />
-                      </span>
-                      <motion.span
-                        className={`absolute left-1/2 top-full mt-1 -translate-x-1/2 rounded-full px-3 py-1 text-xs font-semibold shadow-sm ${
-                          active ? 'bg-primary text-secondary' : 'bg-white/90 text-secondary border border-secondary/10 opacity-0'
-                        }`}
-                        style={{ transform: `translate(calc(-50% + ${labelX}px), ${labelY}px)` }}
-                        initial={{ opacity: 0, y: 6 }}
-                        animate={{ opacity: active ? 1 : 0, y: active ? 0 : 4 }}
-                        exit={{ opacity: 0, y: 6 }}
-                      >
-                        {p.label}
-                      </motion.span>
-                    </motion.button>
+                    <motion.path
+                      key={id}
+                      d={path}
+                      initial={{ opacity: 0, pathLength: 0.92 }}
+                      whileInView={{ opacity: 1, pathLength: 1, transition: { duration: 0.45, delay: index * 0.004 } }}
+                      viewport={{ once: true, amount: 0.2 }}
+                      fill={
+                        isActive ? '#87E126' : isCovered ? 'rgba(135, 225, 38, 0.78)' : 'rgba(203, 209, 219, 0.34)'
+                      }
+                      stroke={isCovered ? 'rgba(20, 28, 38, 0.30)' : 'rgba(20, 28, 38, 0.12)'}
+                      strokeWidth={isActive ? 3 : 1.6}
+                      className={isCovered ? 'cursor-pointer transition-colors duration-200' : ''}
+                      onMouseEnter={isCovered ? () => setActiveStateId(id) : undefined}
+                      onFocus={isCovered ? () => setActiveStateId(id) : undefined}
+                      onClick={isCovered ? () => setActiveStateId(id) : undefined}
+                      tabIndex={isCovered ? 0 : -1}
+                      aria-label={name}
+                    />
                   );
                 })}
-              </AnimatePresence>
+              </svg>
+
+              {activeState && (
+                <motion.div
+                  key={activeState.id}
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="pointer-events-none absolute z-20 rounded-2xl border border-secondary/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur"
+                  style={{
+                    left: `${Math.min(82, Math.max(10, (Number(activeState.bbox.cx) / 1000) * 100))}%`,
+                    top: `${Math.min(82, Math.max(12, (Number(activeState.bbox.cy) / 1000) * 100 - 8))}%`,
+                    transform: 'translate(-50%, -100%)',
+                  }}
+                >
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/55">Active state</p>
+                  <p className="text-sm font-semibold text-secondary">{activeState.uiLabel}</p>
+                </motion.div>
+              )}
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="rounded-2xl border border-secondary/10 bg-white p-4 shadow-md shadow-secondary/10">
-              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary/60">Coverage network</p>
-              <p className="text-lg font-semibold text-secondary">Install, service, and partner support across India</p>
-              <p className="text-secondary/70 text-sm">Hover or tap a location to highlight its marker on the map.</p>
+          <div className="flex flex-col gap-4">
+            <div className="rounded-[1.75rem] border border-secondary/10 bg-secondary px-5 py-5 text-white shadow-lg shadow-secondary/20">
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">Coverage network</p>
+              <h3 className="mt-2 text-2xl font-semibold">Rapid response across manufacturing hubs</h3>
+              <p className="mt-2 text-sm leading-relaxed text-white/75">
+                DNR supports installs, service calls, and partner-led response where customers run foundry, machining,
+                automation, and industrial engineering operations.
+              </p>
+              {activeState && (
+                <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 px-4 py-3">
+                  <p className="text-sm font-semibold text-white">{activeState.uiLabel}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-white/70">{activeState.description}</p>
+                </div>
+              )}
             </div>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {mapped.map((p) => {
-                const active = activeKey === p.key;
+
+            <div className="grid gap-3 sm:grid-cols-2 lg:max-h-[32rem] lg:overflow-auto lg:pr-1">
+              {stateEntries.map((entry) => {
+                const isActive = entry.id === activeStateId;
                 return (
                   <button
-                    key={p.key}
-                    onMouseEnter={() => setActiveKey(p.key)}
-                    onFocus={() => setActiveKey(p.key)}
-                    onClick={() => setActiveKey(p.key)}
-                    className={`flex items-start gap-2 rounded-2xl border px-3 py-3 text-left transition shadow-sm ${
-                      active
-                        ? 'border-primary bg-primary/10 shadow-primary/20'
-                        : 'border-secondary/10 bg-white hover:border-primary/40 hover:shadow-primary/10'
+                    key={entry.id}
+                    type="button"
+                    onMouseEnter={() => setActiveStateId(entry.id)}
+                    onFocus={() => setActiveStateId(entry.id)}
+                    onClick={() => setActiveStateId(entry.id)}
+                    className={`rounded-2xl border px-4 py-3 text-left transition duration-200 ${
+                      isActive
+                        ? 'border-primary bg-primary/10 shadow-md shadow-primary/15'
+                        : 'border-secondary/10 bg-white hover:border-primary/40 hover:shadow-md hover:shadow-secondary/10'
                     }`}
                   >
-                    <span className="mt-1 h-2 w-2 rounded-full bg-primary" />
-                    <div>
-                      <p className="text-sm font-semibold text-secondary">{p.label}</p>
-                      {p.region && <p className="text-xs text-secondary/60">{p.region}</p>}
+                    <div className="flex items-start gap-3">
+                      <span className={`mt-1 h-2.5 w-2.5 rounded-full ${isActive ? 'bg-primary' : 'bg-secondary/30'}`} />
+                      <div className="space-y-1">
+                        <p className="text-sm font-semibold text-secondary">{entry.uiLabel}</p>
+                        <p className="text-xs leading-relaxed text-secondary/65">{entry.description}</p>
+                      </div>
                     </div>
                   </button>
                 );
