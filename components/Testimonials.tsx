@@ -11,13 +11,20 @@ export type TestimonialType = {
   sector?: string;
 };
 
-export function Testimonials({ testimonials }: { testimonials: TestimonialType[] }) {
+export function Testimonials({
+  testimonials,
+  title = 'Trusted by plant heads and maintenance leaders',
+  kicker = 'High-uptime plants choose DNR for reliable installs, responsive service, and clear communication.',
+}: {
+  testimonials: TestimonialType[];
+  title?: string;
+  kicker?: string;
+}) {
+  if (!testimonials.length) return null;
+
   return (
     <section className="container-wide mt-16 space-y-8">
-      <SectionTitle
-        title="Trusted by plant heads and maintenance leaders"
-        kicker="High-uptime plants choose DNR for reliable installs, responsive service, and clear communication."
-      />
+      <SectionTitle title={title} kicker={kicker} />
       <div className="grid md:grid-cols-3 gap-6">
         {testimonials.map((t) => (
           <div

@@ -5,7 +5,7 @@ import { verifyToken } from '@/lib/auth';
 
 export async function GET() {
   await connectDB();
-  const items = await Service.find().sort({ createdAt: -1 });
+  const items = await Service.find().sort({ sortOrder: 1, createdAt: 1 });
   return NextResponse.json(items);
 }
 

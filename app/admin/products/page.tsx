@@ -2,6 +2,7 @@
 import useSWR from 'swr';
 import { useState, ChangeEvent } from 'react';
 import { AdminShell } from '@/components/AdminShell';
+import { AdminEmptyState } from '@/components/AdminEmptyState';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -20,6 +21,8 @@ type FormState = {
 export default function AdminProductsPage() {
   const { data, mutate } = useSWR('/api/products', fetcher);
   const { data: categories } = useSWR('/api/categories', fetcher);
+  const products = Array.isArray(data) ? data : [];
+  const categoryOptions = Array.isArray(categories) ? categories : [];
   const [form, setForm] = useState<FormState>({
     title: '',
     slug: '',
@@ -87,7 +90,7 @@ export default function AdminProductsPage() {
             <input className="bg-white/5 border border-white/10 rounded-lg px-3 py-2" placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
             <select className="bg-white/5 border border-white/10 rounded-lg px-3 py-2" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })}>
               <option value="">Select category</option>
-              {categories?.map((c: any) => (
+              {categoryOptions.map((c: any) => (
                 <option key={c._id} value={c._id}>
                   {c.name}
                 </option>
@@ -124,39 +127,43 @@ export default function AdminProductsPage() {
             </label>
           </div>
           <button onClick={saveProduct} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
-            Add
+            Add product
           </button>
         </div>
-        <div className="glass rounded-2xl border border-white/10 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="text-left text-slate-400">
-              <tr>
-                <th className="p-3">Title</th>
-                <th className="p-3">Category</th>
-                <th className="p-3">Description</th>
-                <th className="p-3">Hero</th>
-                <th className="p-3">Published</th>
-                <th className="p-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.map((p: any) => (
-                <tr key={p._id} className="border-t border-white/5">
-                  <td className="p-3 text-white">{p.title}</td>
-                  <td className="p-3 text-slate-300">{p.category?.name}</td>
-                  <td className="p-3 text-slate-300">{p.shortDescription}</td>
-                  <td className="p-3 text-slate-400 text-xs break-all">{p.heroImage}</td>
-                  <td className="p-3 text-slate-300">{p.published ? 'Yes' : 'No'}</td>
-                  <td className="p-3 text-right">
-                    <button onClick={() => remove(p._id)} className="text-red-400 text-sm">
-                      Delete
-                    </button>
-                  </td>
+        {!products.length ? (
+          <AdminEmptyState title="No products yet" description="Add your first product above to start testing the product CMS." />
+        ) : (
+          <div className="glass rounded-2xl border border-white/10 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="text-left text-slate-400">
+                <tr>
+                  <th className="p-3">Title</th>
+                  <th className="p-3">Category</th>
+                  <th className="p-3">Description</th>
+                  <th className="p-3">Hero</th>
+                  <th className="p-3">Published</th>
+                  <th className="p-3"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {products.map((p: any) => (
+                  <tr key={p._id} className="border-t border-white/10">
+                    <td className="p-3 text-white">{p.title}</td>
+                    <td className="p-3 text-slate-300">{p.category?.name || '—'}</td>
+                    <td className="p-3 text-slate-300"><div className="max-w-sm break-words">{p.shortDescription || '—'}</div></td>
+                    <td className="p-3 text-xs text-slate-400 break-all">{p.heroImage || '—'}</td>
+                    <td className="p-3 text-slate-300">{p.published ? 'Yes' : 'No'}</td>
+                    <td className="p-3 text-right">
+                      <button onClick={() => remove(p._id)} className="text-red-400 text-sm hover:text-red-300">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </AdminShell>
   );

@@ -19,6 +19,8 @@ export function ServiceGrid({
   title?: string;
   kicker?: string;
 }) {
+  if (!services.length) return null;
+
   return (
     <section id={id} className="container-wide scroll-mt-28 mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />

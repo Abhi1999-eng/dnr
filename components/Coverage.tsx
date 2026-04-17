@@ -62,8 +62,8 @@ const STATE_SUMMARIES: Record<string, string> = {
   'Tamil Nadu': 'Coverage for OEMs, machining clusters, and production plants.',
 };
 
-function slugifyState(value: string) {
-  return value
+function slugifyState(value?: string | null) {
+  return String(value || '')
     .normalize('NFKD')
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
@@ -113,7 +113,23 @@ function canonicalFromMapName(value: string) {
   return INPUT_NORMALIZATION[normalized] || value;
 }
 
-export function Coverage({ states }: { states: string[] }) {
+type CoverageProps = {
+  states: string[];
+  title?: string;
+  kicker?: string;
+  summaryTitle?: string;
+  summaryText?: string;
+  stateDescriptions?: Record<string, string>;
+};
+
+export function Coverage({
+  states,
+  title = 'Pan-India coverage',
+  kicker = 'Coverage across key manufacturing belts, with install, service, and partner support where DNR customers operate.',
+  summaryTitle = 'Coverage network',
+  summaryText = 'DNR supports installs, service calls, and partner-led response where customers run foundry, machining, automation, and industrial engineering operations.',
+  stateDescriptions = {},
+}: CoverageProps) {
   const stateEntries = useMemo(() => {
     const canonicalSet = new Set(
       (states.length ? states : CANONICAL_COVERAGE.map((item) => item.mapName))
@@ -132,7 +148,7 @@ export function Coverage({ states }: { states: string[] }) {
         id,
         mapName: item.mapName,
         uiLabel: item.uiLabel,
-        description: STATE_SUMMARIES[item.mapName],
+        description: stateDescriptions[item.mapName] || STATE_SUMMARIES[item.mapName],
         path: MAP_PATHS[id],
         bbox,
       };
@@ -144,7 +160,7 @@ export function Coverage({ states }: { states: string[] }) {
       path: string;
       bbox: { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number };
     }>;
-  }, [states]);
+  }, [stateDescriptions, states]);
 
   const [activeStateId, setActiveStateId] = useState(stateEntries[0]?.id ?? '');
 
@@ -152,10 +168,7 @@ export function Coverage({ states }: { states: string[] }) {
 
   return (
     <section id="coverage" className="container-wide mt-16 space-y-6">
-      <SectionTitle
-        title="Pan-India coverage"
-        kicker="Coverage across key manufacturing belts, with install, service, and partner support where DNR customers operate."
-      />
+      <SectionTitle title={title} kicker={kicker} />
 
       <div className="rounded-[2rem] border border-secondary/10 bg-gradient-to-br from-white via-muted/30 to-white p-6 shadow-xl shadow-secondary/10 md:p-8">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
@@ -222,12 +235,9 @@ export function Coverage({ states }: { states: string[] }) {
 
           <div className="flex flex-col gap-4">
             <div className="rounded-[1.75rem] border border-secondary/10 bg-secondary px-5 py-5 text-white shadow-lg shadow-secondary/20">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">Coverage network</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">{summaryTitle}</p>
               <h3 className="mt-2 text-2xl font-semibold">Rapid response across manufacturing hubs</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/75">
-                DNR supports installs, service calls, and partner-led response where customers run foundry, machining,
-                automation, and industrial engineering operations.
-              </p>
+              <p className="mt-2 text-sm leading-relaxed text-white/75">{summaryText}</p>
               {activeState && (
                 <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 px-4 py-3">
                   <p className="text-sm font-semibold text-white">{activeState.uiLabel}</p>

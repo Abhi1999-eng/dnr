@@ -2,11 +2,13 @@
 import useSWR from 'swr';
 import { useState, ChangeEvent } from 'react';
 import { AdminShell } from '@/components/AdminShell';
+import { AdminEmptyState } from '@/components/AdminEmptyState';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminCategoriesPage() {
   const { data, mutate } = useSWR('/api/categories', fetcher);
+  const categories = Array.isArray(data) ? data : [];
   const [form, setForm] = useState({ name: '', slug: '', description: '', coverImage: '', sortOrder: 0, featured: false });
   const [uploading, setUploading] = useState(false);
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
@@ -46,7 +48,7 @@ export default function AdminCategoriesPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-black">Product Categories</h1>
+        <h1 className="text-2xl font-semibold text-white">Product Categories</h1>
         <div className="glass p-4 rounded-2xl border border-white/10 space-y-3">
           <div className="grid md:grid-cols-3 gap-3">
             <input className="bg-white/5 border border-white/10 rounded-lg px-3 py-2" placeholder="Name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
@@ -69,39 +71,43 @@ export default function AdminCategoriesPage() {
             <input type="checkbox" checked={form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} /> Featured
           </label>
           <button onClick={saveCategory} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
-            Add
+            Add category
           </button>
         </div>
-        <div className="glass rounded-2xl border border-white/10 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="text-left text-slate-400">
-              <tr>
-                <th className="p-3">Name</th>
-                <th className="p-3">Slug</th>
-                <th className="p-3">Description</th>
-                <th className="p-3">Image</th>
-                <th className="p-3">Sort</th>
-                <th className="p-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.map((c: any) => (
-                <tr key={c._id} className="border-t border-white/5">
-                  <td className="p-3 text-white">{c.name}</td>
-                  <td className="p-3 text-slate-300">{c.slug}</td>
-                  <td className="p-3 text-slate-300">{c.description}</td>
-                  <td className="p-3 text-slate-400 text-xs break-all">{c.coverImage}</td>
-                  <td className="p-3 text-slate-300">{c.sortOrder}</td>
-                  <td className="p-3 text-right">
-                    <button onClick={() => remove(c._id)} className="text-red-400 text-sm">
-                      Delete
-                    </button>
-                  </td>
+        {!categories.length ? (
+          <AdminEmptyState title="No categories yet" description="Create your first category to organize products on the website." />
+        ) : (
+          <div className="glass rounded-2xl border border-white/10 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="text-left text-slate-400">
+                <tr>
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Slug</th>
+                  <th className="p-3">Description</th>
+                  <th className="p-3">Image</th>
+                  <th className="p-3">Sort</th>
+                  <th className="p-3"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {categories.map((c: any) => (
+                  <tr key={c._id} className="border-t border-white/10">
+                    <td className="p-3 text-white">{c.name}</td>
+                    <td className="p-3 text-slate-300">{c.slug || '—'}</td>
+                    <td className="p-3 text-slate-300"><div className="max-w-sm break-words">{c.description || '—'}</div></td>
+                    <td className="p-3 text-xs text-slate-400 break-all">{c.coverImage || 'No image yet'}</td>
+                    <td className="p-3 text-slate-300">{c.sortOrder ?? 0}</td>
+                    <td className="p-3 text-right">
+                      <button onClick={() => remove(c._id)} className="text-red-400 text-sm hover:text-red-300">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </AdminShell>
   );

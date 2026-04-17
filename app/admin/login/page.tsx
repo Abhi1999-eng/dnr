@@ -36,9 +36,10 @@ function LoginForm() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950">
-      <div className="glass border border-white/10 rounded-3xl p-8 w-[360px] space-y-4">
+    <div className="admin-ui min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(139,197,63,0.08),_transparent_32%),linear-gradient(180deg,_#020617,_#0f172a)] px-4">
+      <div className="glass border border-white/10 rounded-3xl p-8 w-[380px] space-y-4">
         <h1 className="text-2xl font-semibold text-white">Admin Login</h1>
+        <p className="text-sm text-slate-400">Sign in to manage homepage content, settings, products, and business sections.</p>
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>
             <label className="text-sm text-slate-400">Email</label>

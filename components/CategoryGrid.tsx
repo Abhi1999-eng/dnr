@@ -2,13 +2,25 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { SectionTitle } from './SectionTitle';
 import { CategoryType } from '@/types';
 import { ProductType } from './ProductGrid';
 import { ProductModal } from './ProductModal';
 
-export function CategoryGrid({ categories, products = [] }: { categories: CategoryType[]; products?: ProductType[] }) {
+export function CategoryGrid({
+  categories,
+  products = [],
+  title = 'Product Categories',
+  kicker = 'Precision machinery across casting, machining, marking, polishing, testing.',
+  viewAllLabel = 'View all →',
+}: {
+  categories: CategoryType[];
+  products?: ProductType[];
+  title?: string;
+  kicker?: string;
+  viewAllLabel?: string;
+}) {
   const [selected, setSelected] = useState<ProductType | null>(null);
 
   const productByCategory = useMemo(() => {
@@ -19,6 +31,8 @@ export function CategoryGrid({ categories, products = [] }: { categories: Catego
     });
     return map;
   }, [products]);
+
+  if (!categories.length) return null;
 
   const displayCategories = categories.slice(0, 6);
 
@@ -50,10 +64,10 @@ export function CategoryGrid({ categories, products = [] }: { categories: Catego
   return (
     <section id="categories" className="container-wide space-y-6 mt-16">
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <SectionTitle title="Product Categories" kicker="Precision machinery across casting, machining, marking, polishing, testing." />
+        <SectionTitle title={title} kicker={kicker} />
         {categories.length > 6 && (
           <Link href="/products" className="text-primary font-semibold">
-            View all →
+            {viewAllLabel}
           </Link>
         )}
       </div>

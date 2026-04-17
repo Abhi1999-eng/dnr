@@ -2,11 +2,13 @@
 import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
 import { useState } from 'react';
+import { AdminEmptyState } from '@/components/AdminEmptyState';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminTestimonialsPage() {
   const { data, mutate } = useSWR('/api/testimonials', fetcher);
+  const testimonials = Array.isArray(data) ? data : [];
   const [form, setForm] = useState({ name: '', feedback: '', rating: 5 });
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
 
@@ -54,35 +56,39 @@ export default function AdminTestimonialsPage() {
             />
           </div>
           <button onClick={save} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
-            Add
+            Add testimonial
           </button>
         </div>
-        <div className="glass rounded-2xl border border-white/10 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="text-left text-slate-400">
-              <tr>
-                <th className="p-3">Name</th>
-                <th className="p-3">Feedback</th>
-                <th className="p-3">Rating</th>
-                <th className="p-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {data?.map((t: any) => (
-                <tr key={t._id} className="border-t border-white/5">
-                  <td className="p-3 text-white">{t.name}</td>
-                  <td className="p-3 text-slate-300">{t.feedback}</td>
-                  <td className="p-3 text-slate-300">{t.rating}</td>
-                  <td className="p-3 text-right">
-                    <button onClick={() => remove(t._id)} className="text-red-400 text-sm">
-                      Delete
-                    </button>
-                  </td>
+        {!testimonials.length ? (
+          <AdminEmptyState title="No testimonials yet" description="Add customer feedback here if you want to use a testimonials section later." />
+        ) : (
+          <div className="glass rounded-2xl border border-white/10 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead className="text-left text-slate-400">
+                <tr>
+                  <th className="p-3">Name</th>
+                  <th className="p-3">Feedback</th>
+                  <th className="p-3">Rating</th>
+                  <th className="p-3"></th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody>
+                {testimonials.map((t: any) => (
+                  <tr key={t._id} className="border-t border-white/10">
+                    <td className="p-3 text-white">{t.name || '—'}</td>
+                    <td className="p-3 text-slate-300"><div className="max-w-md break-words">{t.feedback || '—'}</div></td>
+                    <td className="p-3 text-slate-300">{t.rating ?? '—'}</td>
+                    <td className="p-3 text-right">
+                      <button onClick={() => remove(t._id)} className="text-red-400 text-sm hover:text-red-300">
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </AdminShell>
   );

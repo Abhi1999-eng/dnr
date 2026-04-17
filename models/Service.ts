@@ -8,6 +8,8 @@ const ServiceSchema = new Schema(
     description: { type: String, required: true },
     image: { type: String },
     slug: { type: String, unique: true, index: true },
+    sortOrder: { type: Number, default: 0 },
+    active: { type: Boolean, default: true },
   },
   { timestamps: true }
 );

@@ -9,6 +9,10 @@ const nav = [
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/services', label: 'Services' },
+  { href: '/admin/featured-machines', label: 'Featured Machines' },
+  { href: '/admin/client-logos', label: 'Client Logos / Brands' },
+  { href: '/admin/coverage', label: 'Coverage Settings' },
+  { href: '/admin/contact', label: 'Contact Settings' },
   { href: '/admin/testimonials', label: 'Testimonials' },
   { href: '/admin/inquiries', label: 'Inquiries' },
   { href: '/admin/settings', label: 'Settings' },
@@ -19,17 +23,21 @@ const nav = [
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
+    <div className="admin-ui min-h-screen bg-[radial-gradient(circle_at_top,_rgba(139,197,63,0.08),_transparent_32%),linear-gradient(180deg,_#020617,_#0f172a)] text-slate-100">
       <div className="flex h-full">
-        <aside className="w-60 border-r border-white/10 p-5 sticky top-0 h-screen hidden md:block">
-          <h2 className="text-lg font-semibold mb-6">Admin</h2>
-          <div className="space-y-2 text-sm">
+        <aside className="sticky top-0 hidden h-screen w-72 border-r border-white/10 bg-slate-950/80 p-6 backdrop-blur md:block">
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary/80">DNR CMS</p>
+          <h2 className="mt-3 text-2xl font-semibold text-white">Admin Panel</h2>
+          <p className="mt-2 text-sm text-slate-400">Manage website content, contact settings, and business sections from one place.</p>
+          <div className="mt-6 space-y-2 text-sm">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={`block px-3 py-2 rounded-lg transition ${
-                  pathname === item.href ? 'bg-white/10 text-white' : 'hover:bg-white/5'
+                className={`block rounded-xl px-4 py-3 transition ${
+                  pathname === item.href
+                    ? 'bg-primary/15 text-white shadow-[inset_0_0_0_1px_rgba(139,197,63,0.35)]'
+                    : 'text-slate-300 hover:bg-white/5 hover:text-white'
                 }`}
               >
                 {item.label}
@@ -37,8 +45,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
             ))}
           </div>
         </aside>
-        <main className="flex-1 p-6 md:p-10">
-          <div className="max-w-5xl mx-auto">{children}</div>
+        <main className="flex-1 p-4 md:p-8 xl:p-10">
+          <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>
     </div>

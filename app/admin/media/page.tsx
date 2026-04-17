@@ -26,6 +26,7 @@ export default function MediaPage() {
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold text-white">Media</h1>
         <form onSubmit={handleUpload} className="glass p-6 rounded-2xl border border-white/10 space-y-4">
+          <p className="text-sm text-slate-400">Upload one asset at a time and copy the returned URL into products, logos, featured machines, or settings.</p>
           <input name="file" type="file" className="text-sm text-slate-300" />
           <button type="submit" className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
             Upload
@@ -42,6 +43,5 @@ export default function MediaPage() {
   );
 
 }
-
 
 

@@ -23,3 +23,27 @@ export type ProductType = {
   features?: string[];
   featured?: boolean;
 };
+
+export type ClientLogoType = {
+  _id?: string;
+  name: string;
+  logoImage?: string;
+  externalUrl?: string;
+  sortOrder?: number;
+  active?: boolean;
+};
+
+export type FeaturedMachineType = {
+  _id?: string;
+  title: string;
+  slug: string;
+  shortDescription?: string;
+  image?: string;
+  gallery?: string[];
+  bullets?: string[];
+  ctaLabel?: string;
+  ctaLink?: string;
+  featured?: boolean;
+  active?: boolean;
+  sortOrder?: number;
+};

@@ -1,21 +1,19 @@
 'use client';
+
 import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
+const defaultHero = { title: '', subtitle: '', cta: '' };
+
 export default function AdminContentPage() {
   const { data, mutate } = useSWR('/api/content', fetcher);
-  const [hero, setHero] = useState({ title: '', subtitle: '', cta: '' });
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const [draft, setDraft] = useState<typeof defaultHero | null>(null);
 
-  useEffect(() => {
-    if (!data?.hero) return;
-    // Sync fetched hero content into form state when data changes
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setHero(data.hero);
-  }, [data?.hero]);
+  const hero = draft ?? { ...defaultHero, ...(data?.hero || {}) };
 
   async function saveHero() {
     await fetch('/api/content', {
@@ -23,36 +21,25 @@ export default function AdminContentPage() {
       headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
       body: JSON.stringify({ key: 'hero', data: hero }),
     });
+    setDraft(null);
     mutate();
   }
 
   return (
     <AdminShell>
       <div className="space-y-6">
-        <h1 className="text-2xl font-semibold text-white">Content</h1>
-        <div className="glass p-5 rounded-2xl border border-white/10 space-y-3">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-semibold text-white">Legacy Content</h1>
+          <p className="text-sm text-slate-400">This screen keeps the older hero content store editable for compatibility while the main homepage CMS lives under Homepage.</p>
+        </div>
+        <div className="glass space-y-3 rounded-2xl border border-white/10 p-5">
           <div className="grid gap-3">
-            <input
-              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2"
-              placeholder="Hero title"
-              value={hero.title}
-              onChange={(e) => setHero({ ...hero, title: e.target.value })}
-            />
-            <input
-              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2"
-              placeholder="Hero subtitle"
-              value={hero.subtitle}
-              onChange={(e) => setHero({ ...hero, subtitle: e.target.value })}
-            />
-            <input
-              className="bg-white/5 border border-white/10 rounded-lg px-3 py-2"
-              placeholder="Hero CTA"
-              value={hero.cta}
-              onChange={(e) => setHero({ ...hero, cta: e.target.value })}
-            />
+            <input placeholder="Hero title" value={hero.title} onChange={(e) => setDraft({ ...hero, title: e.target.value })} />
+            <input placeholder="Hero subtitle" value={hero.subtitle} onChange={(e) => setDraft({ ...hero, subtitle: e.target.value })} />
+            <input placeholder="Hero CTA" value={hero.cta} onChange={(e) => setDraft({ ...hero, cta: e.target.value })} />
           </div>
-          <button onClick={saveHero} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
-            Save hero
+          <button onClick={saveHero} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900">
+            Save hero content
           </button>
         </div>
       </div>

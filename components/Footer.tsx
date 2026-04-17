@@ -1,27 +1,81 @@
 import Link from 'next/link';
 
-export function Footer() {
+type FooterLink = {
+  label: string;
+  href: string;
+};
+
+type FooterProps = {
+  companyName?: string;
+  footerDescription?: string;
+  phoneNumbers?: string[];
+  email?: string;
+  address?: string;
+  website?: string;
+  footerLinks?: FooterLink[];
+};
+
+export function Footer({
+  companyName = 'DNR Techno Services',
+  footerDescription = 'Industrial machinery, support, and engineering services for casting, machining, automation, and production teams across India.',
+  phoneNumbers = [],
+  email = '',
+  address = '',
+  website = '',
+  footerLinks = [
+    { label: 'About', href: '/about' },
+    { label: 'Products', href: '/products' },
+    { label: 'Services', href: '/services' },
+    { label: 'Contact', href: '/contact' },
+  ],
+}: FooterProps) {
+  const hasCompanyLinks = footerLinks.length > 0;
+  const hasContact = phoneNumbers.length > 0 || !!email || !!website || !!address;
+
   return (
-    <footer className="border-t border-white/10 mt-20 py-12 bg-slate-950/80">
-      <div className="container-wide grid md:grid-cols-3 gap-8 text-sm text-slate-300">
+    <footer className="mt-20 border-t border-secondary/10 bg-secondary py-12 text-white">
+      <div className={`container-wide grid gap-8 text-sm ${hasCompanyLinks && hasContact ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
         <div>
-          <h3 className="text-white font-semibold">DNR Techno Services</h3>
-          <p className="mt-3 text-slate-400">Industrial thermal imaging, vibration analysis, ultrasound, and reliability engineering across India.</p>
+          <h3 className="text-xl font-semibold">{companyName}</h3>
+          {footerDescription ? <p className="mt-3 max-w-md text-white/70">{footerDescription}</p> : null}
         </div>
-        <div>
-          <h4 className="text-white font-semibold">Company</h4>
-          <div className="mt-3 flex flex-col gap-2">
-            <Link href="/about">About</Link>
-            <Link href="/services">Services</Link>
-            <Link href="/contact">Contact</Link>
+
+        {hasCompanyLinks ? (
+          <div>
+            <h4 className="font-semibold">Company</h4>
+            <div className="mt-3 flex flex-col gap-2 text-white/80">
+              {footerLinks.map((link) => (
+                <Link key={`${link.label}-${link.href}`} href={link.href}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
           </div>
-        </div>
-        <div>
-          <h4 className="text-white font-semibold">Contact</h4>
-          <p className="mt-3">+91 9711196735 / 9911399919</p>
-          <p>info@dnrtechnoservices.com</p>
-          <p className="text-slate-400 mt-2">27-A, Parda Bagh, Daryaganj, Delhi - 110002</p>
-        </div>
+        ) : null}
+
+        {hasContact ? (
+          <div>
+            <h4 className="font-semibold">Contact</h4>
+            <div className="mt-3 space-y-1 text-white/80">
+              {phoneNumbers.map((phone) => (
+                <a key={phone} href={`tel:${phone}`} className="block hover:text-white">
+                  {phone}
+                </a>
+              ))}
+              {email && (
+                <a href={`mailto:${email}`} className="block hover:text-white">
+                  {email}
+                </a>
+              )}
+              {website && (
+                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" className="block hover:text-white">
+                  {website}
+                </a>
+              )}
+              {address && <p className="pt-2 text-white/65">{address}</p>}
+            </div>
+          </div>
+        ) : null}
       </div>
     </footer>
   );

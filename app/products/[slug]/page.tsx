@@ -6,6 +6,9 @@ import { Product } from '@/models/Product';
 import { Category } from '@/models/Category';
 import { InquiryForm } from '@/components/InquiryForm';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
+import { SiteSettings } from '@/models/SiteSettings';
+import { Footer } from '@/components/Footer';
+import { Nav } from '@/components/Nav';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,9 +20,20 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const product: any = productDoc;
   const related = await Product.find({ category: product.category?._id, _id: { $ne: product._id }, published: true }).limit(3).lean();
   const category: any = product.category ? await Category.findById(product.category).lean() : null;
+  const settings: any = await SiteSettings.findOne().lean();
+  const companyName = settings?.companyName || 'DNR Techno Services';
+  const logo = settings?.logo || '/logo-dnr.png';
+  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
+  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <Nav
+        companyName={companyName}
+        logo={logo}
+        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaTarget={settings?.headerCtaTarget || '#contact'}
+      />
       <div className="container-wide py-14 space-y-10">
         <div className="grid md:grid-cols-[1.1fr,0.9fr] gap-10 items-start">
           <div className="space-y-6">
@@ -84,7 +98,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
 
         <div className="glass bg-white rounded-2xl border border-accent/40 p-6 space-y-3">
           <h3 className="text-xl font-semibold text-secondary">Request a quote</h3>
-          <InquiryForm />
+          <InquiryForm config={settings?.inquiryForm} />
         </div>
 
         {related.length ? (
@@ -101,6 +115,15 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
         ) : null}
       </div>
+      <Footer
+        companyName={companyName}
+        footerDescription={settings?.footerDescription}
+        phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}
+        email={settings?.email}
+        address={settings?.address}
+        website={settings?.website}
+        footerLinks={settings?.footerLinks}
+      />
     </div>
   );
 }
