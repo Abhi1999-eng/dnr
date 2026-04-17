@@ -15,12 +15,19 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
+          timeout: 60s
+          command_timeout: 30m
           script: |
-            set -e
+            set -euxo pipefail
             cd /home/ubuntu/dnr
+            echo "Starting deploy on $(hostname) at $(date)"
             git fetch origin
             git reset --hard origin/main
-            npm ci --legacy-peer-deps
+            echo "Running npm ci"
+            npm ci
+            echo "Running build"
             npm run build
+            echo "Restarting PM2"
             pm2 restart dnr-modern || pm2 start /home/ubuntu/dnr/ecosystem.config.cjs
             pm2 save
+            echo "Deploy finished at $(date)"
