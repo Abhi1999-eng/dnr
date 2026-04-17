@@ -7,7 +7,6 @@ const nav = [
   { href: '/admin/dashboard', label: 'Dashboard' },
   { href: '/admin/homepage', label: 'Homepage' },
   { href: '/admin/products', label: 'Products' },
-  { href: '/admin/categories', label: 'Categories' },
   { href: '/admin/services', label: 'Services' },
   { href: '/admin/featured-machines', label: 'Featured Machines' },
   { href: '/admin/client-logos', label: 'Client Logos / Brands' },

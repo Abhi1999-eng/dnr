@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { CategoryGrid } from '@/components/CategoryGrid';
 import { ClientLogosSection } from '@/components/ClientLogosSection';
 import { Coverage } from '@/components/Coverage';
 import { FeaturedMachinesSection } from '@/components/FeaturedMachinesSection';
@@ -8,41 +7,55 @@ import { Footer } from '@/components/Footer';
 import { HeroSlider } from '@/components/HeroSlider';
 import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
+import { ProductGrid } from '@/components/ProductGrid';
 import { ServiceGrid } from '@/components/ServiceGrid';
 import { Testimonials } from '@/components/Testimonials';
 import { TrustSection } from '@/components/TrustSection';
+import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const { products, categories, testimonials, homepage, settings, services, clientLogos, featuredMachines } = await fetchPublicData();
+  const { products, testimonials, homepage, settings, services, clientLogos, featuredMachines } = await fetchPublicData();
 
   const companyName = settings?.companyName || 'DNR Techno Services';
   const logo = settings?.logo || '/logo-dnr.png';
   const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
   const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
   const whatsappNumber = settings?.whatsappNumber || primaryPhone;
+  const headerCtaHref = resolveContactActionHref(
+    settings?.headerCtaActionType,
+    settings?.headerCtaValue || settings?.headerCtaTarget || (settings?.headerCtaActionType === 'whatsapp' ? whatsappNumber : ''),
+    '#contact'
+  );
   const email = settings?.email || '';
   const contactNumbers = [primaryPhone, secondaryPhone].filter(Boolean);
-  const quickLinks = (settings?.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const primaryHeroHref = categories.length > 0 ? '#categories' : '#contact';
-  const hero = homepage?.hero || {
-    heading: companyName,
-    subheading: 'Industrial machinery, service support, and engineering guidance managed directly from the DNR CMS.',
-    ctaPrimary: 'Explore categories',
-    ctaSecondary: settings?.headerCtaLabel || 'Talk to an Expert',
-    tagline: companyName,
-  };
-  const about = homepage?.about || { heading: '', body: '', bullets: [] };
+  const quickLinks = (settings?.contactQuickLinks || [])
+    .filter((item: any) => item.active !== false)
+    .sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
   const sections = homepage?.sections || {};
-  const heroStats = (homepage?.heroStats || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const hero = homepage?.hero || {};
+  const heroHeading = hero.heading || 'Industrial machinery and engineering support for high-uptime plants';
+  const heroSubheading =
+    hero.subheading ||
+    'DNR Techno Services delivers machinery, commissioning, and responsive support for casting, machining, automation, testing, and fabrication requirements.';
+  const heroPrimaryCta = hero.ctaPrimary || 'View products';
+  const heroSecondaryCta = hero.ctaSecondary || settings?.headerCtaLabel || 'Talk to an Expert';
+  const heroTagline = hero.tagline || 'DNR Techno Services — Your service partner';
+  const about = homepage?.about || { heading: '', body: '', bullets: [] };
+  const heroStats = (homepage?.heroStats || [])
+    .filter((item: any) => item.active !== false)
+    .sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const whyCards = (homepage?.why || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const industries = ((homepage?.industries as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const trustCards = ((homepage?.trustCards as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const coverageEntries = ((homepage?.coverageStates as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const coverageStateDescriptions = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.description]));
+  const coverageStateLabels = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.label]));
   const coverageStates = coverageEntries.map((item: any) => item.stateId);
+  const productsSection = sections.products || {};
 
   return (
     <div className="bg-background text-secondary">
@@ -50,39 +63,63 @@ export default async function HomePage() {
         companyName={companyName}
         logo={logo}
         headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
-        headerCtaTarget={settings?.headerCtaTarget || '#contact'}
+        headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide space-y-16 pb-20 pt-14">
         {(sections.hero?.visible ?? true) && (
-          <section id="hero" className="grid items-center gap-10 rounded-3xl border border-secondary/10 bg-gradient-to-br from-white via-muted to-white p-8 shadow-lg shadow-secondary/10 md:grid-cols-[1.05fr,0.95fr] md:p-12">
-            <div className="space-y-6">
-              <span className="pill mb-2 inline-flex">{hero.tagline}</span>
-              <h1 className="text-4xl font-semibold leading-tight text-secondary md:text-6xl">{hero.heading}</h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-secondary/80">{hero.subheading}</p>
+          <section
+            id="hero"
+            className="grid items-center gap-8 rounded-[32px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(241,245,249,0.94),rgba(230,244,214,0.85))] p-7 shadow-[0_25px_80px_rgba(15,23,42,0.08)] md:grid-cols-[minmax(0,1.02fr)_minmax(420px,0.98fr)] md:p-12"
+          >
+            <div className="space-y-7">
+              <div className="space-y-4">
+                <span className="pill inline-flex">{heroTagline}</span>
+                <div className="space-y-4">
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] text-secondary md:text-6xl">{heroHeading}</h1>
+                  <p className="max-w-2xl text-lg leading-relaxed text-secondary/80">{heroSubheading}</p>
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-3">
-                <Link href={primaryHeroHref} className="btn-primary shadow-md">
-                  {hero.ctaPrimary || (categories.length > 0 ? 'Explore categories' : 'Talk to an Expert')}
+                <Link href="#products" className="btn-primary shadow-md">
+                  {heroPrimaryCta}
                 </Link>
-                <Link href={settings?.headerCtaTarget || '#contact'} className="btn-ghost border-secondary/20 bg-white text-secondary shadow-sm">
-                  {hero.ctaSecondary || settings?.headerCtaLabel || 'Contact us'}
+                <Link href={headerCtaHref} className="btn-ghost border-secondary/15 bg-white text-secondary shadow-sm">
+                  {heroSecondaryCta}
                 </Link>
               </div>
+
               {heroStats.length ? (
-                <div className={`grid gap-4 text-sm text-secondary/80 ${heroStats.length >= 3 ? 'grid-cols-3' : 'grid-cols-2'}`}>
+                <div className={`grid gap-4 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                   {heroStats.map((stat: any) => (
-                    <div key={`${stat.label}-${stat.value}`} className="rounded-xl border border-secondary/10 bg-white px-4 py-3 shadow-sm">
+                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
                       <p className="text-3xl font-semibold text-secondary">{stat.value}</p>
-                      <p>{stat.label}</p>
+                      <p className="mt-1 text-sm text-secondary/75">{stat.label}</p>
                     </div>
                   ))}
                 </div>
-              ) : null}
+              ) : (
+                <div className="grid gap-4 md:grid-cols-3">
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
+                    <p className="text-3xl font-semibold text-secondary">All</p>
+                    <p className="mt-1 text-sm text-secondary/75">Products added in admin appear automatically</p>
+                  </div>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
+                    <p className="text-3xl font-semibold text-secondary">Pan-India</p>
+                    <p className="mt-1 text-sm text-secondary/75">Support aligned to key manufacturing hubs</p>
+                  </div>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
+                    <p className="text-3xl font-semibold text-secondary">Fast</p>
+                    <p className="mt-1 text-sm text-secondary/75">Talk to an expert for machine guidance and service planning</p>
+                  </div>
+                </div>
+              )}
             </div>
-            <HeroSlider />
+            <HeroSlider products={products || []} />
           </section>
         )}
 
-        {(about.heading || about.body || about.bullets.length) ? (
+        {about.heading || about.body || about.bullets.length ? (
           <section id="about" className="glass grid gap-8 rounded-3xl border border-secondary/10 bg-white/95 p-10 shadow-lg shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
@@ -102,13 +139,15 @@ export default async function HomePage() {
           </section>
         ) : null}
 
-        {(sections.categories?.visible ?? true) && categories.length > 0 && (
-          <CategoryGrid
-            categories={categories || []}
+        {(productsSection.visible ?? true) && (
+          <ProductGrid
+            id="products"
             products={products || []}
-            title={sections.categories?.title || 'Product Categories'}
-            kicker={sections.categories?.kicker || 'Precision machinery across casting, machining, marking, polishing, testing.'}
-            viewAllLabel={sections.categories?.buttonLabel || 'View all →'}
+            enableModal
+            title={productsSection.title || 'Products'}
+            kicker={productsSection.kicker || 'Explore the machinery, systems, and solutions DNR supports for production-driven industrial environments.'}
+            emptyTitle="No products added yet"
+            emptyDescription="Add products from the admin panel and they will automatically appear on the homepage and products page."
           />
         )}
 
@@ -117,7 +156,7 @@ export default async function HomePage() {
             id="services"
             services={services || []}
             title={sections.services?.title || 'Services that keep plants online'}
-            kicker={sections.services?.kicker || 'Installation, commissioning, audits, diagnostics, and reliability programs for casting, machining, marking, and testing lines.'}
+            kicker={sections.services?.kicker || 'Installation, commissioning, audits, diagnostics, and reliability programs for casting, machining, marking, testing, and fabrication lines.'}
           />
         )}
 
@@ -125,7 +164,7 @@ export default async function HomePage() {
           <section id="why" className="glass rounded-3xl border border-accent/30 bg-white/90 p-10">
             <p className="pill inline-flex">Why choose DNR</p>
             <h3 className="mt-4 text-3xl font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h3>
-            {sections.whyChoose?.kicker && <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p>}
+            {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {whyCards.map((item: any) => (
                 <div key={item.title} className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-sm">
@@ -137,16 +176,15 @@ export default async function HomePage() {
           </section>
         )}
 
-        {(sections.coverage?.visible ?? true) && coverageEntries.length > 0 && (
-          <Coverage
-            states={coverageStates}
-            title={sections.coverage?.title || 'Pan-India coverage'}
-            kicker={sections.coverage?.kicker || 'Coverage across key manufacturing belts, with install, service, and partner support where DNR customers operate.'}
-            summaryTitle={sections.coverage?.summaryTitle || 'Coverage network'}
-            summaryText={sections.coverage?.summaryText || 'DNR supports installs, service calls, and partner-led response where customers run foundry, machining, automation, and industrial engineering operations.'}
-            stateDescriptions={coverageStateDescriptions}
-          />
-        )}
+        <Coverage
+          states={coverageStates}
+          title={sections.coverage?.title || 'Pan-India coverage'}
+          kicker={sections.coverage?.kicker || 'Coverage across key manufacturing belts, with install, service, and partner support where DNR customers operate.'}
+          summaryTitle={sections.coverage?.summaryTitle || 'Coverage network'}
+          summaryText={sections.coverage?.summaryText || 'DNR supports installs, service calls, and partner-led response where customers run foundry, machining, automation, and industrial engineering operations.'}
+          stateDescriptions={coverageStateDescriptions}
+          stateLabels={coverageStateLabels}
+        />
 
         {(sections.industries?.visible ?? true) && industries.length > 0 && (
           <section id="industries" className="container-wide space-y-6">
@@ -213,37 +251,44 @@ export default async function HomePage() {
               <p className="text-secondary/80">
                 {settings?.inquiryForm?.description ||
                   settings?.inquiryIntro ||
-                  'Share your requirement for casting, machining, marking, polishing, or testing equipment. We’ll recommend the right machine, commissioning plan, and service model.'}
+                  'Share your requirement for machinery, commissioning, fabrication, machining, or service support. We’ll recommend the right next step.'}
               </p>
               <div className="space-y-2 text-lg text-secondary/80">
                 <p className="font-semibold text-secondary">Quick contact</p>
                 <div className="flex flex-col gap-1">
                   {quickLinks.length ? (
-                    quickLinks.map((item: any) => (
-                      <a
-                        key={`${item.label}-${item.value}`}
-                        className="font-semibold text-primary hover:underline"
-                        href={
-                          item.href ||
-                          (item.type === 'phone'
-                            ? `tel:${item.value}`
-                            : item.type === 'email'
-                              ? `mailto:${item.value}`
-                              : item.type === 'whatsapp'
-                                ? `https://wa.me/${String(item.value || '').replace(/[^0-9]/g, '')}`
-                                : item.value)
-                        }
-                        target={item.type === 'whatsapp' || String(item.href || '').startsWith('http') ? '_blank' : undefined}
-                        rel={item.type === 'whatsapp' || String(item.href || '').startsWith('http') ? 'noreferrer' : undefined}
-                      >
-                        {item.label}
-                      </a>
-                    ))
+                    quickLinks.map((item: any) => {
+                      const href =
+                        item.href ||
+                        (item.type === 'phone'
+                          ? `tel:${item.value}`
+                          : item.type === 'email'
+                            ? `mailto:${item.value}`
+                            : item.type === 'whatsapp'
+                              ? `https://wa.me/${String(item.value || '').replace(/[^0-9]/g, '')}`
+                              : item.value);
+                      const opensExternally = item.type === 'whatsapp' || String(item.href || '').startsWith('http');
+                      return (
+                        <a
+                          key={`${item.label}-${item.value}`}
+                          className="font-semibold text-primary hover:underline"
+                          href={href}
+                          target={opensExternally ? '_blank' : undefined}
+                          rel={opensExternally ? 'noreferrer' : undefined}
+                        >
+                          {item.label}
+                        </a>
+                      );
+                    })
                   ) : (
                     <>
-                      {primaryPhone && <a className="font-semibold text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a>}
-                      {email && <a className="font-semibold text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a>}
-                      {whatsappNumber && <a className="font-semibold text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer">WhatsApp: {whatsappNumber}</a>}
+                      {primaryPhone ? <a className="font-semibold text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a> : null}
+                      {email ? <a className="font-semibold text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a> : null}
+                      {whatsappNumber ? (
+                        <a className="font-semibold text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer">
+                          WhatsApp: {whatsappNumber}
+                        </a>
+                      ) : null}
                     </>
                   )}
                 </div>
@@ -262,7 +307,11 @@ export default async function HomePage() {
         website={settings?.website}
         footerLinks={settings?.footerLinks}
       />
-      <FloatingSupport whatsappNumber={whatsappNumber} label={settings?.floatingSupportLabel || 'WhatsApp Support'} />
+      <FloatingSupport
+        enabled={settings?.floatingSupportEnabled !== false}
+        whatsappNumber={whatsappNumber}
+        label={settings?.floatingSupportLabel || 'WhatsApp Support'}
+      />
     </div>
   );
 }

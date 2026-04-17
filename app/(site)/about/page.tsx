@@ -1,5 +1,6 @@
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
+import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,7 @@ export default async function AboutPage() {
   const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
   const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
   const email = settings?.email || '';
+  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget, '#contact');
 
   return (
     <div className="min-h-screen bg-background text-secondary">
@@ -20,7 +22,7 @@ export default async function AboutPage() {
         companyName={companyName}
         logo={logo}
         headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
-        headerCtaTarget={settings?.headerCtaTarget || '#contact'}
+        headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide max-w-5xl space-y-10 pb-20 pt-16">
         <div className="space-y-3">

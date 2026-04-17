@@ -3,12 +3,13 @@
 import Image from 'next/image';
 
 type FloatingSupportProps = {
+  enabled?: boolean;
   whatsappNumber?: string;
   label?: string;
 };
 
-export function FloatingSupport({ whatsappNumber = '', label = 'WhatsApp Support' }: FloatingSupportProps) {
-  if (!whatsappNumber) return null;
+export function FloatingSupport({ enabled = true, whatsappNumber = '', label = 'WhatsApp Support' }: FloatingSupportProps) {
+  if (!enabled || !whatsappNumber) return null;
 
   const normalized = whatsappNumber.replace(/[^0-9]/g, '');
 

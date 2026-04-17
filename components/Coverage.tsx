@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import { motion } from 'framer-motion';
 import { SectionTitle } from './SectionTitle';
 import { simplemapsIndiaMapinfo } from '@/lib/simplemaps-india';
+import { SUPPORTED_COVERAGE_STATES } from '@/lib/coverage-config';
 
 const MAP_NAMES = simplemapsIndiaMapinfo.names as Record<string, string>;
 const MAP_PATHS = simplemapsIndiaMapinfo.paths as Record<string, string>;
@@ -11,56 +12,6 @@ const MAP_BBOX = simplemapsIndiaMapinfo.state_bbox_array as Record<
   string,
   { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number }
 >;
-
-const CANONICAL_COVERAGE = [
-  { mapName: 'Andhra Pradesh', uiLabel: 'Andhra Pradesh' },
-  { mapName: 'Gujarat', uiLabel: 'Gujarat' },
-  { mapName: 'Haryana', uiLabel: 'Haryana' },
-  { mapName: 'Jammu and Kashmir', uiLabel: 'Jammu and Kashmir' },
-  { mapName: 'West Bengal', uiLabel: 'West Bengal' },
-  { mapName: 'Madhya Pradesh', uiLabel: 'Madhya Pradesh' },
-  { mapName: 'Maharashtra', uiLabel: 'Maharashtra' },
-  { mapName: 'Delhi', uiLabel: 'Delhi NCR' },
-  { mapName: 'Punjab', uiLabel: 'Punjab' },
-  { mapName: 'Rajasthan', uiLabel: 'Rajasthan' },
-  { mapName: 'Telangana', uiLabel: 'Telangana' },
-  { mapName: 'Uttar Pradesh', uiLabel: 'Uttar Pradesh' },
-  { mapName: 'Uttarakhand', uiLabel: 'Uttarakhand' },
-  { mapName: 'Bihar', uiLabel: 'Bihar' },
-  { mapName: 'Chhattisgarh', uiLabel: 'Chhattisgarh' },
-  { mapName: 'Goa', uiLabel: 'Goa' },
-  { mapName: 'Himachal Pradesh', uiLabel: 'Himachal Pradesh' },
-  { mapName: 'Jharkhand', uiLabel: 'Jharkhand' },
-  { mapName: 'Karnataka', uiLabel: 'Karnataka' },
-  { mapName: 'Kerala', uiLabel: 'Kerala' },
-  { mapName: 'Odisha', uiLabel: 'Odisha' },
-  { mapName: 'Tamil Nadu', uiLabel: 'Tamil Nadu' },
-] as const;
-
-const STATE_SUMMARIES: Record<string, string> = {
-  'Andhra Pradesh': 'Support for coastal manufacturing, machining, and automation programs.',
-  Gujarat: 'Coverage across casting, foundry, and machine tool clusters.',
-  Haryana: 'Fast access to OEM belts and maintenance-heavy industrial sites.',
-  'Jammu and Kashmir': 'Regional support through partner-led response coverage.',
-  'West Bengal': 'Eastern coverage for processing, fabrication, and plant engineering.',
-  'Madhya Pradesh': 'Central India response for machining and industrial support needs.',
-  Maharashtra: 'Strong footprint across automotive, tooling, and manufacturing plants.',
-  Delhi: 'Commercial, technical, and rapid-response access for NCR customers.',
-  Punjab: 'Industrial support for machine shops, fabrication, and component plants.',
-  Rajasthan: 'Coverage for process industries, castings, and factory projects.',
-  Telangana: 'Support across Hyderabad-region machining and automation demand.',
-  'Uttar Pradesh': 'Large manufacturing corridor support with field-service reach.',
-  Uttarakhand: 'Access to hill-state industrial hubs and OEM supply chains.',
-  Bihar: 'Coverage through eastern network partners and service coordination.',
-  Chhattisgarh: 'Central-east support for heavy industry and engineering sites.',
-  Goa: 'Small-footprint coastal support tied to west-region response teams.',
-  'Himachal Pradesh': 'North-zone service access for dispersed production locations.',
-  Jharkhand: 'Coverage for metals, fabrication, and heavy engineering customers.',
-  Karnataka: 'Support for precision machining, OEM supply, and industrial automation.',
-  Kerala: 'Southern response coverage for plant maintenance and project support.',
-  Odisha: 'East-coast service support for engineering and processing sectors.',
-  'Tamil Nadu': 'Coverage for OEMs, machining clusters, and production plants.',
-};
 
 function slugifyState(value?: string | null) {
   return String(value || '')
@@ -120,6 +71,7 @@ type CoverageProps = {
   summaryTitle?: string;
   summaryText?: string;
   stateDescriptions?: Record<string, string>;
+  stateLabels?: Record<string, string>;
 };
 
 export function Coverage({
@@ -129,15 +81,12 @@ export function Coverage({
   summaryTitle = 'Coverage network',
   summaryText = 'DNR supports installs, service calls, and partner-led response where customers run foundry, machining, automation, and industrial engineering operations.',
   stateDescriptions = {},
+  stateLabels = {},
 }: CoverageProps) {
-  const stateEntries = useMemo(() => {
-    const canonicalSet = new Set(
-      (states.length ? states : CANONICAL_COVERAGE.map((item) => item.mapName))
-        .map(canonicalFromInput)
-        .filter(Boolean)
-    );
+  const activeEntries = useMemo(() => {
+    const canonicalSet = new Set(states.map(canonicalFromInput).filter(Boolean));
 
-    return CANONICAL_COVERAGE.map((item) => {
+    return SUPPORTED_COVERAGE_STATES.map((item) => {
       if (!canonicalSet.has(item.mapName)) return null;
 
       const id = Object.entries(MAP_NAMES).find(([, name]) => canonicalFromMapName(name) === item.mapName)?.[0];
@@ -147,8 +96,8 @@ export function Coverage({
       return {
         id,
         mapName: item.mapName,
-        uiLabel: item.uiLabel,
-        description: stateDescriptions[item.mapName] || STATE_SUMMARIES[item.mapName],
+        uiLabel: stateLabels[item.mapName] || item.defaultLabel,
+        description: stateDescriptions[item.mapName] || item.defaultDescription,
         path: MAP_PATHS[id],
         bbox,
       };
@@ -158,13 +107,13 @@ export function Coverage({
       uiLabel: string;
       description: string;
       path: string;
-      bbox: { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number };
-    }>;
-  }, [stateDescriptions, states]);
+        bbox: { cx: string | number; cy: string | number; x: number; x2: number; y: number; y2: number };
+      }>;
+  }, [stateDescriptions, stateLabels, states]);
 
-  const [activeStateId, setActiveStateId] = useState(stateEntries[0]?.id ?? '');
+  const [activeStateId, setActiveStateId] = useState(activeEntries[0]?.id ?? '');
 
-  const activeState = stateEntries.find((entry) => entry.id === activeStateId) || stateEntries[0];
+  const activeState = activeEntries.find((entry) => entry.id === activeStateId) || activeEntries[0];
 
   return (
     <section id="coverage" className="container-wide mt-16 space-y-6">
@@ -179,7 +128,7 @@ export function Coverage({
                 <p className="text-lg font-semibold text-secondary">SimpleMaps India layer with live state highlighting</p>
               </div>
               <div className="rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-secondary">
-                {stateEntries.length} active states
+                {activeEntries.length} active states
               </div>
             </div>
 
@@ -187,7 +136,7 @@ export function Coverage({
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(135,225,38,0.08),transparent_40%,rgba(24,32,45,0.04))]" />
               <svg viewBox="0 0 1000 1000" className="relative z-10 h-full w-full" role="img" aria-label="India coverage map">
                 {Object.entries(MAP_PATHS).map(([id, path], index) => {
-                  const isCovered = stateEntries.some((entry) => entry.id === id);
+                  const isCovered = activeEntries.some((entry) => entry.id === id);
                   const isActive = activeStateId === id;
                   const name = MAP_NAMES[id];
 
@@ -247,7 +196,7 @@ export function Coverage({
             </div>
 
             <div className="grid gap-3 sm:grid-cols-2 lg:max-h-[32rem] lg:overflow-auto lg:pr-1">
-              {stateEntries.map((entry) => {
+              {activeEntries.length ? activeEntries.map((entry) => {
                 const isActive = entry.id === activeStateId;
                 return (
                   <button
@@ -271,7 +220,11 @@ export function Coverage({
                     </div>
                   </button>
                 );
-              })}
+              }) : (
+                <div className="rounded-2xl border border-dashed border-secondary/15 bg-white px-4 py-5 text-sm leading-relaxed text-secondary/65 sm:col-span-2">
+                  No states are active right now. The map is still visible so you can enable support coverage from the admin panel whenever needed.
+                </div>
+              )}
             </div>
           </div>
         </div>

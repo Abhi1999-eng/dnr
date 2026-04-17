@@ -10,8 +10,8 @@ const HomepageContentSchema = new Schema(
         kicker: { type: String, default: '' },
         visible: { type: Boolean, default: true },
       },
-      categories: {
-        title: { type: String, default: 'Product Categories' },
+      products: {
+        title: { type: String, default: 'Products' },
         kicker: { type: String, default: '' },
         visible: { type: Boolean, default: true },
         buttonLabel: { type: String, default: 'View all products' },
@@ -118,7 +118,6 @@ const HomepageContentSchema = new Schema(
         sortOrder: { type: Number, default: 0 },
       },
     ],
-    featuredCategories: [String], // category slugs
     stats: {
       plants: String,
       response: String,

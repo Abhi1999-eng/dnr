@@ -1,6 +1,7 @@
 import { Footer } from '@/components/Footer';
 import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
+import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 
 export const dynamic = 'force-dynamic';
@@ -13,6 +14,7 @@ export default async function ContactPage() {
   const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
   const whatsappNumber = settings?.whatsappNumber || primaryPhone;
   const email = settings?.email || '';
+  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget || whatsappNumber, '#contact');
   const quickLinks = (settings?.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
   return (
@@ -21,7 +23,7 @@ export default async function ContactPage() {
         companyName={companyName}
         logo={logo}
         headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
-        headerCtaTarget={settings?.headerCtaTarget || '#contact'}
+        headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide max-w-6xl space-y-8 pb-20 pt-16">
         <div className="space-y-3">

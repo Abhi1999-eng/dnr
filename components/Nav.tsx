@@ -7,7 +7,7 @@ import { MouseEvent, useState } from 'react';
 
 const links = [
   { href: '#hero', label: 'Home' },
-  { href: '#categories', label: 'Products' },
+  { href: '#products', label: 'Products' },
   { href: '#services', label: 'Services' },
   { href: '#contact', label: 'Contact' },
 ];

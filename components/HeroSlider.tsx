@@ -1,88 +1,152 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { ProductType } from '@/types';
 
-const slides = [
-  '/dnr/page_06.png',
-  '/dnr/page_10.png',
-  '/dnr/page_12.png',
-  '/dnr/page_16.png',
-  '/dnr/page_18.png',
-  '/dnr/page_19.png',
-  '/dnr/page_20.png',
-  '/dnr/page_22.png',
-  '/dnr/page_23.png',
+type Slide = {
+  image: string;
+  title: string;
+  description: string;
+};
+
+const fallbackSlides: Slide[] = [
+  {
+    image: '/dnr/page_06.png',
+    title: 'Casting machinery',
+    description: 'Support for die casting, moulding, and foundry-driven production environments.',
+  },
+  {
+    image: '/dnr/page_18.png',
+    title: 'Precision CNC systems',
+    description: 'Turning, milling, and production-support machinery for high-uptime operations.',
+  },
+  {
+    image: '/dnr/page_22.png',
+    title: 'Industrial automation',
+    description: 'Marking, testing, polishing, and fabrication-ready equipment for modern plants.',
+  },
 ];
 
-export function HeroSlider() {
+export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
+  const slides = useMemo<Slide[]>(() => {
+    const productSlides = products
+      .filter((product) => product.heroImage || product.image)
+      .slice(0, 5)
+      .map((product) => ({
+        image: product.heroImage || product.image || '/dnr/page_06.png',
+        title: product.title,
+        description:
+          product.shortDescription ||
+          product.description ||
+          'Production-ready product support from DNR Techno Services.',
+      }));
+
+    return productSlides.length ? productSlides : fallbackSlides;
+  }, [products]);
+
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || slides.length <= 1) return;
     const id = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
-    }, 2000);
+    }, 3500);
     return () => clearInterval(id);
-  }, [paused]);
+  }, [paused, slides.length]);
 
-  const goTo = (i: number) => setIndex((i + slides.length) % slides.length);
+  const activeIndex = slides.length ? index % slides.length : 0;
+  const activeSlide = slides[activeIndex];
+  const goTo = (nextIndex: number) => setIndex((nextIndex + slides.length) % slides.length);
 
   return (
     <div
-      className="relative overflow-hidden rounded-3xl border border-muted shadow-2xl min-h-[320px] bg-muted"
+      className="relative min-h-[420px] overflow-hidden rounded-[28px] border border-secondary/10 bg-secondary shadow-2xl shadow-secondary/15"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
       <AnimatePresence mode="wait">
         <motion.div
-          key={slides[index]}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          key={activeSlide.image}
+          initial={{ opacity: 0, scale: 1.04 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
           transition={{ duration: 0.6, ease: 'easeInOut' }}
           className="absolute inset-0"
         >
           <Image
-            src={slides[index]}
-            alt="DNR machinery"
+            src={activeSlide.image}
+            alt={activeSlide.title}
             fill
             className="object-cover"
             sizes="(max-width: 768px) 100vw, 50vw"
             priority
           />
-          <div className="absolute inset-0 bg-gradient-to-br from-white/75 via-white/45 to-white/25" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,23,42,0.88),rgba(15,23,42,0.38)_52%,rgba(15,23,42,0.12))]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-secondary via-secondary/35 to-transparent" />
         </motion.div>
       </AnimatePresence>
 
-      <div className="absolute z-20 flex gap-2 left-1/2 -translate-x-1/2 bottom-4">
-        {slides.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => goTo(i)}
-            className={`w-2.5 h-2.5 rounded-full transition ${i === index ? 'bg-primary' : 'bg-secondary/30'}`}
-            aria-label={`Slide ${i + 1}`}
-          />
-        ))}
-      </div>
+      <div className="relative z-10 flex h-full min-h-[420px] flex-col justify-between p-6 md:p-8">
+        <div className="flex items-start justify-between gap-4">
+          <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/80">
+            Product showcase
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => goTo(activeIndex - 1)}
+              aria-label="Previous slide"
+              className="rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white hover:text-secondary"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              onClick={() => goTo(activeIndex + 1)}
+              aria-label="Next slide"
+              className="rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white hover:text-secondary"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
+        </div>
 
-      <button
-        onClick={() => goTo(index - 1)}
-        aria-label="Previous slide"
-        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-secondary rounded-full p-2 shadow"
-      >
-        <ChevronLeft size={18} />
-      </button>
-      <button
-        onClick={() => goTo(index + 1)}
-        aria-label="Next slide"
-        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 bg-white/80 hover:bg-white text-secondary rounded-full p-2 shadow"
-      >
-        <ChevronRight size={18} />
-      </button>
+        <div className="max-w-lg space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Precision machinery • support-ready</p>
+            <h3 className="text-2xl font-semibold leading-tight text-white md:text-3xl">{activeSlide.title}</h3>
+            <p className="max-w-md text-sm leading-relaxed text-white/80 md:text-base">{activeSlide.description}</p>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">All</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/65">Products appear live</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">Admin</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/65">Managed updates</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
+              <p className="text-2xl font-semibold text-white">Fast</p>
+              <p className="text-xs uppercase tracking-[0.18em] text-white/65">Inquiry response</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          {slides.map((slide, slideIndex) => (
+            <button
+              key={`${slide.title}-${slideIndex}`}
+              onClick={() => goTo(slideIndex)}
+              className={`h-2.5 rounded-full transition-all ${slideIndex === activeIndex ? 'w-10 bg-primary' : 'w-2.5 bg-white/35 hover:bg-white/70'}`}
+              aria-label={`Show ${slide.title}`}
+            />
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

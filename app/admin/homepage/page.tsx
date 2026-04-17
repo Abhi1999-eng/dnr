@@ -1,13 +1,39 @@
 'use client';
 
 import useSWR from 'swr';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
 import { AdminShell } from '@/components/AdminShell';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 type CardItem = { title: string; description: string; sortOrder?: number; active?: boolean };
 type StatItem = { label: string; value: string; sortOrder?: number; active?: boolean };
+
+type SectionKey =
+  | 'products'
+  | 'services'
+  | 'whyChoose'
+  | 'industries'
+  | 'testimonials'
+  | 'trust'
+  | 'clients'
+  | 'featuredMachines'
+  | 'inquiry'
+  | 'coverage';
+
+const SECTION_LABELS: Record<SectionKey, string> = {
+  products: 'Products',
+  services: 'Services',
+  whyChoose: 'Why Choose DNR',
+  industries: 'Industries & Applications',
+  testimonials: 'Testimonials',
+  trust: 'Proof Section',
+  clients: 'Associated Brands',
+  featuredMachines: 'Featured Machines',
+  inquiry: 'Inquiry Section',
+  coverage: 'Coverage Section',
+};
 
 const defaultHomepage = {
   hero: {
@@ -27,7 +53,7 @@ const defaultHomepage = {
   industries: [] as CardItem[],
   trustCards: [] as CardItem[],
   sections: {
-    categories: { visible: true, title: '', kicker: '', buttonLabel: '' },
+    products: { visible: true, title: '', kicker: '', buttonLabel: '' },
     services: { visible: true, title: '', kicker: '' },
     whyChoose: { visible: true, title: '', kicker: '' },
     industries: { visible: true, title: '', kicker: '' },
@@ -47,14 +73,14 @@ function normalizeHomepage(data: any) {
     ...data,
     hero: { ...defaultHomepage.hero, ...(data.hero || {}) },
     about: { ...defaultHomepage.about, ...(data.about || {}), bullets: data.about?.bullets || [] },
-    heroStats: data.heroStats || [],
-    why: data.why || [],
-    industries: data.industries || [],
-    trustCards: data.trustCards || [],
+    heroStats: (data.heroStats || []).map((item: StatItem, index: number) => ({ ...item, sortOrder: item.sortOrder || index + 1, active: item.active !== false })),
+    why: (data.why || []).map((item: CardItem, index: number) => ({ ...item, sortOrder: item.sortOrder || index + 1, active: item.active !== false })),
+    industries: (data.industries || []).map((item: CardItem, index: number) => ({ ...item, sortOrder: item.sortOrder || index + 1, active: item.active !== false })),
+    trustCards: (data.trustCards || []).map((item: CardItem, index: number) => ({ ...item, sortOrder: item.sortOrder || index + 1, active: item.active !== false })),
     sections: {
       ...defaultHomepage.sections,
       ...(data.sections || {}),
-      categories: { ...defaultHomepage.sections.categories, ...(data.sections?.categories || {}) },
+      products: { ...defaultHomepage.sections.products, ...(data.sections?.products || {}) },
       services: { ...defaultHomepage.sections.services, ...(data.sections?.services || {}) },
       whyChoose: { ...defaultHomepage.sections.whyChoose, ...(data.sections?.whyChoose || {}) },
       industries: { ...defaultHomepage.sections.industries, ...(data.sections?.industries || {}) },
@@ -68,28 +94,51 @@ function normalizeHomepage(data: any) {
   };
 }
 
-function parseCardLines(value: string) {
-  return value
-    .split('\n')
-    .map((line) => {
-      const [title, description, sortOrder, active] = line.split('|').map((part) => part.trim());
-      if (!title) return null;
-      return {
-        title,
-        description: description || '',
-        sortOrder: Number(sortOrder || 0),
-        active: active !== 'false',
-      };
-    })
-    .filter(Boolean) as CardItem[];
+function SectionCard({
+  title,
+  description,
+  children,
+}: {
+  title: string;
+  description?: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
+      <div className="space-y-1">
+        <h2 className="text-lg font-semibold text-white">{title}</h2>
+        {description ? <p className="text-sm text-slate-400">{description}</p> : null}
+      </div>
+      {children}
+    </div>
+  );
 }
 
-function cardLines(items: CardItem[] = []) {
-  return items.map((item: CardItem) => [item.title, item.description || '', item.sortOrder || 0, item.active !== false ? 'true' : 'false'].join('|')).join('\n');
+function TextInput({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (value: string) => void; placeholder?: string }) {
+  return (
+    <label className="space-y-2 text-sm text-slate-200">
+      <span>{label}</span>
+      <input className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+    </label>
+  );
 }
 
-function statLines(items: StatItem[] = []) {
-  return items.map((item: StatItem) => [item.label, item.value, item.sortOrder || 0, item.active !== false ? 'true' : 'false'].join('|')).join('\n');
+function TextAreaInput({ label, value, onChange, rows = 3, placeholder }: { label: string; value: string; onChange: (value: string) => void; rows?: number; placeholder?: string }) {
+  return (
+    <label className="space-y-2 text-sm text-slate-200">
+      <span>{label}</span>
+      <textarea className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" rows={rows} value={value} placeholder={placeholder} onChange={(e) => onChange(e.target.value)} />
+    </label>
+  );
+}
+
+function Toggle({ label, checked, onChange }: { label: string; checked: boolean; onChange: (checked: boolean) => void }) {
+  return (
+    <label className="flex items-center gap-3 rounded-lg border border-white/10 bg-white/5 px-3 py-3 text-sm text-white">
+      <input type="checkbox" checked={checked} onChange={(e) => onChange(e.target.checked)} />
+      <span>{label}</span>
+    </label>
+  );
 }
 
 export default function AdminHomepagePage() {
@@ -97,74 +146,146 @@ export default function AdminHomepagePage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
   const [draft, setDraft] = useState<typeof defaultHomepage | null>(null);
 
-  const form = draft ?? normalizeHomepage(data);
+  const form = useMemo(() => draft ?? normalizeHomepage(data), [data, draft]);
+
+  function setSection<K extends SectionKey>(key: K, patch: Partial<(typeof form.sections)[K]>) {
+    setDraft({
+      ...form,
+      sections: {
+        ...form.sections,
+        [key]: { ...form.sections[key], ...patch },
+      },
+    });
+  }
+
+  function updateStat(index: number, patch: Partial<StatItem>) {
+    setDraft({
+      ...form,
+      heroStats: form.heroStats.map((item: StatItem, itemIndex: number) => (itemIndex === index ? { ...item, ...patch } : item)),
+    });
+  }
+
+  function addStat() {
+    setDraft({
+      ...form,
+      heroStats: [...form.heroStats, { label: '', value: '', active: true, sortOrder: form.heroStats.length + 1 }],
+    });
+  }
+
+  function removeStat(index: number) {
+    setDraft({ ...form, heroStats: form.heroStats.filter((_: StatItem, itemIndex: number) => itemIndex !== index) });
+  }
+
+  function updateBullet(index: number, value: string) {
+    setDraft({
+      ...form,
+      about: { ...form.about, bullets: form.about.bullets.map((bullet: string, bulletIndex: number) => (bulletIndex === index ? value : bullet)) },
+    });
+  }
+
+  function addBullet() {
+    setDraft({ ...form, about: { ...form.about, bullets: [...form.about.bullets, ''] } });
+  }
+
+  function removeBullet(index: number) {
+    setDraft({ ...form, about: { ...form.about, bullets: form.about.bullets.filter((_: string, bulletIndex: number) => bulletIndex !== index) } });
+  }
+
+  function updateCardList(key: 'why' | 'industries' | 'trustCards', index: number, patch: Partial<CardItem>) {
+    setDraft({
+      ...form,
+      [key]: form[key].map((item: CardItem, itemIndex: number) => (itemIndex === index ? { ...item, ...patch } : item)),
+    });
+  }
+
+  function addCard(key: 'why' | 'industries' | 'trustCards') {
+    setDraft({
+      ...form,
+      [key]: [...form[key], { title: '', description: '', active: true, sortOrder: form[key].length + 1 }],
+    });
+  }
+
+  function removeCard(key: 'why' | 'industries' | 'trustCards', index: number) {
+    setDraft({
+      ...form,
+      [key]: form[key].filter((_: CardItem, itemIndex: number) => itemIndex !== index),
+    });
+  }
 
   async function save() {
     await fetch('/api/homepage', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-      body: JSON.stringify({ ...data, ...form }),
+      body: JSON.stringify({
+        ...data,
+        ...form,
+        heroStats: form.heroStats.map((item: StatItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+        why: form.why.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+        industries: form.industries.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+        trustCards: form.trustCards.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+        sections: {
+          ...form.sections,
+          coverage: { ...form.sections.coverage, visible: true },
+        },
+      }),
     });
     setDraft(null);
     mutate();
   }
 
-  function sectionCard(
-    key: keyof typeof defaultHomepage.sections,
-    fields: Array<{ key: string; placeholder: string; multiline?: boolean }> = [
-      { key: 'title', placeholder: 'Section title' },
-      { key: 'kicker', placeholder: 'Section subtitle', multiline: true },
-    ]
+  function renderCardEditor(
+    key: 'why' | 'industries' | 'trustCards',
+    title: string,
+    description: string,
+    emptyText: string
   ) {
-    const section = form.sections[key] as Record<string, string | boolean | undefined>;
+    const items = form[key];
+    return (
+      <SectionCard title={title} description={description}>
+        <div className="space-y-3">
+          {items.length ? (
+            items.map((item: CardItem, index: number) => (
+              <div key={`${key}-${index}`} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 lg:grid-cols-[1fr_1.4fr_140px_auto]">
+                <TextInput label="Title" value={item.title} onChange={(value) => updateCardList(key, index, { title: value })} />
+                <TextAreaInput label="Description" value={item.description} onChange={(value) => updateCardList(key, index, { description: value })} rows={2} />
+                <div className="self-end">
+                  <Toggle label="Show item" checked={item.active !== false} onChange={(value) => updateCardList(key, index, { active: value })} />
+                </div>
+                <button type="button" className="self-end rounded-full border border-red-400/30 px-3 py-2 text-sm font-semibold text-red-200" onClick={() => removeCard(key, index)}>
+                  Delete
+                </button>
+              </div>
+            ))
+          ) : (
+            <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-5 text-sm text-slate-400">{emptyText}</div>
+          )}
+        </div>
+        <button type="button" className="rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white" onClick={() => addCard(key)}>
+          Add item
+        </button>
+      </SectionCard>
+    );
+  }
+
+  function renderSectionSettings(key: SectionKey, extraFields?: ReactNode, allowVisibility = true) {
     return (
       <div className="space-y-3 rounded-2xl border border-white/10 bg-white/5 p-4">
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="font-semibold text-white">{String(key)}</h3>
-          <label className="flex items-center gap-2 text-sm text-slate-200">
-            <input
-              type="checkbox"
-              checked={Boolean(section.visible)}
-              onChange={(e) =>
-                setDraft({
-                  ...form,
-                  sections: { ...form.sections, [key]: { ...section, visible: e.target.checked } as any },
-                })
-              }
-            />
-            Visible
-          </label>
-        </div>
-        {fields.map((field) =>
-          field.multiline ? (
-            <textarea
-              key={field.key}
-              rows={3}
-              className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2"
-              placeholder={field.placeholder}
-              value={String(section[field.key] || '')}
-              onChange={(e) =>
-                setDraft({
-                  ...form,
-                  sections: { ...form.sections, [key]: { ...section, [field.key]: e.target.value } as any },
-                })
-              }
-            />
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <h3 className="font-semibold text-white">{SECTION_LABELS[key]}</h3>
+            <p className="text-xs text-slate-400">Edit the title and supporting text for this homepage section.</p>
+          </div>
+          {allowVisibility ? (
+            <Toggle label="Show section" checked={form.sections[key].visible} onChange={(value) => setSection(key, { visible: value } as any)} />
           ) : (
-            <input
-              key={field.key}
-              className="w-full rounded-lg border border-white/10 bg-slate-950/50 px-3 py-2"
-              placeholder={field.placeholder}
-              value={String(section[field.key] || '')}
-              onChange={(e) =>
-                setDraft({
-                  ...form,
-                  sections: { ...form.sections, [key]: { ...section, [field.key]: e.target.value } as any },
-                })
-              }
-            />
-          )
-        )}
+            <div className="rounded-full border border-primary/20 bg-primary/10 px-3 py-2 text-xs font-semibold text-white">Always visible</div>
+          )}
+        </div>
+        <div className="grid gap-3">
+          <TextInput label="Section title" value={form.sections[key].title || ''} onChange={(value) => setSection(key, { title: value } as any)} />
+          <TextAreaInput label="Section subtitle" value={form.sections[key].kicker || ''} onChange={(value) => setSection(key, { kicker: value } as any)} rows={2} />
+          {extraFields}
+        </div>
       </div>
     );
   }
@@ -174,93 +295,98 @@ export default function AdminHomepagePage() {
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold text-white">Homepage Content</h1>
-          <p className="text-sm text-slate-400">Manage hero copy, section titles, trust cards, industries, about content, and section visibility without touching code.</p>
+          <p className="text-sm text-slate-400">Update the homepage copy and featured content using simple business-friendly forms.</p>
         </div>
 
-        <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <h2 className="text-lg font-semibold text-white">Hero</h2>
+        <SectionCard title="Hero Section" description="Control the main heading, supporting copy, and headline buttons seen first on the homepage.">
           <div className="grid gap-3 md:grid-cols-2">
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Heading" value={form.hero.heading} onChange={(e) => setDraft({ ...form, hero: { ...form.hero, heading: e.target.value } })} />
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Tagline" value={form.hero.tagline} onChange={(e) => setDraft({ ...form, hero: { ...form.hero, tagline: e.target.value } })} />
-            <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="Subheading" value={form.hero.subheading} onChange={(e) => setDraft({ ...form, hero: { ...form.hero, subheading: e.target.value } })} />
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Primary CTA label" value={form.hero.ctaPrimary} onChange={(e) => setDraft({ ...form, hero: { ...form.hero, ctaPrimary: e.target.value } })} />
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Secondary CTA label" value={form.hero.ctaSecondary} onChange={(e) => setDraft({ ...form, hero: { ...form.hero, ctaSecondary: e.target.value } })} />
+            <TextInput label="Main heading" value={form.hero.heading} onChange={(value) => setDraft({ ...form, hero: { ...form.hero, heading: value } })} />
+            <TextInput label="Top tagline" value={form.hero.tagline} onChange={(value) => setDraft({ ...form, hero: { ...form.hero, tagline: value } })} />
+            <div className="md:col-span-2">
+              <TextAreaInput label="Supporting description" value={form.hero.subheading} onChange={(value) => setDraft({ ...form, hero: { ...form.hero, subheading: value } })} />
+            </div>
+            <TextInput label="Primary button label" value={form.hero.ctaPrimary} onChange={(value) => setDraft({ ...form, hero: { ...form.hero, ctaPrimary: value } })} />
+            <TextInput label="Secondary button label" value={form.hero.ctaSecondary} onChange={(value) => setDraft({ ...form, hero: { ...form.hero, ctaSecondary: value } })} />
           </div>
-          <textarea
-            className="min-h-28 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-            placeholder="Hero stats: label|value|sortOrder|active one per line"
-            value={statLines(form.heroStats)}
-            onChange={(e) =>
-              setDraft({
-                ...form,
-                heroStats: e.target.value
-                  .split('\n')
-                  .map((line: string) => {
-                    const [label, value, sortOrder, active] = line.split('|').map((part) => part.trim());
-                    if (!label || !value) return null;
-                    return { label, value, sortOrder: Number(sortOrder || 0), active: active !== 'false' };
-                  })
-                  .filter(Boolean) as typeof form.heroStats,
-              })
-            }
-          />
-        </div>
+        </SectionCard>
 
-        <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <h2 className="text-lg font-semibold text-white">About & why choose DNR</h2>
+        <SectionCard title="Hero Stats" description="Add short proof points such as coverage reach, machine range, or response promise.">
+          <div className="space-y-3">
+            {form.heroStats.length ? (
+              form.heroStats.map((item: StatItem, index: number) => (
+                <div key={`stat-${index}`} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 lg:grid-cols-[1fr_1fr_140px_auto]">
+                  <TextInput label="Label" value={item.label} onChange={(value) => updateStat(index, { label: value })} />
+                  <TextInput label="Value" value={item.value} onChange={(value) => updateStat(index, { value })} />
+                  <div className="self-end">
+                    <Toggle label="Show stat" checked={item.active !== false} onChange={(value) => updateStat(index, { active: value })} />
+                  </div>
+                  <button type="button" className="self-end rounded-full border border-red-400/30 px-3 py-2 text-sm font-semibold text-red-200" onClick={() => removeStat(index)}>
+                    Delete
+                  </button>
+                </div>
+              ))
+            ) : (
+              <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-5 text-sm text-slate-400">No hero stats added yet.</div>
+            )}
+          </div>
+          <button type="button" className="rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white" onClick={addStat}>
+            Add stat
+          </button>
+        </SectionCard>
+
+        <SectionCard title="About DNR" description="This content appears in the homepage introduction section.">
           <div className="grid gap-3 md:grid-cols-2">
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="About heading" value={form.about.heading} onChange={(e) => setDraft({ ...form, about: { ...form.about, heading: e.target.value } })} />
-            <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="About body" value={form.about.body} onChange={(e) => setDraft({ ...form, about: { ...form.about, body: e.target.value } })} />
-            <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={4} placeholder="About bullets (one per line)" value={form.about.bullets.join('\n')} onChange={(e) => setDraft({ ...form, about: { ...form.about, bullets: e.target.value.split('\n').map((line: string) => line.trim()).filter(Boolean) } })} />
+            <TextInput label="Section heading" value={form.about.heading} onChange={(value) => setDraft({ ...form, about: { ...form.about, heading: value } })} />
+            <div className="md:col-span-2">
+              <TextAreaInput label="Section description" value={form.about.body} onChange={(value) => setDraft({ ...form, about: { ...form.about, body: value } })} />
+            </div>
           </div>
-          <textarea
-            className="min-h-32 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-            placeholder="Why choose cards: title|description|sortOrder|active one per line"
-            value={cardLines(form.why)}
-            onChange={(e) => setDraft({ ...form, why: parseCardLines(e.target.value) })}
-          />
-        </div>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <h3 className="font-semibold text-white">About bullet points</h3>
+                <p className="text-sm text-slate-400">Add short support highlights shown as cards beside the intro text.</p>
+              </div>
+              <button type="button" className="rounded-full border border-white/15 px-3 py-2 text-sm font-semibold text-white" onClick={addBullet}>
+                Add bullet
+              </button>
+            </div>
+            {form.about.bullets.length ? form.about.bullets.map((bullet: string, index: number) => (
+              <div key={`bullet-${index}`} className="grid gap-3 rounded-2xl border border-white/10 bg-white/5 p-4 lg:grid-cols-[1fr_auto]">
+                <TextInput label={`Bullet ${index + 1}`} value={bullet} onChange={(value) => updateBullet(index, value)} />
+                <button type="button" className="self-end rounded-full border border-red-400/30 px-3 py-2 text-sm font-semibold text-red-200" onClick={() => removeBullet(index)}>
+                  Delete
+                </button>
+              </div>
+            )) : <div className="rounded-2xl border border-dashed border-white/10 bg-white/5 px-4 py-5 text-sm text-slate-400">No about bullets added yet.</div>}
+          </div>
+        </SectionCard>
 
-        <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <h2 className="text-lg font-semibold text-white">Industries & proof content</h2>
-          <textarea
-            className="min-h-36 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-            placeholder="Industries: title|description|sortOrder|active one per line"
-            value={cardLines(form.industries)}
-            onChange={(e) => setDraft({ ...form, industries: parseCardLines(e.target.value) })}
-          />
-          <textarea
-            className="min-h-36 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-            placeholder="Trust cards: title|description|sortOrder|active one per line"
-            value={cardLines(form.trustCards)}
-            onChange={(e) => setDraft({ ...form, trustCards: parseCardLines(e.target.value) })}
-          />
-        </div>
+        {renderCardEditor('why', 'Why Choose DNR', 'Manage the benefit cards shown after products and services.', 'No “Why Choose DNR” items added yet.')}
+        {renderCardEditor('industries', 'Industries & Applications', 'Manage the industry use-case cards shown on the homepage.', 'No industry cards added yet.')}
+        {renderCardEditor('trustCards', 'Proof / Trust Cards', 'Manage the proof cards that reinforce trust and credibility.', 'No proof cards added yet.')}
 
-        <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <h2 className="text-lg font-semibold text-white">Section visibility, titles, and labels</h2>
+        <SectionCard title="Section Titles & Visibility" description="Keep homepage sections clear and business-friendly. Coverage always stays visible on the website.">
           <div className="grid gap-4 lg:grid-cols-2">
-            {sectionCard('categories', [
-              { key: 'title', placeholder: 'Categories title' },
-              { key: 'kicker', placeholder: 'Categories subtitle', multiline: true },
-              { key: 'buttonLabel', placeholder: 'View all label' },
-            ])}
-            {sectionCard('services')}
-            {sectionCard('whyChoose')}
-            {sectionCard('industries')}
-            {sectionCard('testimonials')}
-            {sectionCard('trust')}
-            {sectionCard('clients')}
-            {sectionCard('featuredMachines')}
-            {sectionCard('inquiry')}
-            {sectionCard('coverage', [
-              { key: 'title', placeholder: 'Coverage title' },
-              { key: 'kicker', placeholder: 'Coverage subtitle', multiline: true },
-              { key: 'summaryTitle', placeholder: 'Coverage summary title' },
-              { key: 'summaryText', placeholder: 'Coverage summary text', multiline: true },
-            ])}
+            {renderSectionSettings('products', <TextInput label="View all button label" value={form.sections.products.buttonLabel || ''} onChange={(value) => setSection('products', { buttonLabel: value })} />)}
+            {renderSectionSettings('services')}
+            {renderSectionSettings('whyChoose')}
+            {renderSectionSettings('industries')}
+            {renderSectionSettings('testimonials')}
+            {renderSectionSettings('trust')}
+            {renderSectionSettings('clients')}
+            {renderSectionSettings('featuredMachines')}
+            {renderSectionSettings('inquiry')}
+            {renderSectionSettings(
+              'coverage',
+              <>
+                <TextInput label="Summary card title" value={form.sections.coverage.summaryTitle || ''} onChange={(value) => setSection('coverage', { summaryTitle: value })} />
+                <TextAreaInput label="Summary card description" value={form.sections.coverage.summaryText || ''} onChange={(value) => setSection('coverage', { summaryText: value })} rows={3} />
+              </>,
+              false
+            )}
           </div>
-        </div>
+        </SectionCard>
 
         <button onClick={save} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900">
           Save homepage content

@@ -3,7 +3,6 @@ import { Service } from '../models/Service.js';
 import { Testimonial } from '../models/Testimonial.js';
 import { Content } from '../models/Content.js';
 import { Product } from '../models/Product.js';
-import { Category } from '../models/Category.js';
 import { HomepageContent } from '../models/HomepageContent.js';
 import { SiteSettings } from '../models/SiteSettings.js';
 import { AdminUser } from '../models/AdminUser.js';
@@ -11,6 +10,7 @@ import { ClientLogo } from '../models/ClientLogo.js';
 import { FeaturedMachine } from '../models/FeaturedMachine.js';
 import { Inquiry } from '../models/Inquiry.js';
 import { MediaAsset } from '../models/MediaAsset.js';
+import { SUPPORTED_COVERAGE_STATES } from '../lib/coverage-config.js';
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/dnr-modern';
 const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@dnr.com';
@@ -26,7 +26,6 @@ async function run() {
     Content.deleteMany({}),
     AdminUser.deleteMany({}),
     Product.deleteMany({}),
-    Category.deleteMany({}),
     HomepageContent.deleteMany({}),
     SiteSettings.deleteMany({}),
     ClientLogo.deleteMany({}),
@@ -51,8 +50,11 @@ async function run() {
     coverageStates: [],
     footerDescription: '',
     headerCtaLabel: 'Talk to an Expert',
+    headerCtaActionType: 'scroll',
+    headerCtaValue: '#contact',
     headerCtaTarget: '#contact',
     contactCtaLabel: 'Send inquiry',
+    floatingSupportEnabled: true,
     floatingSupportLabel: 'WhatsApp Support',
     inquiryIntro: '',
     inquiryResponseText: '',
@@ -92,10 +94,16 @@ async function run() {
     why: [],
     industries: [],
     trustCards: [],
-    coverageStates: [],
+    coverageStates: SUPPORTED_COVERAGE_STATES.map((state, index) => ({
+      stateId: state.mapName,
+      label: state.defaultLabel,
+      description: state.defaultDescription,
+      active: true,
+      sortOrder: index + 1,
+    })),
     sections: {
       hero: { visible: true, title: 'Hero', kicker: '' },
-      categories: { visible: true, title: 'Product Categories', kicker: '', buttonLabel: 'View all →', buttonHref: '/products' },
+      products: { visible: true, title: 'Products', kicker: '', buttonLabel: 'View all →', buttonHref: '/products' },
       services: { visible: true, title: 'Services', kicker: '' },
       whyChoose: { visible: true, title: 'Why choose DNR', kicker: '' },
       coverage: { visible: true, title: 'Pan-India coverage', kicker: '', summaryTitle: 'Coverage network', summaryText: '' },
@@ -106,7 +114,6 @@ async function run() {
       inquiry: { visible: true, title: 'Talk to an expert', kicker: 'Inquiry' },
       testimonials: { visible: true, title: 'Testimonials', kicker: '' },
     },
-    featuredCategories: [],
     stats: {},
     seo: { title: '', description: '', ogImage: '' },
   });

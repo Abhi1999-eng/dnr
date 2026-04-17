@@ -1,9 +1,9 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
 import { X, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
-import { ProductType } from './ProductGrid';
 import { useEffect, useState } from 'react';
 import { DescriptionBlock } from './DescriptionBlock';
+import type { ProductType } from '@/types';
 
 export function ProductModal({ product, onClose }: { product: ProductType; onClose: () => void }) {
   const [zoom, setZoom] = useState(1);
@@ -67,7 +67,7 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
           </div>
           <div className="space-y-3 text-secondary">
             <div className="flex items-center gap-2 text-sm">
-              <span className="px-2 py-1 rounded-full bg-muted border border-muted/80">{product.category?.name || 'Product'}</span>
+              <span className="px-2 py-1 rounded-full bg-muted border border-muted/80">Product details</span>
             </div>
             <h3 className="text-2xl font-semibold">{product.title}</h3>
             <DescriptionBlock content={product.description || product.shortDescription || ''} maxPreview={240} />

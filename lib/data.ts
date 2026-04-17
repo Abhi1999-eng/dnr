@@ -3,7 +3,6 @@ import { Service } from '@/models/Service';
 import { Testimonial } from '@/models/Testimonial';
 import { Content } from '@/models/Content';
 import { Product } from '@/models/Product';
-import { Category } from '@/models/Category';
 import { HomepageContent } from '@/models/HomepageContent';
 import { SiteSettings } from '@/models/SiteSettings';
 import { ClientLogo } from '@/models/ClientLogo';
@@ -11,12 +10,11 @@ import { FeaturedMachine } from '@/models/FeaturedMachine';
 
 export async function fetchPublicData() {
   await connectDB();
-  const [services, testimonials, contents, products, categories, homepage, settings, clientLogos, featuredMachines] = await Promise.all([
+  const [services, testimonials, contents, products, homepage, settings, clientLogos, featuredMachines] = await Promise.all([
     Service.find({ active: { $ne: false } }).sort({ sortOrder: 1, createdAt: 1 }).lean(),
     Testimonial.find().lean(),
     Content.find().lean(),
-    Product.find({ published: true }).populate('category').lean(),
-    Category.find().sort({ sortOrder: 1 }).lean(),
+    Product.find().sort({ createdAt: -1 }).lean(),
     HomepageContent.findOne().lean(),
     SiteSettings.findOne().lean(),
     ClientLogo.find({ active: true }).sort({ sortOrder: 1, createdAt: 1 }).lean(),
@@ -28,7 +26,6 @@ export async function fetchPublicData() {
     services: JSON.parse(JSON.stringify(services)),
     testimonials: JSON.parse(JSON.stringify(testimonials)),
     products: JSON.parse(JSON.stringify(products)),
-    categories: JSON.parse(JSON.stringify(categories)),
     homepage: JSON.parse(JSON.stringify(homepage || {})),
     settings: JSON.parse(JSON.stringify(settings || {})),
     clientLogos: JSON.parse(JSON.stringify(clientLogos || [])),

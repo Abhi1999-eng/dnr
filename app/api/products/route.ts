@@ -11,9 +11,26 @@ function slugify(text: string) {
     .replace(/(^-|-$)+/g, '');
 }
 
+function normalizeProductPayload(body: any) {
+  const heroImage = body.heroImage || body.image || '';
+  return {
+    title: body.title || '',
+    slug: body.slug || slugify(body.title || 'product'),
+    shortDescription: body.shortDescription || '',
+    description: body.description || '',
+    image: body.image || heroImage,
+    heroImage,
+    gallery: Array.isArray(body.gallery) ? body.gallery.filter(Boolean) : [],
+    specs: Array.isArray(body.specs) ? body.specs : [],
+    applications: Array.isArray(body.applications) ? body.applications.filter(Boolean) : [],
+    features: Array.isArray(body.features) ? body.features.filter(Boolean) : [],
+    seo: body.seo || {},
+  };
+}
+
 export async function GET() {
   await connectDB();
-  const products = await Product.find().populate('category').lean();
+  const products = await Product.find().sort({ createdAt: -1 }).lean();
   return NextResponse.json(products);
 }
 
@@ -23,7 +40,6 @@ export async function POST(req: Request) {
 
   const body = await req.json();
   await connectDB();
-  if (!body.slug) body.slug = slugify(body.title);
-  const created = await Product.create(body);
+  const created = await Product.create(normalizeProductPayload(body));
   return NextResponse.json(created, { status: 201 });
 }
