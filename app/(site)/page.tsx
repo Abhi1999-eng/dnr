@@ -69,14 +69,16 @@ export default async function HomePage() {
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="grid items-center gap-8 rounded-[32px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(241,245,249,0.94),rgba(230,244,214,0.85))] p-7 shadow-[0_25px_80px_rgba(15,23,42,0.08)] md:grid-cols-[minmax(0,1.02fr)_minmax(420px,0.98fr)] md:p-12"
+            className="relative grid items-center gap-10 overflow-hidden rounded-[34px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] p-7 shadow-[0_25px_80px_rgba(15,23,42,0.08)] md:grid-cols-[minmax(0,0.98fr)_minmax(470px,1.02fr)] md:p-12"
           >
+            <div className="absolute -left-16 top-10 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-secondary/5 blur-3xl" />
             <div className="space-y-7">
               <div className="space-y-4">
                 <span className="pill inline-flex">{heroTagline}</span>
                 <div className="space-y-4">
-                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] text-secondary md:text-6xl">{heroHeading}</h1>
-                  <p className="max-w-2xl text-lg leading-relaxed text-secondary/80">{heroSubheading}</p>
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] text-secondary md:text-[4.25rem]">{heroHeading}</h1>
+                  <p className="max-w-2xl text-lg leading-relaxed text-secondary/80 md:text-[1.075rem]">{heroSubheading}</p>
                 </div>
               </div>
 
@@ -87,6 +89,12 @@ export default async function HomePage() {
                 <Link href={headerCtaHref} className="btn-ghost border-secondary/15 bg-white text-secondary shadow-sm">
                   {heroSecondaryCta}
                 </Link>
+              </div>
+
+              <div className="flex flex-wrap gap-3 text-sm text-secondary/75">
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Industrial machinery support</span>
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Installation and commissioning</span>
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Responsive service coordination</span>
               </div>
 
               {heroStats.length ? (

@@ -3,7 +3,9 @@
 import useSWR from 'swr';
 import { useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
+import { AdminFeedback } from '@/components/AdminFeedback';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -143,8 +145,11 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 
 export default function AdminHomepagePage() {
   const { data, mutate } = useSWR('/api/homepage', fetcher);
+  const router = useRouter();
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
   const [draft, setDraft] = useState<typeof defaultHomepage | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const form = useMemo(() => draft ?? normalizeHomepage(data), [data, draft]);
 
@@ -213,24 +218,37 @@ export default function AdminHomepagePage() {
   }
 
   async function save() {
-    await fetch('/api/homepage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-      body: JSON.stringify({
-        ...data,
-        ...form,
-        heroStats: form.heroStats.map((item: StatItem, index: number) => ({ ...item, sortOrder: index + 1 })),
-        why: form.why.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
-        industries: form.industries.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
-        trustCards: form.trustCards.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
-        sections: {
-          ...form.sections,
-          coverage: { ...form.sections.coverage, visible: true },
-        },
-      }),
-    });
-    setDraft(null);
-    mutate();
+    setSaving(true);
+    try {
+      const res = await fetch('/api/homepage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+        body: JSON.stringify({
+          ...data,
+          ...form,
+          heroStats: form.heroStats.map((item: StatItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+          why: form.why.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+          industries: form.industries.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+          trustCards: form.trustCards.map((item: CardItem, index: number) => ({ ...item, sortOrder: index + 1 })),
+          sections: {
+            ...form.sections,
+            coverage: { ...form.sections.coverage, visible: true },
+          },
+        }),
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to save homepage content');
+      }
+      setDraft(null);
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Homepage updated successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save homepage content' });
+    } finally {
+      setSaving(false);
+    }
   }
 
   function renderCardEditor(
@@ -297,6 +315,7 @@ export default function AdminHomepagePage() {
           <h1 className="text-2xl font-semibold text-white">Homepage Content</h1>
           <p className="text-sm text-slate-400">Update the homepage copy and featured content using simple business-friendly forms.</p>
         </div>
+        {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
 
         <SectionCard title="Hero Section" description="Control the main heading, supporting copy, and headline buttons seen first on the homepage.">
           <div className="grid gap-3 md:grid-cols-2">
@@ -388,8 +407,8 @@ export default function AdminHomepagePage() {
           </div>
         </SectionCard>
 
-        <button onClick={save} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-          Save homepage content
+        <button onClick={save} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+          {saving ? 'Saving…' : 'Save homepage content'}
         </button>
       </div>
     </AdminShell>

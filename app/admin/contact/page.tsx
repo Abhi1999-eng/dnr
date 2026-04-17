@@ -2,8 +2,10 @@
 
 import useSWR from 'swr';
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { ContactActionType, resolveContactActionHref } from '@/lib/contact-actions';
+import { AdminFeedback } from '@/components/AdminFeedback';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -88,8 +90,11 @@ function addQuickLinkRow(settings: ContactSettings): ContactSettings {
 
 export default function AdminContactPage() {
   const { data, mutate } = useSWR('/api/settings', fetcher);
+  const router = useRouter();
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
   const [draft, setDraft] = useState<ContactSettings | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const settings = useMemo(() => draft ?? normalizeSettings(data), [data, draft]);
 
@@ -108,24 +113,37 @@ export default function AdminContactPage() {
   }
 
   async function save() {
-    const headerCtaTarget = resolveContactActionHref(settings.headerCtaActionType, settings.headerCtaValue, '#contact');
-    const payload = {
-      ...data,
-      ...settings,
-      phone: [settings.primaryPhone, settings.secondaryPhone].filter(Boolean),
-      headerCtaTarget,
-      contactQuickLinks: settings.contactQuickLinks
-        .map((item, index) => ({ ...item, sortOrder: index + 1 }))
-        .filter((item) => item.label && item.value),
-    };
+    setSaving(true);
+    try {
+      const headerCtaTarget = resolveContactActionHref(settings.headerCtaActionType, settings.headerCtaValue, '#contact');
+      const payload = {
+        ...data,
+        ...settings,
+        phone: [settings.primaryPhone, settings.secondaryPhone].filter(Boolean),
+        headerCtaTarget,
+        contactQuickLinks: settings.contactQuickLinks
+          .map((item, index) => ({ ...item, sortOrder: index + 1 }))
+          .filter((item) => item.label && item.value),
+      };
 
-    await fetch('/api/settings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-      body: JSON.stringify(payload),
-    });
-    setDraft(null);
-    mutate();
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to save contact settings');
+      }
+      setDraft(null);
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Contact settings updated successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save contact settings' });
+    } finally {
+      setSaving(false);
+    }
   }
 
   const ctaValueLabel =
@@ -146,6 +164,7 @@ export default function AdminContactPage() {
           <h1 className="text-2xl font-semibold text-white">Contact Settings</h1>
           <p className="text-sm text-slate-400">Update the contact details and actions used in the header, floating WhatsApp button, inquiry area, and footer.</p>
         </div>
+        {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
           <div className="space-y-1">
@@ -239,8 +258,8 @@ export default function AdminContactPage() {
           </div>
         </div>
 
-        <button onClick={save} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-          Save contact settings
+        <button onClick={save} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+          {saving ? 'Saving…' : 'Save contact settings'}
         </button>
       </div>
     </AdminShell>

@@ -2,8 +2,10 @@
 
 import useSWR from 'swr';
 import { ChangeEvent, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
+import { AdminFeedback } from '@/components/AdminFeedback';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -35,6 +37,7 @@ function slugify(value: string) {
 
 export default function AdminProductsPage() {
   const { data, mutate } = useSWR('/api/products', fetcher);
+  const router = useRouter();
   const products = Array.isArray(data) ? data : [];
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
 
@@ -42,6 +45,8 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const isEditing = useMemo(() => Boolean(editingId), [editingId]);
 
@@ -73,6 +78,9 @@ export default function AdminProductsPage() {
       } else {
         setForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
       }
+      setFeedback({ type: 'success', message: 'Image uploaded successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Upload failed' });
     } finally {
       setUploading(false);
       e.target.value = '';
@@ -107,6 +115,10 @@ export default function AdminProductsPage() {
 
       resetForm();
       await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: isEditing ? 'Product updated successfully' : 'Product added successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save product' });
     } finally {
       setSaving(false);
     }
@@ -125,18 +137,29 @@ export default function AdminProductsPage() {
   }
 
   async function removeProduct(id: string) {
-    const res = await fetch(`/api/products/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: token ? `Bearer ${token}` : '' },
-    });
+    if (!window.confirm('Are you sure you want to delete this product?')) return;
+    setDeletingId(id);
 
-    if (!res.ok) {
-      const error = await res.json().catch(() => ({}));
-      throw new Error(error.message || 'Unable to delete product');
+    try {
+      const res = await fetch(`/api/products/${id}`, {
+        method: 'DELETE',
+        headers: { Authorization: token ? `Bearer ${token}` : '' },
+      });
+
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to delete product');
+      }
+
+      if (editingId === id) resetForm();
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Product deleted successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to delete product' });
+    } finally {
+      setDeletingId(null);
     }
-
-    if (editingId === id) resetForm();
-    await mutate();
   }
 
   return (
@@ -146,6 +169,7 @@ export default function AdminProductsPage() {
           <h1 className="text-2xl font-semibold text-white">Products</h1>
           <p className="text-sm text-slate-400">Add, edit, or delete products. Every saved product appears automatically on the homepage and products page.</p>
         </div>
+        {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
           <div className="grid gap-3 md:grid-cols-2">
@@ -259,9 +283,10 @@ export default function AdminProductsPage() {
                         </button>
                         <button
                           onClick={() => removeProduct(product._id)}
+                          disabled={deletingId === product._id}
                           className="text-sm font-semibold text-red-300 hover:text-red-200"
                         >
-                          Delete
+                          {deletingId === product._id ? 'Deleting…' : 'Delete'}
                         </button>
                       </div>
                     </td>

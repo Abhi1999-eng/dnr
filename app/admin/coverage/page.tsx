@@ -2,8 +2,10 @@
 
 import useSWR from 'swr';
 import { useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { SUPPORTED_COVERAGE_STATES } from '@/lib/coverage-config';
+import { AdminFeedback } from '@/components/AdminFeedback';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -53,8 +55,11 @@ function normalizeCoverage(data: any) {
 
 export default function AdminCoveragePage() {
   const { data, mutate } = useSWR('/api/homepage', fetcher);
+  const router = useRouter();
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
   const [draft, setDraft] = useState<ReturnType<typeof normalizeCoverage> | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   const form = useMemo(() => draft ?? normalizeCoverage(data), [data, draft]);
 
@@ -66,30 +71,43 @@ export default function AdminCoveragePage() {
   }
 
   async function save() {
-    const payload = {
-      ...data,
-      sections: {
-        ...(data?.sections || {}),
-        coverage: {
-          ...(data?.sections?.coverage || {}),
-          ...form.sections.coverage,
-          visible: true,
+    setSaving(true);
+    try {
+      const payload = {
+        ...data,
+        sections: {
+          ...(data?.sections || {}),
+          coverage: {
+            ...(data?.sections?.coverage || {}),
+            ...form.sections.coverage,
+            visible: true,
+          },
         },
-      },
-      coverageStates: form.coverageStates.map((item, index) => ({
-        ...item,
-        sortOrder: index + 1,
-      })),
-    };
+        coverageStates: form.coverageStates.map((item, index) => ({
+          ...item,
+          sortOrder: index + 1,
+        })),
+      };
 
-    await fetch('/api/homepage', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-      body: JSON.stringify(payload),
-    });
+      const res = await fetch('/api/homepage', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+        body: JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to save coverage settings');
+      }
 
-    setDraft(null);
-    mutate();
+      setDraft(null);
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Coverage settings updated successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save coverage settings' });
+    } finally {
+      setSaving(false);
+    }
   }
 
   const activeCount = form.coverageStates.filter((state) => state.active !== false).length;
@@ -101,6 +119,7 @@ export default function AdminCoveragePage() {
           <h1 className="text-2xl font-semibold text-white">Coverage Settings</h1>
           <p className="text-sm text-slate-400">The India map always stays visible on the website. Use this page to choose which states are highlighted and what text appears beside the map.</p>
         </div>
+        {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
           <div className="space-y-1">
@@ -208,8 +227,8 @@ export default function AdminCoveragePage() {
           </div>
         </div>
 
-        <button onClick={save} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900">
-          Save coverage settings
+        <button onClick={save} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+          {saving ? 'Saving…' : 'Save coverage settings'}
         </button>
       </div>
     </AdminShell>

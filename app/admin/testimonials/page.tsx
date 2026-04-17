@@ -2,35 +2,69 @@
 import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
+import { AdminFeedback } from '@/components/AdminFeedback';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
 export default function AdminTestimonialsPage() {
   const { data, mutate } = useSWR('/api/testimonials', fetcher);
+  const router = useRouter();
   const testimonials = Array.isArray(data) ? data : [];
   const [form, setForm] = useState({ name: '', feedback: '', rating: 5 });
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const [saving, setSaving] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   async function save() {
-    await fetch('/api/testimonials', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-      body: JSON.stringify(form),
-    });
-    setForm({ name: '', feedback: '', rating: 5 });
-    mutate();
+    setSaving(true);
+    try {
+      const res = await fetch('/api/testimonials', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to add testimonial');
+      }
+      setForm({ name: '', feedback: '', rating: 5 });
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Testimonial added successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to add testimonial' });
+    } finally {
+      setSaving(false);
+    }
   }
 
   async function remove(id: string) {
-    await fetch(`/api/testimonials/${id}`, { method: 'DELETE', headers: { Authorization: token ? `Bearer ${token}` : '' } });
-    mutate();
+    if (!window.confirm('Are you sure you want to delete this testimonial?')) return;
+    setDeletingId(id);
+    try {
+      const res = await fetch(`/api/testimonials/${id}`, { method: 'DELETE', headers: { Authorization: token ? `Bearer ${token}` : '' } });
+      if (!res.ok) {
+        const error = await res.json().catch(() => ({}));
+        throw new Error(error.message || 'Unable to delete testimonial');
+      }
+      await mutate();
+      router.refresh();
+      setFeedback({ type: 'success', message: 'Testimonial deleted successfully' });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to delete testimonial' });
+    } finally {
+      setDeletingId(null);
+    }
   }
 
   return (
     <AdminShell>
       <div className="space-y-6">
         <h1 className="text-2xl font-semibold text-white">Testimonials</h1>
+        {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
         <div className="glass p-4 rounded-2xl border border-white/10 space-y-3">
           <div className="grid md:grid-cols-3 gap-3">
             <input
@@ -55,8 +89,8 @@ export default function AdminTestimonialsPage() {
               onChange={(e) => setForm({ ...form, feedback: e.target.value })}
             />
           </div>
-          <button onClick={save} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold">
-            Add testimonial
+          <button onClick={save} disabled={saving} className="rounded-full bg-white text-slate-900 px-4 py-2 text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-60">
+            {saving ? 'Adding…' : 'Add testimonial'}
           </button>
         </div>
         {!testimonials.length ? (
@@ -79,8 +113,8 @@ export default function AdminTestimonialsPage() {
                     <td className="p-3 text-slate-300"><div className="max-w-md break-words">{t.feedback || '—'}</div></td>
                     <td className="p-3 text-slate-300">{t.rating ?? '—'}</td>
                     <td className="p-3 text-right">
-                      <button onClick={() => remove(t._id)} className="text-red-400 text-sm hover:text-red-300">
-                        Delete
+                      <button onClick={() => remove(t._id)} disabled={deletingId === t._id} className="text-red-400 text-sm hover:text-red-300 disabled:opacity-60">
+                        {deletingId === t._id ? 'Deleting…' : 'Delete'}
                       </button>
                     </td>
                   </tr>
