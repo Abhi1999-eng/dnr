@@ -7,7 +7,6 @@ import { HomepageContent } from '../models/HomepageContent.js';
 import { SiteSettings } from '../models/SiteSettings.js';
 import { AdminUser } from '../models/AdminUser.js';
 import { ClientLogo } from '../models/ClientLogo.js';
-import { FeaturedMachine } from '../models/FeaturedMachine.js';
 import { Inquiry } from '../models/Inquiry.js';
 import { MediaAsset } from '../models/MediaAsset.js';
 import { SUPPORTED_COVERAGE_STATES } from '../lib/coverage-config.js';
@@ -29,7 +28,6 @@ async function run() {
     HomepageContent.deleteMany({}),
     SiteSettings.deleteMany({}),
     ClientLogo.deleteMany({}),
-    FeaturedMachine.deleteMany({}),
     Inquiry.deleteMany({}),
     MediaAsset.deleteMany({}),
   ]);
@@ -110,7 +108,6 @@ async function run() {
       industries: { visible: true, title: 'Industries & applications', kicker: '' },
       trust: { visible: true, title: 'Trusted by industry', kicker: '' },
       clients: { visible: true, title: 'Associated Brands', kicker: '' },
-      featuredMachines: { visible: true, title: 'Featured Machines', kicker: '' },
       inquiry: { visible: true, title: 'Talk to an expert', kicker: 'Inquiry' },
       testimonials: { visible: true, title: 'Testimonials', kicker: '' },
     },

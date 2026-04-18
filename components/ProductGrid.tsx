@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useState } from 'react';
 import { SectionTitle } from './SectionTitle';
 import { ProductModal } from './ProductModal';
+import { ContentCarousel } from './ContentCarousel';
 import type { ProductType } from '@/types';
 
 export function ProductGrid({
@@ -33,21 +34,22 @@ export function ProductGrid({
     <div className="space-y-8">
       {showTitle ? <SectionTitle title={title} kicker={kicker} /> : null}
       {products.length ? (
-        <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }}>
           {products.map((product) => {
             const imageSrc = product.heroImage || product.image || '/dnr/page_06.png';
             return (
               <article
                 key={product._id || product.slug || product.title}
-                className="glass flex h-full flex-col gap-4 rounded-2xl border border-secondary/10 bg-white p-5 shadow-lg shadow-secondary/10 transition duration-200 hover:-translate-y-1 hover:shadow-xl"
+                className="glass group flex h-full flex-col gap-4 rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-5 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_54px_rgba(15,23,42,0.13)]"
               >
                 <button
                   type="button"
                   className={`flex h-full flex-col gap-4 text-left ${enableModal ? 'cursor-pointer' : 'cursor-default'}`}
                   onClick={enableModal ? () => setSelected(product) : undefined}
                 >
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-secondary/10 bg-muted/40">
-                    <Image src={imageSrc} alt={product.title} fill className="object-cover" sizes="(max-width: 768px) 100vw, 33vw" />
+                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] border border-secondary/10 bg-muted/40">
+                    <Image src={imageSrc} alt={product.title} fill className="object-cover transition duration-500 group-hover:scale-[1.04]" sizes="(max-width: 768px) 100vw, 33vw" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-secondary/18 via-transparent to-transparent" />
                   </div>
                   <div className="flex-1 space-y-2">
                     <h3 className="text-xl font-semibold text-secondary">{product.title}</h3>
@@ -55,11 +57,15 @@ export function ProductGrid({
                       {product.shortDescription || product.description || 'Product details will appear here once added from the admin panel.'}
                     </p>
                   </div>
+                  <div className="flex items-center justify-between border-t border-secondary/10 pt-3">
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/45">Machinery range</span>
+                    {enableModal ? <span className="text-sm font-semibold text-primary transition group-hover:translate-x-1">View details →</span> : null}
+                  </div>
                 </button>
               </article>
             );
           })}
-        </div>
+        </ContentCarousel>
       ) : (
         <div className="rounded-3xl border border-dashed border-secondary/20 bg-white/80 px-6 py-12 text-center shadow-sm">
           <h3 className="text-xl font-semibold text-secondary">{emptyTitle}</h3>

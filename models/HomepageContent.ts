@@ -49,11 +49,6 @@ const HomepageContentSchema = new Schema(
         kicker: { type: String, default: '' },
         visible: { type: Boolean, default: true },
       },
-      featuredMachines: {
-        title: { type: String, default: 'Featured Machine' },
-        kicker: { type: String, default: '' },
-        visible: { type: Boolean, default: true },
-      },
       inquiry: {
         title: { type: String, default: 'Talk to an expert' },
         kicker: { type: String, default: '' },

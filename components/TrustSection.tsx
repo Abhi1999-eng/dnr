@@ -15,7 +15,7 @@ export function TrustSection({
   return (
     <section className="container-wide space-y-6 mt-12">
       <SectionTitle title={title} kicker={kicker} />
-      <ContentCarousel itemClassName="auto-cols-[86%] sm:auto-cols-[56%] lg:auto-cols-[34%] xl:auto-cols-[26%]">
+      <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
         {cards.map((p) => (
           <div
             key={p.title}

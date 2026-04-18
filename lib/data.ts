@@ -6,11 +6,10 @@ import { Product } from '@/models/Product';
 import { HomepageContent } from '@/models/HomepageContent';
 import { SiteSettings } from '@/models/SiteSettings';
 import { ClientLogo } from '@/models/ClientLogo';
-import { FeaturedMachine } from '@/models/FeaturedMachine';
 
 export async function fetchPublicData() {
   await connectDB();
-  const [services, testimonials, contents, products, homepage, settings, clientLogos, featuredMachines] = await Promise.all([
+  const [services, testimonials, contents, products, homepage, settings, clientLogos] = await Promise.all([
     Service.find({ active: { $ne: false } }).sort({ sortOrder: 1, createdAt: 1 }).lean(),
     Testimonial.find().lean(),
     Content.find().lean(),
@@ -18,7 +17,6 @@ export async function fetchPublicData() {
     HomepageContent.findOne().lean(),
     SiteSettings.findOne().lean(),
     ClientLogo.find({ active: true }).sort({ sortOrder: 1, createdAt: 1 }).lean(),
-    FeaturedMachine.find({ active: true }).sort({ sortOrder: 1, createdAt: 1 }).lean(),
   ]);
   const contentMap: Record<string, any> = {};
   contents.forEach((c: any) => (contentMap[c.key] = c.data));
@@ -29,7 +27,6 @@ export async function fetchPublicData() {
     homepage: JSON.parse(JSON.stringify(homepage || {})),
     settings: JSON.parse(JSON.stringify(settings || {})),
     clientLogos: JSON.parse(JSON.stringify(clientLogos || [])),
-    featuredMachines: JSON.parse(JSON.stringify(featuredMachines || [])),
     contents: contentMap,
   };
 }

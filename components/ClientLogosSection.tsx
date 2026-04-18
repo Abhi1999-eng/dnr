@@ -26,7 +26,7 @@ export function ClientLogosSection({
   return (
     <section id="clients" className="container-wide mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />
-      <ContentCarousel itemClassName="auto-cols-[78%] sm:auto-cols-[48%] lg:auto-cols-[28%] xl:auto-cols-[22%]">
+      <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
         {logos.map((logo) => {
           const content = logo.logoImage ? (
             <div className="relative h-20 w-full grayscale transition duration-300 group-hover:grayscale-0">

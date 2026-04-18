@@ -8,7 +8,7 @@
 
 body {
   font-family: 'Inter', 'Roboto', system-ui, sans-serif;
-  background: #ffffff;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfcfd 55%, #f6f8fa 100%);
   color: #1f2730;
   min-height: 100vh;
   line-height: 1.65;
@@ -17,9 +17,9 @@ body {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.92);
   border: 1px solid rgba(31, 39, 48, 0.08);
-  box-shadow: 0 24px 60px rgba(31, 39, 48, 0.12);
+  box-shadow: 0 20px 50px rgba(31, 39, 48, 0.09);
   backdrop-filter: blur(12px);
 }
 
@@ -36,7 +36,7 @@ body {
 }
 
 .card-hover {
-  transition: transform 0.2s ease, border-color 0.2s ease;
+  transition: transform 0.28s ease, border-color 0.24s ease, box-shadow 0.28s ease;
 }
 
 .card-hover:hover {
@@ -86,6 +86,13 @@ body {
   border: 1px solid rgba(31, 39, 48, 0.12);
   color: #1f2730;
   background: rgba(139, 197, 63, 0.08);
+  transition: transform 150ms ease, box-shadow 200ms ease, border-color 200ms ease;
+}
+
+.btn-ghost:hover {
+  transform: translateY(-1px);
+  border-color: rgba(139, 197, 63, 0.28);
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
 }
 
 @keyframes pulse-soft {

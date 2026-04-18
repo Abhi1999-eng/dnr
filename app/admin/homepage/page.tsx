@@ -20,7 +20,6 @@ type SectionKey =
   | 'testimonials'
   | 'trust'
   | 'clients'
-  | 'featuredMachines'
   | 'inquiry'
   | 'coverage';
 
@@ -32,7 +31,6 @@ const SECTION_LABELS: Record<SectionKey, string> = {
   testimonials: 'Testimonials',
   trust: 'Proof Section',
   clients: 'Associated Brands',
-  featuredMachines: 'Featured Machines',
   inquiry: 'Inquiry Section',
   coverage: 'Coverage Section',
 };
@@ -62,7 +60,6 @@ const defaultHomepage = {
     testimonials: { visible: true, title: '', kicker: '' },
     trust: { visible: true, title: '', kicker: '' },
     clients: { visible: true, title: '', kicker: '' },
-    featuredMachines: { visible: true, title: '', kicker: '' },
     inquiry: { visible: true, title: '', kicker: '' },
     coverage: { visible: true, title: '', kicker: '', summaryTitle: '', summaryText: '' },
   },
@@ -89,7 +86,6 @@ function normalizeHomepage(data: any) {
       testimonials: { ...defaultHomepage.sections.testimonials, ...(data.sections?.testimonials || {}) },
       trust: { ...defaultHomepage.sections.trust, ...(data.sections?.trust || {}) },
       clients: { ...defaultHomepage.sections.clients, ...(data.sections?.clients || {}) },
-      featuredMachines: { ...defaultHomepage.sections.featuredMachines, ...(data.sections?.featuredMachines || {}) },
       inquiry: { ...defaultHomepage.sections.inquiry, ...(data.sections?.inquiry || {}) },
       coverage: { ...defaultHomepage.sections.coverage, ...(data.sections?.coverage || {}) },
     },
@@ -394,7 +390,6 @@ export default function AdminHomepagePage() {
             {renderSectionSettings('testimonials')}
             {renderSectionSettings('trust')}
             {renderSectionSettings('clients')}
-            {renderSectionSettings('featuredMachines')}
             {renderSectionSettings('inquiry')}
             {renderSectionSettings(
               'coverage',

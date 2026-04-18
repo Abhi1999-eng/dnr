@@ -50,23 +50,23 @@ export function InquiryForm({ config }: InquiryFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-3">
-      <div className="grid gap-3 md:grid-cols-2">
+    <form onSubmit={submit} className="space-y-4">
+      <div className="grid gap-4 md:grid-cols-2">
         {fields.name && (
-          <input className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary" placeholder={labels.name} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.name} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
         )}
         {fields.company && (
-          <input className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary" placeholder={labels.company} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.company} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
         )}
         {fields.phone && (
-          <input className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary" placeholder={labels.phone} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.phone} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
         )}
         {fields.email && (
-          <input className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary" placeholder={labels.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
         )}
         {fields.productInterest && (
           <input
-            className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary md:col-span-2"
+            className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)] md:col-span-2"
             placeholder={labels.productInterest}
             value={form.productInterest}
             onChange={(e) => setForm({ ...form, productInterest: e.target.value })}
@@ -74,7 +74,7 @@ export function InquiryForm({ config }: InquiryFormProps) {
         )}
         {fields.message && (
           <textarea
-            className="rounded-lg border-2 border-muted/80 bg-white px-3 py-2 outline-none focus:border-primary md:col-span-2"
+            className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)] md:col-span-2"
             rows={4}
             placeholder={labels.message}
             value={form.message}
@@ -82,11 +82,11 @@ export function InquiryForm({ config }: InquiryFormProps) {
           />
         )}
       </div>
-      <button type="submit" className="btn-primary" disabled={status === 'submitting'}>
+      <button type="submit" className="btn-primary min-w-[180px]" disabled={status === 'submitting'}>
         {status === 'submitting' ? 'Sending…' : labels.submit}
       </button>
-      {status === 'done' && <p className="text-sm text-green-700">Thanks, we’ll contact you shortly.</p>}
-      {status === 'error' && <p className="text-sm text-red-600">Could not send. Try again.</p>}
+      {status === 'done' && <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Thanks, we’ll contact you shortly.</p>}
+      {status === 'error' && <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">Could not send. Try again.</p>}
     </form>
   );
 }

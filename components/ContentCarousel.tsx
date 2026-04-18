@@ -1,84 +1,125 @@
 'use client';
 
-import { Children, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
+import { Children, ReactNode, useEffect, useMemo, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 type ContentCarouselProps = {
   children: ReactNode;
-  itemClassName?: string;
+  itemsPerView?: {
+    mobile?: number;
+    tablet?: number;
+    desktop?: number;
+    wide?: number;
+  };
   viewportClassName?: string;
 };
 
 export function ContentCarousel({
   children,
-  itemClassName = 'auto-cols-[88%] sm:auto-cols-[65%] lg:auto-cols-[38%] xl:auto-cols-[32%]',
+  itemsPerView = { mobile: 1, tablet: 2, desktop: 3, wide: 4 },
   viewportClassName = '',
 }: ContentCarouselProps) {
   const items = useMemo(() => Children.toArray(children), [children]);
-  const viewportRef = useRef<HTMLDivElement | null>(null);
-  const [canPrev, setCanPrev] = useState(false);
-  const [canNext, setCanNext] = useState(items.length > 1);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [cardsPerView, setCardsPerView] = useState(itemsPerView.mobile ?? 1);
+  const gapRem = 1.25;
+  const totalPages = Math.max(1, Math.ceil(items.length / cardsPerView));
+  const maxStartIndex = Math.max(0, items.length - cardsPerView);
+  const clampedActiveIndex = Math.min(activeIndex, maxStartIndex);
+  const canPrev = clampedActiveIndex > 0;
+  const canNext = clampedActiveIndex < maxStartIndex;
+  const showControls = totalPages > 1;
 
   useEffect(() => {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-
-    const updateButtons = () => {
-      const maxScroll = viewport.scrollWidth - viewport.clientWidth - 4;
-      setCanPrev(viewport.scrollLeft > 4);
-      setCanNext(viewport.scrollLeft < maxScroll);
+    const updateCardsPerView = () => {
+      const width = window.innerWidth;
+      const nextCardsPerView =
+        width >= 1280
+          ? itemsPerView.wide ?? itemsPerView.desktop ?? itemsPerView.tablet ?? itemsPerView.mobile ?? 1
+          : width >= 1024
+            ? itemsPerView.desktop ?? itemsPerView.tablet ?? itemsPerView.mobile ?? 1
+            : width >= 768
+              ? itemsPerView.tablet ?? itemsPerView.mobile ?? 1
+              : itemsPerView.mobile ?? 1;
+      setCardsPerView(Math.max(1, nextCardsPerView));
     };
 
-    updateButtons();
-    viewport.addEventListener('scroll', updateButtons);
-    window.addEventListener('resize', updateButtons);
-    return () => {
-      viewport.removeEventListener('scroll', updateButtons);
-      window.removeEventListener('resize', updateButtons);
-    };
-  }, [items.length]);
+    updateCardsPerView();
+    window.addEventListener('resize', updateCardsPerView);
+    return () => window.removeEventListener('resize', updateCardsPerView);
+  }, [itemsPerView.desktop, itemsPerView.mobile, itemsPerView.tablet, itemsPerView.wide]);
 
-  function scrollByPage(direction: 1 | -1) {
-    const viewport = viewportRef.current;
-    if (!viewport) return;
-    viewport.scrollBy({ left: direction * Math.max(viewport.clientWidth * 0.85, 280), behavior: 'smooth' });
+  function move(direction: 1 | -1) {
+    setActiveIndex((current) => {
+      const next = current + direction * cardsPerView;
+      return Math.max(0, Math.min(maxStartIndex, next));
+    });
   }
 
   return (
     <div className="space-y-5">
-      <div className="flex items-center justify-end gap-2">
-        <button
-          type="button"
-          onClick={() => scrollByPage(-1)}
-          disabled={!canPrev}
-          aria-label="Previous items"
-          className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ChevronLeft size={18} />
-        </button>
-        <button
-          type="button"
-          onClick={() => scrollByPage(1)}
-          disabled={!canNext}
-          aria-label="Next items"
-          className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-        >
-          <ChevronRight size={18} />
-        </button>
-      </div>
+      {showControls ? (
+        <div className="flex items-center justify-end gap-2">
+          <button
+            type="button"
+            onClick={() => move(-1)}
+            disabled={!canPrev}
+            aria-label="Previous items"
+            className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronLeft size={18} />
+          </button>
+          <button
+            type="button"
+            onClick={() => move(1)}
+            disabled={!canNext}
+            aria-label="Next items"
+            className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <ChevronRight size={18} />
+          </button>
+        </div>
+      ) : null}
 
-      <div
-        ref={viewportRef}
-        className={`overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden ${viewportClassName}`}
-      >
-        <div className={`grid grid-flow-col gap-5 pb-1 ${itemClassName}`}>
+      <div className={`overflow-hidden rounded-[28px] border border-secondary/10 bg-white/70 p-2 shadow-[0_14px_36px_rgba(15,23,42,0.06)] ${viewportClassName}`}>
+        <div
+          className="flex transition-transform duration-500 ease-out"
+          style={{
+            gap: `${gapRem}rem`,
+            transform: `translateX(calc(-${clampedActiveIndex} * ((100% - ${(cardsPerView - 1) * gapRem}rem) / ${cardsPerView} + ${gapRem}rem)))`,
+          }}
+        >
           {items.map((item, index) => (
-            <div key={index} className="min-w-0 snap-start">
+            <div
+              key={index}
+              className="min-w-0"
+              style={{
+                flex: `0 0 calc((100% - ${(cardsPerView - 1) * gapRem}rem) / ${cardsPerView})`,
+              }}
+            >
               {item}
             </div>
           ))}
         </div>
       </div>
+
+      {showControls ? (
+        <div className="flex items-center justify-center gap-2">
+          {Array.from({ length: totalPages }).map((_, pageIndex) => {
+            const pageStart = Math.min(pageIndex * cardsPerView, maxStartIndex);
+            const isActive = clampedActiveIndex === pageStart;
+            return (
+              <button
+                key={pageIndex}
+                type="button"
+                onClick={() => setActiveIndex(pageStart)}
+                aria-label={`Go to slide group ${pageIndex + 1}`}
+                className={`h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/20 hover:bg-secondary/35'}`}
+              />
+            );
+          })}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -33,19 +33,22 @@ export function Footer({
   const hasContact = phoneNumbers.length > 0 || !!email || !!website || !!address;
 
   return (
-    <footer className="mt-20 border-t border-secondary/10 bg-secondary py-12 text-white">
-      <div className={`container-wide grid gap-8 text-sm ${hasCompanyLinks && hasContact ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
-        <div>
-          <h3 className="text-xl font-semibold">{companyName}</h3>
-          {footerDescription ? <p className="mt-3 max-w-md text-white/70">{footerDescription}</p> : null}
+    <footer className="mt-20 border-t border-secondary/10 bg-[linear-gradient(180deg,#1b2430,#141b24)] py-14 text-white">
+      <div className={`container-wide grid gap-10 text-sm ${hasCompanyLinks && hasContact ? 'md:grid-cols-[1.2fr_0.8fr_0.9fr]' : 'md:grid-cols-2'}`}>
+        <div className="space-y-4">
+          <div>
+            <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">DNR Techno Services</p>
+            <h3 className="mt-2 text-2xl font-semibold">{companyName}</h3>
+          </div>
+          {footerDescription ? <p className="max-w-md text-white/70">{footerDescription}</p> : null}
         </div>
 
         {hasCompanyLinks ? (
-          <div>
-            <h4 className="font-semibold">Company</h4>
-            <div className="mt-3 flex flex-col gap-2 text-white/80">
+          <div className="space-y-4">
+            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/70">Company</h4>
+            <div className="flex flex-col gap-3 text-white/80">
               {footerLinks.map((link) => (
-                <Link key={`${link.label}-${link.href}`} href={link.href}>
+                <Link key={`${link.label}-${link.href}`} href={link.href} className="transition hover:text-primary">
                   {link.label}
                 </Link>
               ))}
@@ -54,21 +57,21 @@ export function Footer({
         ) : null}
 
         {hasContact ? (
-          <div>
-            <h4 className="font-semibold">Contact</h4>
-            <div className="mt-3 space-y-1 text-white/80">
+          <div className="space-y-4">
+            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/70">Contact</h4>
+            <div className="space-y-2 text-white/80">
               {phoneNumbers.map((phone) => (
-                <a key={phone} href={`tel:${phone}`} className="block hover:text-white">
+                <a key={phone} href={`tel:${phone}`} className="block transition hover:text-primary">
                   {phone}
                 </a>
               ))}
               {email && (
-                <a href={`mailto:${email}`} className="block hover:text-white">
+                <a href={`mailto:${email}`} className="block transition hover:text-primary">
                   {email}
                 </a>
               )}
               {website && (
-                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" className="block hover:text-white">
+                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" className="block transition hover:text-primary">
                   {website}
                 </a>
               )}

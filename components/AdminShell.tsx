@@ -8,7 +8,6 @@ const nav = [
   { href: '/admin/homepage', label: 'Homepage' },
   { href: '/admin/products', label: 'Products' },
   { href: '/admin/services', label: 'Services' },
-  { href: '/admin/featured-machines', label: 'Featured Machines' },
   { href: '/admin/client-logos', label: 'Client Logos / Brands' },
   { href: '/admin/coverage', label: 'Coverage Settings' },
   { href: '/admin/contact', label: 'Contact Settings' },

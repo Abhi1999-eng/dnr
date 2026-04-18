@@ -119,9 +119,9 @@ export function Coverage({
     <section id="coverage" className="container-wide mt-16 space-y-6">
       <SectionTitle title={title} kicker={kicker} />
 
-      <div className="rounded-[2rem] border border-secondary/10 bg-gradient-to-br from-white via-muted/30 to-white p-6 shadow-xl shadow-secondary/10 md:p-8">
+      <div className="rounded-[2rem] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(246,248,250,0.98),rgba(237,245,228,0.82))] p-6 shadow-[0_22px_60px_rgba(15,23,42,0.09)] md:p-8">
         <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
-          <div className="rounded-[1.75rem] border border-secondary/10 bg-white p-4 shadow-lg shadow-secondary/10 md:p-6">
+          <div className="rounded-[1.75rem] border border-secondary/10 bg-white/95 p-4 shadow-[0_18px_46px_rgba(15,23,42,0.08)] md:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/55">Coverage map</p>
@@ -132,7 +132,7 @@ export function Coverage({
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[1.5rem] border border-secondary/10 bg-[radial-gradient(circle_at_top,#f4f8ef,transparent_48%),linear-gradient(180deg,#ffffff,#f6f7f3)] p-4">
+            <div className="relative overflow-hidden rounded-[1.5rem] border border-secondary/10 bg-[radial-gradient(circle_at_top,#f4f8ef,transparent_48%),linear-gradient(180deg,#ffffff,#f6f7f3)] p-5">
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(135,225,38,0.08),transparent_40%,rgba(24,32,45,0.04))]" />
               <svg viewBox="0 0 1000 1000" className="relative z-10 h-full w-full" role="img" aria-label="India coverage map">
                 {Object.entries(MAP_PATHS).map(([id, path], index) => {
@@ -183,7 +183,7 @@ export function Coverage({
           </div>
 
           <div className="flex flex-col gap-4">
-            <div className="rounded-[1.75rem] border border-secondary/10 bg-secondary px-5 py-5 text-white shadow-lg shadow-secondary/20">
+            <div className="rounded-[1.75rem] border border-secondary/10 bg-[linear-gradient(180deg,#1b2430,#141b24)] px-5 py-5 text-white shadow-[0_20px_50px_rgba(15,23,42,0.22)]">
               <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">{summaryTitle}</p>
               <h3 className="mt-2 text-2xl font-semibold">Rapid response across manufacturing hubs</h3>
               <p className="mt-2 text-sm leading-relaxed text-white/75">{summaryText}</p>
@@ -208,7 +208,7 @@ export function Coverage({
                     className={`rounded-2xl border px-4 py-3 text-left transition duration-200 ${
                       isActive
                         ? 'border-primary bg-primary/10 shadow-md shadow-primary/15'
-                        : 'border-secondary/10 bg-white hover:border-primary/40 hover:shadow-md hover:shadow-secondary/10'
+                        : 'border-secondary/10 bg-white/90 hover:-translate-y-0.5 hover:border-primary/40 hover:shadow-md hover:shadow-secondary/10'
                     }`}
                   >
                     <div className="flex items-start gap-3">

@@ -26,7 +26,7 @@ export function Testimonials({
   return (
     <section className="container-wide mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />
-      <ContentCarousel itemClassName="auto-cols-[92%] sm:auto-cols-[70%] lg:auto-cols-[48%] xl:auto-cols-[38%]">
+      <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }}>
         {testimonials.map((t) => (
           <div
             key={t.name}

@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { ClientLogosSection } from '@/components/ClientLogosSection';
 import { ContentCarousel } from '@/components/ContentCarousel';
 import { Coverage } from '@/components/Coverage';
-import { FeaturedMachinesSection } from '@/components/FeaturedMachinesSection';
 import { FloatingSupport } from '@/components/FloatingSupport';
 import { Footer } from '@/components/Footer';
 import { HeroSlider } from '@/components/HeroSlider';
@@ -18,7 +17,7 @@ import { fetchPublicData } from '@/lib/data';
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const { products, testimonials, homepage, settings, services, clientLogos, featuredMachines } = await fetchPublicData();
+  const { products, testimonials, homepage, settings, services, clientLogos } = await fetchPublicData();
 
   const companyName = settings?.companyName || 'DNR Techno Services';
   const logo = settings?.logo || '/logo-dnr.png';
@@ -202,7 +201,7 @@ export default async function HomePage() {
               <h3 className="mt-3 text-3xl font-semibold text-secondary">{sections.industries?.title || 'Where DNR machinery runs'}</h3>
               <p className="mt-1 text-secondary/75">{sections.industries?.kicker || 'Capability across casting cells, machining lines, automation, and finishing.'}</p>
             </div>
-            <ContentCarousel itemClassName="auto-cols-[86%] sm:auto-cols-[54%] lg:auto-cols-[34%] xl:auto-cols-[28%]">
+            <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
               {industries.map((industry: any) => (
                 <div key={industry.title} className="h-full rounded-[28px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
                   <div className="mb-4 flex items-center gap-3">
@@ -244,14 +243,6 @@ export default async function HomePage() {
             title={sections.clients?.title || 'Associated Brands'}
             kicker={sections.clients?.kicker || 'Customer and brand relationships from DNR project materials.'}
             logos={clientLogos || []}
-          />
-        )}
-
-        {(sections.featuredMachines?.visible ?? true) && featuredMachines.length > 0 && (
-          <FeaturedMachinesSection
-            title={sections.featuredMachines?.title || 'Featured Machine'}
-            kicker={sections.featuredMachines?.kicker || 'Highlighted production-ready machinery from the latest DNR materials.'}
-            machines={featuredMachines || []}
           />
         )}
 
