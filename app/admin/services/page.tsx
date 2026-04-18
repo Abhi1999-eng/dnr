@@ -12,6 +12,7 @@ const fetcher = (url: string) => fetch(url).then((r) => r.json());
 type ServiceForm = {
   title: string;
   description: string;
+  longDescription: string;
   image: string;
   slug: string;
   sortOrder: number;
@@ -21,6 +22,7 @@ type ServiceForm = {
 const emptyForm: ServiceForm = {
   title: '',
   description: '',
+  longDescription: '',
   image: '',
   slug: '',
   sortOrder: 1,
@@ -120,6 +122,7 @@ export default function AdminServicesPage() {
     setForm({
       title: service.title || '',
       description: service.description || '',
+      longDescription: service.longDescription || '',
       image: service.image || '',
       slug: service.slug || '',
       sortOrder: service.sortOrder || 0,
@@ -141,6 +144,7 @@ export default function AdminServicesPage() {
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value, slug: slugify(e.target.value) })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Slug" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} />
             <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="Short description" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+            <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={5} placeholder="Long description for the detail page" value={form.longDescription} onChange={(e) => setForm({ ...form, longDescription: e.target.value })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Image URL" value={form.image} onChange={(e) => setForm({ ...form, image: e.target.value })} />
             <div className="flex items-center gap-3 md:col-span-2">
               <input type="file" onChange={handleFile} className="text-xs text-slate-200" />
@@ -173,6 +177,7 @@ export default function AdminServicesPage() {
                   <div>
                     <p className="text-lg font-semibold text-white">{service.title}</p>
                     <p className="mt-1 text-sm text-slate-400">{service.description}</p>
+                    {service.longDescription ? <p className="mt-2 line-clamp-2 text-xs text-slate-500">{service.longDescription}</p> : null}
                   </div>
                   <div className="flex gap-3 text-sm">
                     <button onClick={() => startEdit(service)} className="text-emerald-300 hover:underline">Edit</button>

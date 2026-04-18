@@ -1,11 +1,14 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { SectionTitle } from './SectionTitle';
 
 export type ServiceType = {
   _id?: string;
   title: string;
   description: string;
+  longDescription?: string;
   image?: string;
+  slug?: string;
 };
 
 export function ServiceGrid({
@@ -27,9 +30,11 @@ export function ServiceGrid({
       <div className="grid gap-6 md:grid-cols-3">
         {services.map((service) => {
           const imgSrc = service.image || '/dnr/page_21.png';
+          const href = service.slug ? `/services/${service.slug}` : '/services';
           return (
-            <div
-              key={service.title}
+            <Link
+              key={service._id || service.slug || service.title}
+              href={href}
               className="glass p-5 rounded-2xl card-hover border border-secondary/10 flex flex-col gap-4 bg-white shadow-lg shadow-secondary/10"
             >
               <div className="relative w-full overflow-hidden rounded-xl border border-secondary/10 bg-muted/40 aspect-[4/3]">
@@ -46,7 +51,7 @@ export function ServiceGrid({
                 <p className="text-secondary/80 text-sm leading-relaxed line-clamp-3">{service.description}</p>
               </div>
               <div className="text-sm font-semibold text-primary hover:underline">Learn more →</div>
-            </div>
+            </Link>
           );
         })}
       </div>

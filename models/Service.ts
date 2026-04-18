@@ -6,6 +6,7 @@ const ServiceSchema = new Schema(
   {
     title: { type: String, required: true },
     description: { type: String, required: true },
+    longDescription: { type: String, default: '' },
     image: { type: String },
     slug: { type: String, unique: true, index: true },
     sortOrder: { type: Number, default: 0 },
