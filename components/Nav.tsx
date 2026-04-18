@@ -58,7 +58,7 @@ export function Nav({
 
   return (
     <header className="sticky top-0 z-40 border-b border-secondary/10 bg-white/88 text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
-      <div className="container-wide flex items-center justify-between gap-6 px-2 py-6 md:px-0">
+      <div className="container-wide flex items-center justify-between gap-6 py-6">
         <Link href={resolveHref('#hero')} className="group flex items-center gap-4 text-4xl font-bold leading-none tracking-tight text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
           <div className="relative h-18 w-18 min-h-[72px] min-w-[72px] transition-transform duration-300 group-hover:scale-[1.02]">
             <Image src={logo} alt={`${companyName} logo`} fill className="object-contain" priority />
