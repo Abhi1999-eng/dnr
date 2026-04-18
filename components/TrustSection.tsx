@@ -1,4 +1,5 @@
 import { SectionTitle } from './SectionTitle';
+import { ContentCarousel } from './ContentCarousel';
 
 export function TrustSection({
   title = 'Trusted across manufacturing',
@@ -14,17 +15,20 @@ export function TrustSection({
   return (
     <section className="container-wide space-y-6 mt-12">
       <SectionTitle title={title} kicker={kicker} />
-      <div className="grid md:grid-cols-4 gap-4">
+      <ContentCarousel itemClassName="auto-cols-[86%] sm:auto-cols-[56%] lg:auto-cols-[34%] xl:auto-cols-[26%]">
         {cards.map((p) => (
           <div
             key={p.title}
-            className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-md shadow-secondary/10 hover:-translate-y-1 hover:shadow-lg transition"
+            className="h-full rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(243,246,249,0.96))] p-5 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]"
           >
+            <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
+              Trust signal
+            </div>
             <h4 className="text-lg font-semibold text-secondary">{p.title}</h4>
-            <p className="text-secondary/80 text-sm leading-relaxed mt-1">{p.desc}</p>
+            <p className="mt-2 text-sm leading-relaxed text-secondary/80">{p.desc}</p>
           </div>
         ))}
-      </div>
+      </ContentCarousel>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { SectionTitle } from './SectionTitle';
 import { ClientLogoType } from '@/types';
+import { ContentCarousel } from './ContentCarousel';
 
 function initials(name: string) {
   return name
@@ -25,10 +26,10 @@ export function ClientLogosSection({
   return (
     <section id="clients" className="container-wide mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <ContentCarousel itemClassName="auto-cols-[78%] sm:auto-cols-[48%] lg:auto-cols-[28%] xl:auto-cols-[22%]">
         {logos.map((logo) => {
           const content = logo.logoImage ? (
-            <div className="relative h-20 w-full">
+            <div className="relative h-20 w-full grayscale transition duration-300 group-hover:grayscale-0">
               <Image src={logo.logoImage} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" />
             </div>
           ) : (
@@ -43,8 +44,9 @@ export function ClientLogosSection({
           );
 
           const card = (
-            <div className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-md shadow-secondary/10 transition hover:-translate-y-1 hover:shadow-lg">
+            <div className="group flex h-full min-h-[148px] flex-col justify-center rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-5 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
               {content}
+              <p className="mt-4 text-center text-sm font-semibold text-secondary">{logo.name}</p>
             </div>
           );
 
@@ -56,7 +58,7 @@ export function ClientLogosSection({
             <div key={logo._id || logo.name}>{card}</div>
           );
         })}
-      </div>
+      </ContentCarousel>
     </section>
   );
 }

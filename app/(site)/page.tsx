@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { ClientLogosSection } from '@/components/ClientLogosSection';
+import { ContentCarousel } from '@/components/ContentCarousel';
 import { Coverage } from '@/components/Coverage';
 import { FeaturedMachinesSection } from '@/components/FeaturedMachinesSection';
 import { FloatingSupport } from '@/components/FloatingSupport';
@@ -201,19 +202,22 @@ export default async function HomePage() {
               <h3 className="mt-3 text-3xl font-semibold text-secondary">{sections.industries?.title || 'Where DNR machinery runs'}</h3>
               <p className="mt-1 text-secondary/75">{sections.industries?.kicker || 'Capability across casting cells, machining lines, automation, and finishing.'}</p>
             </div>
-            <div className="grid gap-5 md:grid-cols-3">
+            <ContentCarousel itemClassName="auto-cols-[86%] sm:auto-cols-[54%] lg:auto-cols-[34%] xl:auto-cols-[28%]">
               {industries.map((industry: any) => (
-                <div key={industry.title} className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-md shadow-secondary/10 transition hover:-translate-y-1 hover:shadow-lg">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-primary/15 font-semibold text-secondary">
+                <div key={industry.title} className="h-full rounded-[28px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
+                  <div className="mb-4 flex items-center gap-3">
+                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 font-semibold text-secondary shadow-inner">
                       {industry.title.slice(0, 2).toUpperCase()}
                     </span>
-                    <h4 className="text-lg font-semibold text-secondary">{industry.title}</h4>
+                    <div>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/50">Industry</p>
+                      <h4 className="text-lg font-semibold text-secondary">{industry.title}</h4>
+                    </div>
                   </div>
                   <p className="text-sm leading-relaxed text-secondary/80">{industry.description}</p>
                 </div>
               ))}
-            </div>
+            </ContentCarousel>
           </section>
         )}
 

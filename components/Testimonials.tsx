@@ -1,5 +1,6 @@
 import { SectionTitle } from './SectionTitle';
 import { Quote } from 'lucide-react';
+import { ContentCarousel } from './ContentCarousel';
 
 export type TestimonialType = {
   _id?: string;
@@ -25,25 +26,31 @@ export function Testimonials({
   return (
     <section className="container-wide mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />
-      <div className="grid md:grid-cols-3 gap-6">
+      <ContentCarousel itemClassName="auto-cols-[92%] sm:auto-cols-[70%] lg:auto-cols-[48%] xl:auto-cols-[38%]">
         {testimonials.map((t) => (
           <div
             key={t.name}
-            className="rounded-2xl border border-secondary/10 bg-white shadow-lg shadow-secondary/10 p-6 space-y-4 hover:-translate-y-1 transition"
+            className="h-full rounded-[28px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-6 shadow-[0_18px_40px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_24px_44px_rgba(15,23,42,0.12)]"
           >
-            <div className="flex items-center gap-2 text-primary">
-              <Quote size={18} />
-              <span className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary/70">Testimonial</span>
-            </div>
-            <p className="text-secondary leading-relaxed text-sm md:text-base">“{t.feedback}”</p>
-            <div className="text-sm text-secondary/80">
-              <p className="font-semibold text-secondary">{t.name}</p>
-              <p>{t.role || 'Plant / Maintenance Lead'}{t.company ? ` · ${t.company}` : ''}</p>
-              {t.sector && <p className="text-secondary/60">{t.sector}</p>}
+            <div className="flex h-full flex-col justify-between space-y-6">
+              <div className="space-y-5">
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary">
+                    <Quote size={18} />
+                  </div>
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/60">Client feedback</span>
+                </div>
+                <p className="text-base leading-relaxed text-secondary md:text-lg">“{t.feedback}”</p>
+              </div>
+              <div className="rounded-2xl border border-secondary/10 bg-secondary/[0.03] px-4 py-3 text-sm text-secondary/80">
+                <p className="font-semibold text-secondary">{t.name}</p>
+                <p>{t.role || 'Plant / Maintenance Lead'}{t.company ? ` · ${t.company}` : ''}</p>
+                {t.sector && <p className="text-secondary/60">{t.sector}</p>}
+              </div>
             </div>
           </div>
         ))}
-      </div>
+      </ContentCarousel>
     </section>
   );
 }
