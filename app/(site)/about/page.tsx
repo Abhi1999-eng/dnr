@@ -1,27 +1,49 @@
+import type { Metadata } from 'next';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
+import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildOrganizationJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { homepage } = await fetchPublicData();
+  const about = (homepage as any)?.about || {};
+  return createPageMetadata({
+    title: 'About',
+    description: about.body || 'Learn about DNR Techno Services and our industrial machinery, service support, and engineering approach.',
+    path: '/about',
+  });
+}
 
 export default async function AboutPage() {
   const { homepage, settings } = await fetchPublicData();
-  const about = homepage?.about || { heading: '', body: '', bullets: [] };
+  const about = (homepage as any)?.about || { heading: '', body: '', bullets: [] };
+  const siteSettings: any = settings || {};
 
-  const companyName = settings?.companyName || 'DNR Techno Services';
-  const logo = settings?.logo || '/logo-dnr.png';
-  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
-  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
-  const email = settings?.email || '';
-  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget, '#contact');
+  const companyName = siteSettings.companyName || 'DNR Techno Services';
+  const logo = siteSettings.logo || '/logo-dnr.png';
+  const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
+  const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const email = siteSettings.email || '';
+  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
+  const structuredData = [
+    buildOrganizationJsonLd(siteSettings),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: absoluteUrl('/') },
+      { name: 'About', url: absoluteUrl('/about') },
+    ]),
+  ];
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide max-w-5xl space-y-10 pb-20 pt-16">
@@ -59,19 +81,19 @@ export default async function AboutPage() {
               <a href={`mailto:${email}`} className="block font-semibold text-primary-foreground hover:underline">
                 {email}
               </a>
-              {settings?.address && <p>{settings.address}</p>}
+              {siteSettings.address && <p>{siteSettings.address}</p>}
             </div>
           </div>
         </div>
       </main>
       <Footer
         companyName={companyName}
-        footerDescription={settings?.footerDescription}
+        footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}
         email={email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
     </div>
   );

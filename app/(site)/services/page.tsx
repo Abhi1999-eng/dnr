@@ -1,26 +1,45 @@
+import type { Metadata } from 'next';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { ServiceGrid } from '@/components/ServiceGrid';
+import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { homepage } = await fetchPublicData();
+  const section = (homepage as any)?.sections?.services || {};
+  return createPageMetadata({
+    title: 'Services',
+    description: section.kicker || 'Explore DNR Techno Services support capabilities for installation, diagnostics, commissioning, and plant-side engineering.',
+    path: '/services',
+  });
+}
 
 export default async function ServicesPage() {
   const { services, homepage, settings } = await fetchPublicData();
-  const companyName = settings?.companyName || 'DNR Techno Services';
-  const logo = settings?.logo || '/logo-dnr.png';
-  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
-  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
-  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget, '#contact');
-  const section = homepage?.sections?.services || {};
+  const siteSettings: any = settings || {};
+  const companyName = siteSettings.companyName || 'DNR Techno Services';
+  const logo = siteSettings.logo || '/logo-dnr.png';
+  const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
+  const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
+  const section = (homepage as any)?.sections?.services || {};
+  const structuredData = buildBreadcrumbJsonLd([
+    { name: 'Home', url: absoluteUrl('/') },
+    { name: 'Services', url: absoluteUrl('/services') },
+  ]);
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide space-y-10 pb-20 pt-16">
@@ -46,12 +65,12 @@ export default async function ServicesPage() {
       </main>
       <Footer
         companyName={companyName}
-        footerDescription={settings?.footerDescription}
+        footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}
-        email={settings?.email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        email={siteSettings.email}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
     </div>
   );

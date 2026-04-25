@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { HomepageContent } from '@/models/HomepageContent';
 import { verifyToken } from '@/lib/auth';
@@ -19,5 +20,7 @@ export async function POST(req: Request) {
   delete body.updatedAt;
   await connectDB();
   const doc = await HomepageContent.findOneAndUpdate({}, body, { upsert: true, new: true });
+  revalidateTag('homepage', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(doc);
 }

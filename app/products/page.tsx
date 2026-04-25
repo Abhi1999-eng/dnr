@@ -1,26 +1,47 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
+import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { products } = await fetchPublicData();
+  return createPageMetadata({
+    title: 'Products',
+    description:
+      products?.[0]?.shortDescription ||
+      'Browse industrial machinery and product solutions from DNR Techno Services for casting, machining, testing, and fabrication environments.',
+    path: '/products',
+    image: products?.[0]?.heroImage || products?.[0]?.image || '/dnr/page_06.png',
+  });
+}
 
 export default async function ProductsPage() {
   const { products, settings } = await fetchPublicData();
-  const companyName = settings?.companyName || 'DNR Techno Services';
-  const logo = settings?.logo || '/logo-dnr.png';
-  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
-  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
-  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget, '#contact');
+  const siteSettings: any = settings || {};
+  const companyName = siteSettings.companyName || 'DNR Techno Services';
+  const logo = siteSettings.logo || '/logo-dnr.png';
+  const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
+  const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
+  const structuredData = buildBreadcrumbJsonLd([
+    { name: 'Home', url: absoluteUrl('/') },
+    { name: 'Products', url: absoluteUrl('/products') },
+  ]);
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
       />
       <div className="container-wide space-y-10 py-16">
@@ -57,12 +78,12 @@ export default async function ProductsPage() {
       </div>
       <Footer
         companyName={companyName}
-        footerDescription={settings?.footerDescription}
+        footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}
-        email={settings?.email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        email={siteSettings.email}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
     </div>
   );

@@ -53,33 +53,53 @@ export function InquiryForm({ config }: InquiryFormProps) {
     <form onSubmit={submit} className="space-y-4">
       <div className="grid gap-4 md:grid-cols-2">
         {fields.name && (
-          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.name} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          <label className="space-y-2">
+            <span className="sr-only">{labels.name}</span>
+            <input aria-label={labels.name} className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.name} value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} required />
+          </label>
         )}
         {fields.company && (
-          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.company} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+          <label className="space-y-2">
+            <span className="sr-only">{labels.company}</span>
+            <input aria-label={labels.company} className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.company} value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+          </label>
         )}
         {fields.phone && (
-          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.phone} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          <label className="space-y-2">
+            <span className="sr-only">{labels.phone}</span>
+            <input aria-label={labels.phone} className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.phone} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
+          </label>
         )}
         {fields.email && (
-          <input className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+          <label className="space-y-2">
+            <span className="sr-only">{labels.email}</span>
+            <input aria-label={labels.email} className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]" placeholder={labels.email} value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} required />
+          </label>
         )}
         {fields.productInterest && (
-          <input
-            className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)] md:col-span-2"
-            placeholder={labels.productInterest}
-            value={form.productInterest}
-            onChange={(e) => setForm({ ...form, productInterest: e.target.value })}
-          />
+          <label className="space-y-2 md:col-span-2">
+            <span className="sr-only">{labels.productInterest}</span>
+            <input
+              aria-label={labels.productInterest}
+              className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
+              placeholder={labels.productInterest}
+              value={form.productInterest}
+              onChange={(e) => setForm({ ...form, productInterest: e.target.value })}
+            />
+          </label>
         )}
         {fields.message && (
-          <textarea
-            className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)] md:col-span-2"
-            rows={4}
-            placeholder={labels.message}
-            value={form.message}
-            onChange={(e) => setForm({ ...form, message: e.target.value })}
-          />
+          <label className="space-y-2 md:col-span-2">
+            <span className="sr-only">{labels.message}</span>
+            <textarea
+              aria-label={labels.message}
+              className="rounded-2xl border border-secondary/10 bg-white px-4 py-3 shadow-sm outline-none transition focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
+              rows={4}
+              placeholder={labels.message}
+              value={form.message}
+              onChange={(e) => setForm({ ...form, message: e.target.value })}
+            />
+          </label>
         )}
       </div>
       <button type="submit" className="btn-primary min-w-[180px]" disabled={status === 'submitting'}>

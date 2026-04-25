@@ -71,7 +71,7 @@ export function Footer({
                 </a>
               )}
               {website && (
-                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noreferrer" className="block transition hover:text-primary">
+                <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer" className="block transition hover:text-primary">
                   {website}
                 </a>
               )}

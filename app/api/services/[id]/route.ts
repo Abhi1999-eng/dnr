@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Service } from '@/models/Service';
 import { verifyToken } from '@/lib/auth';
@@ -16,6 +17,8 @@ export async function PUT(req: NextRequest, context: RouteContext<'/api/services
 
   await connectDB();
   const updated = await Service.findByIdAndUpdate(id, body, { new: true });
+  revalidateTag('services', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(updated);
 }
 
@@ -26,5 +29,7 @@ export async function DELETE(req: NextRequest, context: RouteContext<'/api/servi
 
   await connectDB();
   await Service.findByIdAndDelete(id);
+  revalidateTag('services', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json({ success: true });
 }

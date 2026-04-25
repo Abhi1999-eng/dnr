@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Testimonial } from '@/models/Testimonial';
 import { verifyToken } from '@/lib/auth';
@@ -15,5 +16,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   await connectDB();
   const created = await Testimonial.create(body);
+  revalidateTag('testimonials', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(created, { status: 201 });
 }

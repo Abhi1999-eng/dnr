@@ -51,7 +51,7 @@ export function ClientLogosSection({
           );
 
           return logo.externalUrl ? (
-            <a key={logo._id || logo.name} href={logo.externalUrl} target="_blank" rel="noreferrer" aria-label={logo.name}>
+            <a key={logo._id || logo.name} href={logo.externalUrl} target="_blank" rel="noopener noreferrer" aria-label={logo.name}>
               {card}
             </a>
           ) : (

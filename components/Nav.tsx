@@ -88,7 +88,7 @@ export function Nav({
               href={headerCtaTarget}
               className="hidden md:inline-flex btn-primary text-base shadow-lg"
               target={headerCtaTarget.startsWith('http') ? '_blank' : undefined}
-              rel={headerCtaTarget.startsWith('http') ? 'noreferrer' : undefined}
+              rel={headerCtaTarget.startsWith('http') ? 'noopener noreferrer' : undefined}
             >
               {headerCtaLabel}
             </a>
@@ -119,7 +119,7 @@ export function Nav({
                 className="py-2 font-semibold text-primary"
                 onClick={closeMenu}
                 target={headerCtaTarget.startsWith('http') ? '_blank' : undefined}
-                rel={headerCtaTarget.startsWith('http') ? 'noreferrer' : undefined}
+                rel={headerCtaTarget.startsWith('http') ? 'noopener noreferrer' : undefined}
               >
                 {headerCtaLabel}
               </a>

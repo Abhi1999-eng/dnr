@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { ClientLogo } from '@/models/ClientLogo';
 import { verifyToken } from '@/lib/auth';
@@ -14,6 +15,8 @@ export async function PUT(req: Request, context: RouteContext) {
   const body = await req.json();
   await connectDB();
   const updated = await ClientLogo.findByIdAndUpdate(id, body, { new: true });
+  revalidateTag('client-logos', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(updated);
 }
 
@@ -23,5 +26,7 @@ export async function DELETE(req: Request, context: RouteContext) {
   const { id } = await context.params;
   await connectDB();
   await ClientLogo.findByIdAndDelete(id);
+  revalidateTag('client-logos', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json({ ok: true });
 }

@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ProductType } from '@/types';
 
@@ -69,27 +68,19 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
       onMouseLeave={() => setPaused(false)}
     >
       <div className="relative min-h-[450px] overflow-hidden rounded-[24px] border border-secondary/10 bg-secondary">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSlide.image}
-            initial={{ opacity: 0, scale: 1.04 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.98 }}
-            transition={{ duration: 0.6, ease: 'easeInOut' }}
-            className="absolute inset-0"
-          >
-            <Image
-              src={activeSlide.image}
-              alt={activeSlide.title}
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
-              priority
-            />
-            <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,23,42,0.9),rgba(15,23,42,0.42)_52%,rgba(15,23,42,0.18))]" />
-            <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
-          </motion.div>
-        </AnimatePresence>
+        <div className="absolute inset-0 transition-opacity duration-500 ease-out">
+          <Image
+            src={activeSlide.image}
+            alt={activeSlide.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 45vw"
+            quality={72}
+            priority={activeIndex === 0}
+          />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,23,42,0.9),rgba(15,23,42,0.42)_52%,rgba(15,23,42,0.18))]" />
+          <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
+        </div>
 
         <div className="relative z-10 flex h-full min-h-[450px] flex-col justify-between p-6 md:p-8">
           <div className="flex items-start justify-between gap-4">

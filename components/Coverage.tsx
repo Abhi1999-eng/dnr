@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from 'react';
-import { motion } from 'framer-motion';
 import { SectionTitle } from './SectionTitle';
 import { simplemapsIndiaMapinfo } from '@/lib/simplemaps-india';
 import { SUPPORTED_COVERAGE_STATES } from '@/lib/coverage-config';
@@ -141,18 +140,15 @@ export function Coverage({
                   const name = MAP_NAMES[id];
 
                   return (
-                    <motion.path
+                    <path
                       key={id}
                       d={path}
-                      initial={{ opacity: 0, pathLength: 0.92 }}
-                      whileInView={{ opacity: 1, pathLength: 1, transition: { duration: 0.45, delay: index * 0.004 } }}
-                      viewport={{ once: true, amount: 0.2 }}
                       fill={
                         isActive ? '#87E126' : isCovered ? 'rgba(135, 225, 38, 0.78)' : 'rgba(203, 209, 219, 0.34)'
                       }
                       stroke={isCovered ? 'rgba(20, 28, 38, 0.30)' : 'rgba(20, 28, 38, 0.12)'}
                       strokeWidth={isActive ? 3 : 1.6}
-                      className={isCovered ? 'cursor-pointer transition-colors duration-200' : ''}
+                      className={isCovered ? 'cursor-pointer transition-colors duration-200 ease-out' : 'transition-colors duration-200 ease-out'}
                       onMouseEnter={isCovered ? () => setActiveStateId(id) : undefined}
                       onFocus={isCovered ? () => setActiveStateId(id) : undefined}
                       onClick={isCovered ? () => setActiveStateId(id) : undefined}
@@ -164,11 +160,9 @@ export function Coverage({
               </svg>
 
               {activeState && (
-                <motion.div
+                <div
                   key={activeState.id}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="pointer-events-none absolute z-20 rounded-2xl border border-secondary/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur"
+                  className="pointer-events-none absolute z-20 rounded-2xl border border-secondary/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur transition-all duration-200"
                   style={{
                     left: `${Math.min(82, Math.max(10, (Number(activeState.bbox.cx) / 1000) * 100))}%`,
                     top: `${Math.min(82, Math.max(12, (Number(activeState.bbox.cy) / 1000) * 100 - 8))}%`,
@@ -177,7 +171,7 @@ export function Coverage({
                 >
                   <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/55">Active state</p>
                   <p className="text-sm font-semibold text-secondary">{activeState.uiLabel}</p>
-                </motion.div>
+                </div>
               )}
             </div>
           </div>

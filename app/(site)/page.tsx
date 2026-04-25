@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { ClientLogosSection } from '@/components/ClientLogosSection';
 import { ContentCarousel } from '@/components/ContentCarousel';
 import { Coverage } from '@/components/Coverage';
@@ -9,60 +10,98 @@ import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ServiceGrid } from '@/components/ServiceGrid';
+import { StructuredData } from '@/components/StructuredData';
 import { Testimonials } from '@/components/Testimonials';
 import { TrustSection } from '@/components/TrustSection';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings, homepage, products } = await fetchPublicData();
+  const homepageData: any = homepage || {};
+  const siteSettings: any = settings || {};
+  const title = siteSettings.seo?.title || 'Industrial Machinery and Engineering Support';
+  const description =
+    siteSettings.seo?.description ||
+    homepageData?.hero?.subheading ||
+    'DNR Techno Services supplies industrial machinery, commissioning, and plant support services for high-uptime manufacturing teams.';
+  const image = products?.[0]?.heroImage || products?.[0]?.image || siteSettings.seo?.ogImage || siteSettings.logo || '/logo-dnr.png';
+
+  return createPageMetadata({
+    title,
+    description,
+    path: '/',
+    image,
+    keywords: ['industrial machinery India', 'DNR Techno Services', 'foundry machinery', 'CNC machine support', 'industrial engineering support'],
+  });
+}
 
 export default async function HomePage() {
   const { products, testimonials, homepage, settings, services, clientLogos } = await fetchPublicData();
+  const homepageData: any = homepage || {};
+  const siteSettings: any = settings || {};
 
-  const companyName = settings?.companyName || 'DNR Techno Services';
-  const logo = settings?.logo || '/logo-dnr.png';
-  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
-  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
-  const whatsappNumber = settings?.whatsappNumber || primaryPhone;
+  const companyName = siteSettings.companyName || 'DNR Techno Services';
+  const logo = siteSettings.logo || '/logo-dnr.png';
+  const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
+  const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const whatsappNumber = siteSettings.whatsappNumber || primaryPhone;
   const headerCtaHref = resolveContactActionHref(
-    settings?.headerCtaActionType,
-    settings?.headerCtaValue || settings?.headerCtaTarget || (settings?.headerCtaActionType === 'whatsapp' ? whatsappNumber : ''),
+    siteSettings.headerCtaActionType,
+    siteSettings.headerCtaValue || siteSettings.headerCtaTarget || (siteSettings.headerCtaActionType === 'whatsapp' ? whatsappNumber : ''),
     '#contact'
   );
-  const email = settings?.email || '';
+  const email = siteSettings.email || '';
   const contactNumbers = [primaryPhone, secondaryPhone].filter(Boolean);
-  const quickLinks = (settings?.contactQuickLinks || [])
+  const quickLinks = (siteSettings.contactQuickLinks || [])
     .filter((item: any) => item.active !== false)
     .sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
 
-  const sections = homepage?.sections || {};
-  const hero = homepage?.hero || {};
+  const sections = homepageData?.sections || {};
+  const hero = homepageData?.hero || {};
   const heroHeading = hero.heading || 'Industrial machinery and engineering support for high-uptime plants';
   const heroSubheading =
     hero.subheading ||
     'DNR Techno Services delivers machinery, commissioning, and responsive support for casting, machining, automation, testing, and fabrication requirements.';
   const heroPrimaryCta = hero.ctaPrimary || 'View products';
-  const heroSecondaryCta = hero.ctaSecondary || settings?.headerCtaLabel || 'Talk to an Expert';
+  const heroSecondaryCta = hero.ctaSecondary || siteSettings.headerCtaLabel || 'Talk to an Expert';
   const heroTagline = hero.tagline || 'DNR Techno Services — Your service partner';
-  const about = homepage?.about || { heading: '', body: '', bullets: [] };
-  const heroStats = (homepage?.heroStats || [])
+  const about = homepageData?.about || { heading: '', body: '', bullets: [] };
+  const heroStats = (homepageData?.heroStats || [])
     .filter((item: any) => item.active !== false)
     .sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const whyCards = (homepage?.why || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const industries = ((homepage?.industries as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const trustCards = ((homepage?.trustCards as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const coverageEntries = ((homepage?.coverageStates as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const whyCards = (homepageData?.why || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const industries = ((homepageData?.industries as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const trustCards = ((homepageData?.trustCards as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const coverageEntries = ((homepageData?.coverageStates as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const coverageStateDescriptions = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.description]));
   const coverageStateLabels = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.label]));
   const coverageStates = coverageEntries.map((item: any) => item.stateId);
   const productsSection = sections.products || {};
+  const heroImage = products?.[0]?.heroImage || products?.[0]?.image || siteSettings.seo?.ogImage || siteSettings.logo || '/logo-dnr.png';
+  const structuredData = [
+    buildOrganizationJsonLd(siteSettings),
+    buildWebsiteJsonLd(),
+    {
+      '@context': 'https://schema.org',
+      '@type': 'WebPage',
+      name: heroHeading,
+      description: heroSubheading,
+      url: absoluteUrl('/'),
+      primaryImageOfPage: heroImage.startsWith('http') ? heroImage : absoluteUrl(heroImage),
+    },
+  ];
 
   return (
     <div className="bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide space-y-16 pb-20 pt-14">
@@ -250,10 +289,10 @@ export default async function HomePage() {
           <section id="contact" className="glass grid gap-8 rounded-3xl border border-accent/30 bg-white/90 p-10 scroll-mt-28 md:grid-cols-2">
             <div className="space-y-4">
               <p className="pill inline-flex">{sections.inquiry?.kicker || 'Inquiry'}</p>
-              <h3 className="text-3xl font-semibold text-secondary">{settings?.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an expert'}</h3>
+              <h3 className="text-3xl font-semibold text-secondary">{siteSettings.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an expert'}</h3>
               <p className="text-secondary/80">
-                {settings?.inquiryForm?.description ||
-                  settings?.inquiryIntro ||
+                {siteSettings.inquiryForm?.description ||
+                  siteSettings.inquiryIntro ||
                   'Share your requirement for machinery, commissioning, fabrication, machining, or service support. We’ll recommend the right next step.'}
               </p>
               <div className="space-y-2 text-lg text-secondary/80">
@@ -277,7 +316,7 @@ export default async function HomePage() {
                           className="font-semibold text-primary hover:underline"
                           href={href}
                           target={opensExternally ? '_blank' : undefined}
-                          rel={opensExternally ? 'noreferrer' : undefined}
+                          rel={opensExternally ? 'noopener noreferrer' : undefined}
                         >
                           {item.label}
                         </a>
@@ -288,7 +327,7 @@ export default async function HomePage() {
                       {primaryPhone ? <a className="font-semibold text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a> : null}
                       {email ? <a className="font-semibold text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a> : null}
                       {whatsappNumber ? (
-                        <a className="font-semibold text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer">
+                        <a className="font-semibold text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
                           WhatsApp: {whatsappNumber}
                         </a>
                       ) : null}
@@ -297,23 +336,23 @@ export default async function HomePage() {
                 </div>
               </div>
             </div>
-            <InquiryForm config={settings?.inquiryForm} />
+            <InquiryForm config={siteSettings.inquiryForm} />
           </section>
         )}
       </main>
       <Footer
         companyName={companyName}
-        footerDescription={settings?.footerDescription}
+        footerDescription={siteSettings.footerDescription}
         phoneNumbers={contactNumbers}
         email={email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
       <FloatingSupport
-        enabled={settings?.floatingSupportEnabled !== false}
+        enabled={siteSettings.floatingSupportEnabled !== false}
         whatsappNumber={whatsappNumber}
-        label={settings?.floatingSupportLabel || 'WhatsApp Support'}
+        label={siteSettings.floatingSupportLabel || 'WhatsApp Support'}
       />
     </div>
   );

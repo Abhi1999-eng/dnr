@@ -1,36 +1,61 @@
+import type { Metadata } from 'next';
 import { Footer } from '@/components/Footer';
 import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
+import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildOrganizationJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata(): Promise<Metadata> {
+  const { settings } = await fetchPublicData();
+  const siteSettings: any = settings || {};
+  return createPageMetadata({
+    title: 'Contact',
+    description:
+      siteSettings.inquiryForm?.description ||
+      siteSettings.inquiryIntro ||
+      'Contact DNR Techno Services for machinery requirements, commissioning support, and plant engineering assistance.',
+    path: '/contact',
+  });
+}
 
 export default async function ContactPage() {
   const { settings } = await fetchPublicData();
-  const companyName = settings?.companyName || 'DNR Techno Services';
-  const logo = settings?.logo || '/logo-dnr.png';
-  const primaryPhone = settings?.primaryPhone || settings?.phone?.[0] || '';
-  const secondaryPhone = settings?.secondaryPhone || settings?.phone?.[1] || '';
-  const whatsappNumber = settings?.whatsappNumber || primaryPhone;
-  const email = settings?.email || '';
-  const headerCtaHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget || whatsappNumber, '#contact');
-  const quickLinks = (settings?.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const siteSettings: any = settings || {};
+  const companyName = siteSettings.companyName || 'DNR Techno Services';
+  const logo = siteSettings.logo || '/logo-dnr.png';
+  const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
+  const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const whatsappNumber = siteSettings.whatsappNumber || primaryPhone;
+  const email = siteSettings.email || '';
+  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget || whatsappNumber, '#contact');
+  const quickLinks = (siteSettings.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
+  const structuredData = [
+    buildOrganizationJsonLd(siteSettings),
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: absoluteUrl('/') },
+      { name: 'Contact', url: absoluteUrl('/contact') },
+    ]),
+  ];
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
       />
       <main className="container-wide max-w-6xl space-y-8 pb-20 pt-16">
         <div className="space-y-3">
           <p className="pill inline-flex">Contact</p>
-          <h1 className="text-4xl font-semibold text-secondary md:text-5xl">{settings?.inquiryForm?.heading || 'Talk to an engineer'}</h1>
+          <h1 className="text-4xl font-semibold text-secondary md:text-5xl">{siteSettings.inquiryForm?.heading || 'Talk to an engineer'}</h1>
           <p className="max-w-3xl text-lg text-secondary/80">
-            {settings?.inquiryForm?.description || settings?.inquiryIntro || 'Share your requirement, machine type, and project timeline. We will connect you with the right DNR contact quickly.'}
+            {siteSettings.inquiryForm?.description || siteSettings.inquiryIntro || 'Share your requirement, machine type, and project timeline. We will connect you with the right DNR contact quickly.'}
           </p>
         </div>
 
@@ -54,7 +79,7 @@ export default async function ContactPage() {
                           : item.value);
                   const external = item.type === 'whatsapp' || String(href).startsWith('http');
                   return (
-                    <a key={`${item.label}-${item.value}`} href={href} target={external ? '_blank' : undefined} rel={external ? 'noreferrer' : undefined} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4 transition hover:border-primary/40 hover:bg-primary/5">
+                    <a key={`${item.label}-${item.value}`} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4 transition hover:border-primary/40 hover:bg-primary/5">
                       <p className="text-sm text-secondary/60">{item.label}</p>
                       <p className="text-lg font-semibold text-secondary">{item.value}</p>
                     </a>
@@ -65,31 +90,31 @@ export default async function ContactPage() {
                   {primaryPhone && <a href={`tel:${primaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Primary phone</p><p className="text-lg font-semibold text-secondary">{primaryPhone}</p></a>}
                   {secondaryPhone && <a href={`tel:${secondaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Secondary phone</p><p className="text-lg font-semibold text-secondary">{secondaryPhone}</p></a>}
                   {email && <a href={`mailto:${email}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Email</p><p className="text-lg font-semibold text-secondary">{email}</p></a>}
-                  {whatsappNumber && <a href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">WhatsApp</p><p className="text-lg font-semibold text-secondary">{whatsappNumber}</p></a>}
+                  {whatsappNumber && <a href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">WhatsApp</p><p className="text-lg font-semibold text-secondary">{whatsappNumber}</p></a>}
                 </>
               )}
             </div>
-            {settings?.address && (
+            {siteSettings.address && (
               <div className="rounded-2xl border border-secondary/10 bg-secondary px-5 py-4 text-white">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/60">Office</p>
-                <p className="mt-2 text-white/85">{settings.address}</p>
+                <p className="mt-2 text-white/85">{siteSettings.address}</p>
               </div>
             )}
           </div>
 
           <div className="rounded-3xl border border-secondary/10 bg-white p-1">
-            <InquiryForm config={settings?.inquiryForm} />
+            <InquiryForm config={siteSettings.inquiryForm} />
           </div>
         </div>
       </main>
       <Footer
         companyName={companyName}
-        footerDescription={settings?.footerDescription}
+        footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}
         email={email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
     </div>
   );

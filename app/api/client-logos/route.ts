@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { ClientLogo } from '@/models/ClientLogo';
 import { verifyToken } from '@/lib/auth';
@@ -16,5 +17,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   await connectDB();
   const created = await ClientLogo.create(body);
+  revalidateTag('client-logos', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(created, { status: 201 });
 }

@@ -1,54 +1,64 @@
+import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
+import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { connectDB } from '@/lib/db';
-import { Service } from '@/models/Service';
-import { SiteSettings } from '@/models/SiteSettings';
+import { fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 300;
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const service: any = await fetchServiceBySlug(slug);
+
+  if (!service) {
+    return createPageMetadata({
+      title: 'Service not found',
+      description: 'The requested service could not be found.',
+      path: `/services/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return createPageMetadata({
+    title: service.title,
+    description: service.longDescription || service.description,
+    path: `/services/${service.slug}`,
+    image: service.image || '/dnr/page_21.png',
+  });
+}
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  await connectDB();
-
-  const [serviceDoc, relatedDocs, settingsDocRaw] = await Promise.all([
-    Service.findOne({ slug, active: { $ne: false } }).lean(),
-    Service.find({ slug: { $ne: slug }, active: { $ne: false } }).sort({ sortOrder: 1, createdAt: 1 }).limit(3).lean(),
-    SiteSettings.findOne().lean(),
+  const [service, related, { settings }] = await Promise.all([
+    fetchServiceBySlug(slug),
+    fetchRelatedServices(slug, 3),
+    fetchPublicData(),
   ]);
-  const settingsDoc: any = settingsDocRaw;
+  const siteSettings: any = settings || {};
+  const serviceData: any = service;
+  const relatedServices: any[] = Array.isArray(related) ? related : [];
 
-  if (!serviceDoc) {
-    return (
-      <div className="min-h-screen bg-background text-secondary">
-        <Nav
-          companyName={settingsDoc?.companyName || 'DNR Techno Services'}
-          logo={settingsDoc?.logo || '/logo-dnr.png'}
-          headerCtaLabel={settingsDoc?.headerCtaLabel || 'Talk to an Expert'}
-          headerCtaTarget={resolveContactActionHref(settingsDoc?.headerCtaActionType, settingsDoc?.headerCtaValue || settingsDoc?.headerCtaTarget, '#contact')}
-        />
-        <main className="container-wide space-y-6 pb-20 pt-16">
-          <p className="pill inline-flex">Services</p>
-          <h1 className="text-4xl font-semibold text-secondary">Service not found</h1>
-          <p className="max-w-2xl text-secondary/75">This service is no longer available or has not been added yet.</p>
-          <Link href="/services" className="btn-ghost w-fit">
-            Back to services
-          </Link>
-        </main>
-      </div>
-    );
+  if (!serviceData) {
+    notFound();
   }
-
-  const service = JSON.parse(JSON.stringify(serviceDoc));
-  const related = JSON.parse(JSON.stringify(relatedDocs || []));
-  const settings = JSON.parse(JSON.stringify(settingsDoc || {}));
-  const contactHref = resolveContactActionHref(settings?.headerCtaActionType, settings?.headerCtaValue || settings?.headerCtaTarget, '#contact');
+  const contactHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
+  const structuredData = [
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: absoluteUrl('/') },
+      { name: 'Services', url: absoluteUrl('/services') },
+      { name: serviceData.title, url: absoluteUrl(`/services/${serviceData.slug}`) },
+    ]),
+    buildServiceJsonLd(serviceData),
+  ];
 
   const detailCopy =
-    service.longDescription ||
-    service.description ||
+    serviceData.longDescription ||
+    serviceData.description ||
     'Talk to DNR Techno Services for service planning, implementation support, and plant-side guidance tailored to your operating requirements.';
 
   const supportPoints = [
@@ -59,10 +69,11 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
   return (
     <div className="min-h-screen bg-background text-secondary">
+      <StructuredData data={structuredData} />
       <Nav
-        companyName={settings?.companyName || 'DNR Techno Services'}
-        logo={settings?.logo || '/logo-dnr.png'}
-        headerCtaLabel={settings?.headerCtaLabel || 'Talk to an Expert'}
+        companyName={siteSettings.companyName || 'DNR Techno Services'}
+        logo={siteSettings.logo || '/logo-dnr.png'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={contactHref}
       />
       <main className="container-wide space-y-10 pb-20 pt-16">
@@ -74,12 +85,12 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           <div className="space-y-5">
             <span className="pill inline-flex">Service detail</span>
             <div className="space-y-4">
-              <h1 className="text-4xl font-semibold leading-tight text-secondary md:text-5xl">{service.title}</h1>
-              <p className="max-w-2xl text-lg leading-relaxed text-secondary/80">{service.description}</p>
+              <h1 className="text-4xl font-semibold leading-tight text-secondary md:text-5xl">{serviceData.title}</h1>
+              <p className="max-w-2xl text-lg leading-relaxed text-secondary/80">{serviceData.description}</p>
             </div>
             <div className="flex flex-wrap gap-3">
               <Link href={contactHref} className="btn-primary">
-                {settings?.headerCtaLabel || 'Talk to an Expert'}
+                {siteSettings.headerCtaLabel || 'Talk to an Expert'}
               </Link>
               <Link href="/contact" className="btn-ghost">
                 Send Inquiry
@@ -89,8 +100,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
           <div className="relative min-h-[300px] overflow-hidden rounded-[26px] border border-secondary/10 bg-secondary/5 shadow-lg shadow-secondary/10">
             <Image
-              src={service.image || '/dnr/page_21.png'}
-              alt={service.title}
+              src={serviceData.image || '/dnr/page_21.png'}
+              alt={serviceData.title}
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, 45vw"
@@ -108,7 +119,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             <div className="rounded-[28px] border border-secondary/10 bg-white p-6 shadow-[0_18px_44px_rgba(15,23,42,0.06)]">
               <h2 className="text-xl font-semibold text-secondary">What you can expect</h2>
               <ul className="mt-4 space-y-3">
-                {supportPoints.map((point) => (
+              {supportPoints.map((point) => (
                   <li key={point} className="flex gap-3 text-sm leading-relaxed text-secondary/80">
                     <span className="mt-1 h-2.5 w-2.5 rounded-full bg-primary" />
                     <span>{point}</span>
@@ -135,14 +146,14 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
         </section>
 
-        {related.length ? (
+        {relatedServices.length ? (
           <section className="space-y-5">
             <div>
               <p className="pill inline-flex">Related services</p>
               <h2 className="mt-3 text-3xl font-semibold text-secondary">More support capabilities</h2>
             </div>
             <div className="grid gap-5 md:grid-cols-3">
-              {related.map((item: any) => (
+              {relatedServices.map((item: any) => (
                 <Link
                   key={item._id || item.slug}
                   href={`/services/${item.slug}`}
@@ -158,13 +169,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         ) : null}
       </main>
       <Footer
-        companyName={settings?.companyName || 'DNR Techno Services'}
-        footerDescription={settings?.footerDescription}
-        phoneNumbers={[settings?.primaryPhone || settings?.phone?.[0], settings?.secondaryPhone || settings?.phone?.[1]].filter(Boolean)}
-        email={settings?.email}
-        address={settings?.address}
-        website={settings?.website}
-        footerLinks={settings?.footerLinks}
+        companyName={siteSettings.companyName || 'DNR Techno Services'}
+        footerDescription={siteSettings.footerDescription}
+        phoneNumbers={[siteSettings.primaryPhone || siteSettings.phone?.[0], siteSettings.secondaryPhone || siteSettings.phone?.[1]].filter(Boolean)}
+        email={siteSettings.email}
+        address={siteSettings.address}
+        website={siteSettings.website}
+        footerLinks={siteSettings.footerLinks}
       />
     </div>
   );

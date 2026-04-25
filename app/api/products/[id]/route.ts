@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyToken } from '@/lib/auth';
@@ -42,6 +43,8 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
   await connectDB();
   const updated = await Product.findByIdAndUpdate(id, normalizeProductPayload(body), { new: true, runValidators: true });
   if (!updated) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+  revalidateTag('products', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(updated);
 }
 
@@ -53,5 +56,7 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
   await connectDB();
   const deleted = await Product.findByIdAndDelete(id);
   if (!deleted) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
+  revalidateTag('products', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json({ success: true, id });
 }

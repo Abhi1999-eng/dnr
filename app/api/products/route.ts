@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyToken } from '@/lib/auth';
@@ -41,5 +42,7 @@ export async function POST(req: Request) {
   const body = await req.json();
   await connectDB();
   const created = await Product.create(normalizeProductPayload(body));
+  revalidateTag('products', 'max');
+  revalidateTag('public-data', 'max');
   return NextResponse.json(created, { status: 201 });
 }
