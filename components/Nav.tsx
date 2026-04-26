@@ -54,7 +54,7 @@ export function Nav({
       return;
     }
 
-    if (pathname !== '/') {
+    if (pathname !== '/' && href !== '#quote') {
       closeMenu();
       return;
     }
@@ -65,7 +65,7 @@ export function Nav({
     target?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
-  const resolveHref = (href: string) => (href.startsWith('#') && pathname !== '/' ? `/${href}` : href);
+  const resolveHref = (href: string) => (href.startsWith('#') && pathname !== '/' && href !== '#quote' ? `/${href}` : href);
   const ctaExternal = isExternalTarget(headerCtaTarget);
 
   return (

@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { InquiryForm } from '@/components/InquiryForm';
+import { InquirySection } from '@/components/InquirySection';
 import { ManagedImage } from '@/components/ManagedImage';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
 import { Footer } from '@/components/Footer';
@@ -47,7 +47,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const logo = siteSettings.logo || '/logo-dnr.png';
   const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
   const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
-  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
+  const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
   const structuredData = [
     buildBreadcrumbJsonLd([
       { name: 'Home', url: absoluteUrl('/') },
@@ -135,10 +135,19 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
         </div>
 
-        <div className="glass space-y-3 rounded-2xl border border-accent/40 bg-white p-6">
-          <h3 className="text-xl font-semibold text-secondary">Request a quote</h3>
-          <InquiryForm config={siteSettings.inquiryForm} />
-        </div>
+        <InquirySection
+          id="quote"
+          kicker="Quote request"
+          heading="Request a Quote"
+          description={`Interested in ${productData.title}? Share your details and our team will contact you.`}
+          formTitle="Tell us about your requirement"
+          config={siteSettings.inquiryForm}
+          initialProductInterest={productData.title}
+          quickLinks={siteSettings.quickContactLinks}
+          fallbackPhone={primaryPhone}
+          fallbackEmail={siteSettings.email}
+          fallbackWhatsapp={siteSettings.whatsappNumber}
+        />
 
         {related.length ? (
           <div className="space-y-4">

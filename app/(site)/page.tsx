@@ -4,9 +4,9 @@ import { ClientLogosSection } from '@/components/ClientLogosSection';
 import { ContentCarousel } from '@/components/ContentCarousel';
 import { Coverage } from '@/components/Coverage';
 import { FloatingSupport } from '@/components/FloatingSupport';
+import { InquirySection } from '@/components/InquirySection';
 import { Footer } from '@/components/Footer';
 import { HeroSlider } from '@/components/HeroSlider';
-import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ServiceGrid } from '@/components/ServiceGrid';
@@ -288,58 +288,22 @@ export default async function HomePage() {
         )}
 
         {(sections.inquiry?.visible ?? true) && (
-          <section id="contact" className="glass grid gap-8 rounded-3xl border border-accent/30 bg-white/90 p-10 scroll-mt-28 md:grid-cols-2">
-            <div className="space-y-4">
-              <p className="pill inline-flex">{sections.inquiry?.kicker || 'Inquiry'}</p>
-              <h2 className="text-3xl font-semibold text-secondary">{siteSettings.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an expert'}</h2>
-              <p className="text-secondary/80">
-                {siteSettings.inquiryForm?.description ||
-                  siteSettings.inquiryIntro ||
-                  'Share your requirement for machinery, commissioning, fabrication, machining, or service support. We’ll recommend the right next step.'}
-              </p>
-              <div className="space-y-2 text-lg text-secondary/80">
-                <p className="font-semibold text-secondary">Quick contact</p>
-                <div className="flex flex-col gap-1">
-                  {quickLinks.length ? (
-                    quickLinks.map((item: any) => {
-                      const href =
-                        item.href ||
-                        (item.type === 'phone'
-                          ? `tel:${item.value}`
-                          : item.type === 'email'
-                            ? `mailto:${item.value}`
-                            : item.type === 'whatsapp'
-                              ? `https://wa.me/${String(item.value || '').replace(/[^0-9]/g, '')}`
-                              : item.value);
-                      const opensExternally = item.type === 'whatsapp' || String(item.href || '').startsWith('http');
-                      return (
-                        <a
-                          key={`${item.label}-${item.value}`}
-                          className="font-semibold text-secondary hover:text-primary hover:underline"
-                          href={href}
-                          target={opensExternally ? '_blank' : undefined}
-                          rel={opensExternally ? 'noopener noreferrer' : undefined}
-                        >
-                          {item.label}
-                        </a>
-                      );
-                    })
-                  ) : (
-                    <>
-                      {primaryPhone ? <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a> : null}
-                      {email ? <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a> : null}
-                      {whatsappNumber ? (
-                        <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
-                          WhatsApp: {whatsappNumber}
-                        </a>
-                      ) : null}
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-            <InquiryForm config={siteSettings.inquiryForm} />
-          </section>
+          <InquirySection
+            id="contact"
+            kicker={sections.inquiry?.kicker || 'Inquiry'}
+            heading={siteSettings.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an Expert'}
+            description={
+              siteSettings.inquiryForm?.description ||
+              siteSettings.inquiryIntro ||
+              'Tell us your requirement and our team will get back with the right machine recommendation.'
+            }
+            formTitle="Share your requirement"
+            config={siteSettings.inquiryForm}
+            quickLinks={quickLinks}
+            fallbackPhone={primaryPhone}
+            fallbackEmail={email}
+            fallbackWhatsapp={whatsappNumber}
+          />
         )}
       </main>
       <Footer
