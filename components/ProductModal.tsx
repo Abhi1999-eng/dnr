@@ -28,19 +28,20 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
           <button className="absolute top-4 right-4 text-secondary hover:text-primary" onClick={onClose} aria-label="Close">
             <X />
           </button>
-          <div className="relative h-[320px] rounded-2xl overflow-hidden border border-muted/60 bg-slate-50 md:h-[500px]">
+          <div className="relative flex h-[360px] items-center justify-center overflow-hidden rounded-2xl border border-muted/60 bg-slate-50 p-4 md:h-[520px] md:p-6">
             <div
-              className="absolute inset-0 transition-transform duration-200"
+              className="absolute inset-0 flex items-center justify-center transition-transform duration-200"
               style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
             >
               {(() => {
                 const imgSrc = resolveProductImage(product);
                 return (
               <ManagedImage
-                  src={imgSrc}
+                src={imgSrc}
                 alt={product.title}
-                fill
-                className="object-contain object-center p-5 md:p-6"
+                width={1600}
+                height={1200}
+                className="max-h-full w-full object-contain object-center"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
                 );

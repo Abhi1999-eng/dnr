@@ -113,13 +113,13 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
 
           <div className="space-y-4">
-            <div className="relative overflow-hidden rounded-2xl border border-muted/80 bg-white p-4 md:p-5">
+            <div className="flex h-[340px] items-center justify-center overflow-hidden rounded-2xl border border-muted/80 bg-slate-50 p-4 md:h-[520px] md:p-6">
               <ManagedImage
                 src={resolveProductImage(productData)}
                 alt={productData.title}
-                width={960}
-                height={540}
-                className="h-[320px] w-full object-contain object-center md:h-[480px]"
+                width={1600}
+                height={1200}
+                className="max-h-full w-full object-contain object-center"
                 priority
               />
             </div>
