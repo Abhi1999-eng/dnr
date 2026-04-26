@@ -37,3 +37,6 @@ export async function storeUploadedImage(file: File) {
   await writeFile(filepath, buffer);
   return `/uploads/${filename}`;
 }
+
+// Backward-compatible alias for any existing bulk-upload routes still using the old helper name.
+export const saveUpload = storeUploadedImage;
