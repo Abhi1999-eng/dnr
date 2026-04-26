@@ -1,4 +1,4 @@
-import { unstable_cache } from 'next/cache';
+import { unstable_cache, unstable_noStore as noStore } from 'next/cache';
 import { connectDB } from './db';
 import { Service } from '@/models/Service';
 import { Testimonial } from '@/models/Testimonial';
@@ -40,6 +40,13 @@ const getPublicData = unstable_cache(
 
 export async function fetchPublicData(): Promise<any> {
   return getPublicData();
+}
+
+export async function fetchLiveProducts(): Promise<any[]> {
+  noStore();
+  await connectDB();
+  const products = await Product.find().sort({ createdAt: -1 }).lean();
+  return serialize(products || []);
 }
 
 export const fetchProductBySlug = unstable_cache(

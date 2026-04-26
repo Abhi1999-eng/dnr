@@ -8,7 +8,7 @@ import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchProductBySlug, fetchPublicData, fetchRelatedProducts } from '@/lib/data';
+import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildProductJsonLd, createPageMetadata } from '@/lib/seo';
 
@@ -40,7 +40,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const productData: any = await fetchProductBySlug(slug);
   if (!productData) return notFound();
 
-  const { settings, products } = await fetchPublicData();
+  const [{ settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const siteSettings: any = settings || {};
   const related = await fetchRelatedProducts(productData._id, 3);
   const companyName = siteSettings.companyName || 'DNR Techno Services';

@@ -4,7 +4,7 @@ import { Nav } from '@/components/Nav';
 import { ServiceGrid } from '@/components/ServiceGrid';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const { services, homepage, settings, products } = await fetchPublicData();
+  const [{ services, homepage, settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';

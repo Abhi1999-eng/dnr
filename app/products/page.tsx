@@ -5,14 +5,14 @@ import { ManagedImage } from '@/components/ManagedImage';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { products } = await fetchPublicData();
+  const products = await fetchLiveProducts();
   return createPageMetadata({
     title: 'Products',
     description:
@@ -24,7 +24,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ProductsPage() {
-  const { products, settings } = await fetchPublicData();
+  const [{ settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';

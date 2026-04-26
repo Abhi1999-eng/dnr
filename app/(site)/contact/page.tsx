@@ -4,7 +4,7 @@ import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildOrganizationJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const { settings, products } = await fetchPublicData();
+  const [{ settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';

@@ -1,8 +1,11 @@
 import { NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyToken } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function slugify(text: string) {
   return text
@@ -44,5 +47,8 @@ export async function POST(req: Request) {
   const created = await Product.create(normalizeProductPayload(body));
   revalidateTag('products', 'max');
   revalidateTag('public-data', 'max');
+  revalidatePath('/');
+  revalidatePath('/products');
+  if (created.slug) revalidatePath(`/products/${created.slug}`);
   return NextResponse.json(created, { status: 201 });
 }

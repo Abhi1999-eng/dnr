@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Product } from '@/models/Product';
 import { verifyToken } from '@/lib/auth';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function slugify(text: string) {
   return text
@@ -41,10 +44,15 @@ export async function PUT(req: NextRequest, context: { params: Promise<{ id: str
   const body = await req.json();
   const id = await getId(context);
   await connectDB();
+  const existing = await Product.findById(id).lean();
   const updated = await Product.findByIdAndUpdate(id, normalizeProductPayload(body), { new: true, runValidators: true });
   if (!updated) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
   revalidateTag('products', 'max');
   revalidateTag('public-data', 'max');
+  revalidatePath('/');
+  revalidatePath('/products');
+  if ((existing as any)?.slug) revalidatePath(`/products/${(existing as any).slug}`);
+  if (updated.slug) revalidatePath(`/products/${updated.slug}`);
   return NextResponse.json(updated);
 }
 
@@ -58,5 +66,8 @@ export async function DELETE(req: NextRequest, context: { params: Promise<{ id: 
   if (!deleted) return NextResponse.json({ message: 'Product not found' }, { status: 404 });
   revalidateTag('products', 'max');
   revalidateTag('public-data', 'max');
+  revalidatePath('/');
+  revalidatePath('/products');
+  if (deleted.slug) revalidatePath(`/products/${deleted.slug}`);
   return NextResponse.json({ success: true, id });
 }

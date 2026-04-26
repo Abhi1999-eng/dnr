@@ -3,7 +3,7 @@ import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildOrganizationJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const { homepage, settings, products } = await fetchPublicData();
+  const [{ homepage, settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const about = (homepage as any)?.about || { heading: '', body: '', bullets: [] };
   const siteSettings: any = settings || {};
 

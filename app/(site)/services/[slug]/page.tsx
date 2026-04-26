@@ -6,7 +6,7 @@ import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -34,10 +34,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [service, related, { settings, products }] = await Promise.all([
+  const [service, related, { settings }, products] = await Promise.all([
     fetchServiceBySlug(slug),
     fetchRelatedServices(slug, 3),
     fetchPublicData(),
+    fetchLiveProducts(),
   ]);
   const siteSettings: any = settings || {};
   const serviceData: any = service;

@@ -14,14 +14,14 @@ import { StructuredData } from '@/components/StructuredData';
 import { Testimonials } from '@/components/Testimonials';
 import { TrustSection } from '@/components/TrustSection';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchPublicData } from '@/lib/data';
+import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { settings, homepage, products } = await fetchPublicData();
+  const [{ settings, homepage }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const homepageData: any = homepage || {};
   const siteSettings: any = settings || {};
   const title = siteSettings.seo?.title || 'Industrial Machinery and Engineering Support';
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const { products, testimonials, homepage, settings, services, clientLogos } = await fetchPublicData();
+  const [{ testimonials, homepage, settings, services, clientLogos }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
   const homepageData: any = homepage || {};
   const siteSettings: any = settings || {};
 
