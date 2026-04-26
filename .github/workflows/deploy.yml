@@ -23,6 +23,8 @@ jobs:
             echo "Starting deploy on $(hostname) at $(date)"
             git fetch origin
             git reset --hard origin/main
+            echo "Cleaning previous build artifacts"
+            rm -rf node_modules .next
             echo "Running npm ci"
             npm ci
             echo "Running build"
