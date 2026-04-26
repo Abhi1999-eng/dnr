@@ -18,6 +18,21 @@ type FormState = {
   gallery: string[];
 };
 
+type BulkUploadResult = {
+  filename: string;
+  title: string;
+  slug: string;
+  status: 'created' | 'skipped' | 'failed';
+  reason: string;
+};
+
+type BulkUploadSummary = {
+  created: number;
+  skipped: number;
+  failed: number;
+  total: number;
+};
+
 const emptyForm: FormState = {
   title: '',
   slug: '',
@@ -45,8 +60,12 @@ export default function AdminProductsPage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [bulkUploading, setBulkUploading] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+  const [bulkFiles, setBulkFiles] = useState<File[]>([]);
+  const [bulkSummary, setBulkSummary] = useState<BulkUploadSummary | null>(null);
+  const [bulkResults, setBulkResults] = useState<BulkUploadResult[]>([]);
 
   const isEditing = useMemo(() => Boolean(editingId), [editingId]);
 
@@ -124,6 +143,47 @@ export default function AdminProductsPage() {
     }
   }
 
+  async function bulkUploadProducts() {
+    if (!bulkFiles.length) return;
+    setBulkUploading(true);
+    setBulkSummary(null);
+    setBulkResults([]);
+
+    try {
+      const formData = new FormData();
+      bulkFiles.forEach((file) => formData.append('files', file));
+
+      const res = await fetch('/api/admin/products/bulk-image-upload', {
+        method: 'POST',
+        headers: { Authorization: token ? `Bearer ${token}` : '' },
+        body: formData,
+      });
+
+      const payload = await res.json().catch(() => null);
+      if (!res.ok) {
+        throw new Error(payload?.message || 'Bulk upload failed');
+      }
+
+      setBulkSummary(payload.summary || null);
+      setBulkResults(Array.isArray(payload.results) ? payload.results : []);
+      setBulkFiles([]);
+      await mutate();
+      router.refresh();
+
+      const createdCount = payload?.summary?.created ?? 0;
+      const skippedCount = payload?.summary?.skipped ?? 0;
+      const failedCount = payload?.summary?.failed ?? 0;
+      setFeedback({
+        type: createdCount > 0 ? 'success' : failedCount > 0 ? 'error' : 'success',
+        message: `Bulk upload finished: ${createdCount} created, ${skippedCount} skipped, ${failedCount} failed.`,
+      });
+    } catch (error) {
+      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Bulk upload failed' });
+    } finally {
+      setBulkUploading(false);
+    }
+  }
+
   function startEdit(product: any) {
     setEditingId(product._id);
     setForm({
@@ -170,6 +230,110 @@ export default function AdminProductsPage() {
           <p className="text-sm text-slate-400">Add, edit, or delete products. Every saved product appears automatically on the homepage and products page.</p>
         </div>
         {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
+
+        <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold text-white">Bulk Upload Products From Images</h2>
+            <p className="text-sm text-slate-400">
+              Select multiple product images. Each filename becomes a product title, each uploaded image becomes the main product image, and duplicates are skipped automatically.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <label className="space-y-2 text-sm text-slate-200">
+              <span>Choose product images</span>
+              <input
+                type="file"
+                multiple
+                accept=".jpg,.jpeg,.png,.webp,.avif,image/jpeg,image/png,image/webp,image/avif"
+                onChange={(event) => setBulkFiles(Array.from(event.target.files || []))}
+                className="block w-full text-xs text-slate-200 file:mr-3 file:rounded-full file:border-0 file:bg-white file:px-4 file:py-2 file:text-xs file:font-semibold file:text-slate-900"
+              />
+            </label>
+            <div className="mt-3 flex flex-wrap items-center gap-3">
+              <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-300">
+                {bulkFiles.length} file{bulkFiles.length === 1 ? '' : 's'} selected
+              </span>
+              <button
+                type="button"
+                onClick={bulkUploadProducts}
+                disabled={bulkUploading || !bulkFiles.length}
+                className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {bulkUploading ? 'Uploading…' : 'Bulk Upload Products'}
+              </button>
+            </div>
+            {bulkFiles.length ? (
+              <div className="mt-4 grid gap-2 md:grid-cols-2">
+                {bulkFiles.map((file) => (
+                  <div key={`${file.name}-${file.size}`} className="rounded-xl border border-white/10 bg-slate-950/20 px-3 py-2 text-xs text-slate-300">
+                    {file.name}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+          </div>
+
+          {bulkSummary ? (
+            <div className="grid gap-3 md:grid-cols-4">
+              <div className="rounded-2xl border border-emerald-400/20 bg-emerald-400/10 px-4 py-3 text-sm text-emerald-100">
+                <p className="text-xs uppercase tracking-[0.18em] text-emerald-200/80">Created</p>
+                <p className="mt-1 text-2xl font-semibold">{bulkSummary.created}</p>
+              </div>
+              <div className="rounded-2xl border border-amber-400/20 bg-amber-400/10 px-4 py-3 text-sm text-amber-100">
+                <p className="text-xs uppercase tracking-[0.18em] text-amber-200/80">Skipped</p>
+                <p className="mt-1 text-2xl font-semibold">{bulkSummary.skipped}</p>
+              </div>
+              <div className="rounded-2xl border border-red-400/20 bg-red-400/10 px-4 py-3 text-sm text-red-100">
+                <p className="text-xs uppercase tracking-[0.18em] text-red-200/80">Failed</p>
+                <p className="mt-1 text-2xl font-semibold">{bulkSummary.failed}</p>
+              </div>
+              <div className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-100">
+                <p className="text-xs uppercase tracking-[0.18em] text-slate-300">Total files</p>
+                <p className="mt-1 text-2xl font-semibold">{bulkSummary.total}</p>
+              </div>
+            </div>
+          ) : null}
+
+          {bulkResults.length ? (
+            <div className="overflow-hidden rounded-2xl border border-white/10">
+              <table className="w-full text-sm">
+                <thead className="text-left text-slate-400">
+                  <tr>
+                    <th className="p-3">Filename</th>
+                    <th className="p-3">Generated title</th>
+                    <th className="p-3">Slug</th>
+                    <th className="p-3">Status</th>
+                    <th className="p-3">Reason</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {bulkResults.map((item) => (
+                    <tr key={`${item.filename}-${item.slug}`} className="border-t border-white/10">
+                      <td className="p-3 text-slate-200">{item.filename}</td>
+                      <td className="p-3 text-white">{item.title}</td>
+                      <td className="p-3 text-slate-300">{item.slug}</td>
+                      <td className="p-3">
+                        <span
+                          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-[0.16em] ${
+                            item.status === 'created'
+                              ? 'bg-emerald-400/15 text-emerald-200'
+                              : item.status === 'skipped'
+                                ? 'bg-amber-400/15 text-amber-200'
+                                : 'bg-red-400/15 text-red-200'
+                          }`}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td className="p-3 text-slate-300">{item.reason}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : null}
+        </div>
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
           <div className="grid gap-3 md:grid-cols-2">
