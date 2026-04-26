@@ -38,14 +38,14 @@ export function Testimonials({
                   <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/12 text-primary">
                     <Quote size={18} />
                   </div>
-                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/60">Client feedback</span>
+                  <span className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/75">Client feedback</span>
                 </div>
                 <p className="text-base leading-relaxed text-secondary md:text-lg">“{t.feedback}”</p>
               </div>
               <div className="rounded-2xl border border-secondary/10 bg-secondary/[0.03] px-4 py-3 text-sm text-secondary/80">
                 <p className="font-semibold text-secondary">{t.name}</p>
                 <p>{t.role || 'Plant / Maintenance Lead'}{t.company ? ` · ${t.company}` : ''}</p>
-                {t.sector && <p className="text-secondary/60">{t.sector}</p>}
+                {t.sector && <p className="text-secondary/75">{t.sector}</p>}
               </div>
             </div>
           </div>

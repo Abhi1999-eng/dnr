@@ -113,21 +113,21 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
 
           <div className="space-y-4">
-            <div className="relative overflow-hidden rounded-2xl border border-muted/80 bg-white">
+            <div className="relative overflow-hidden rounded-2xl border border-muted/80 bg-white p-4 md:p-5">
               <ManagedImage
                 src={resolveProductImage(productData)}
                 alt={productData.title}
                 width={960}
                 height={540}
-                className="h-auto w-full object-cover"
+                className="h-[320px] w-full object-contain object-center md:h-[480px]"
                 priority
               />
             </div>
             {productData.gallery?.length ? (
               <div className="grid grid-cols-3 gap-2">
-                {productData.gallery.map((img: string) => (
-                  <div key={img} className="relative h-28 overflow-hidden rounded-xl border border-muted/80">
-                    <ManagedImage src={resolveMediaUrl(img, '/dnr/page_06.png')} alt={`${productData.title} gallery image`} fill className="object-cover" sizes="(max-width: 768px) 33vw, 160px" />
+                {productData.gallery.map((img: string, index: number) => (
+                  <div key={`${img}-${index}`} className="relative h-28 overflow-hidden rounded-xl border border-muted/80 bg-white p-2">
+                    <ManagedImage src={resolveMediaUrl(img, '/dnr/page_06.png')} alt={`${productData.title} gallery image ${index + 1}`} fill className="object-contain object-center p-2" sizes="(max-width: 768px) 33vw, 160px" />
                   </div>
                 ))}
               </div>

@@ -52,9 +52,8 @@ export function ProductGrid({
                   className={`flex h-full flex-col gap-4 text-left ${enableModal ? 'cursor-pointer' : 'cursor-default'}`}
                   onClick={enableModal ? () => setSelected(product) : undefined}
                 >
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] border border-secondary/10 bg-muted/40">
-                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-cover transition duration-500 group-hover:scale-[1.04]" sizes="(max-width: 768px) 100vw, 33vw" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-secondary/18 via-transparent to-transparent" />
+                  <div className="relative aspect-[16/11] w-full overflow-hidden rounded-[20px] border border-secondary/10 bg-white">
+                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-contain object-center p-3" sizes="(max-width: 768px) 100vw, 33vw" />
                   </div>
                   <div className="flex-1 space-y-2">
                     <h3 className="text-xl font-semibold text-secondary">{product.title}</h3>

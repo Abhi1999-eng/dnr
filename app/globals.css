@@ -56,9 +56,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.35rem 0.75rem;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.9rem;
   border-radius: 9999px;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   font-weight: 600;
   background: linear-gradient(120deg, rgba(139, 197, 63, 0.12), rgba(31, 39, 48, 0.06));
   color: #1f2730;
@@ -70,7 +71,8 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.85rem 1.2rem;
+  min-height: 3rem;
+  padding: 0.95rem 1.25rem;
   border-radius: 14px;
   background: linear-gradient(120deg, #8bc53f, #6aa12f 70%, #5c8b27);
   color: #0f1a10;
@@ -99,7 +101,8 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.85rem 1.1rem;
+  min-height: 3rem;
+  padding: 0.95rem 1.15rem;
   border-radius: 14px;
   border: 1px solid rgba(31, 39, 48, 0.12);
   color: #1f2730;
@@ -111,6 +114,11 @@ select:focus-visible {
   transform: translateY(-1px);
   border-color: rgba(139, 197, 63, 0.28);
   box-shadow: 0 12px 28px rgba(15, 23, 42, 0.08);
+}
+
+.touch-target {
+  min-width: 3rem;
+  min-height: 3rem;
 }
 
 @keyframes pulse-soft {

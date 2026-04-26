@@ -24,7 +24,7 @@ export function TrustSection({
             <div className="mb-4 inline-flex rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] text-secondary">
               Trust signal
             </div>
-            <h4 className="text-lg font-semibold text-secondary">{p.title}</h4>
+            <h3 className="text-lg font-semibold text-secondary">{p.title}</h3>
             <p className="mt-2 text-sm leading-relaxed text-secondary/80">{p.desc}</p>
           </div>
         ))}

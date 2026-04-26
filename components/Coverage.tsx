@@ -123,7 +123,7 @@ export function Coverage({
           <div className="rounded-[1.75rem] border border-secondary/10 bg-white/95 p-4 shadow-[0_18px_46px_rgba(15,23,42,0.08)] md:p-6">
             <div className="mb-4 flex items-center justify-between gap-4">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/55">Coverage map</p>
+                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-secondary/70">Coverage map</p>
                 <p className="text-lg font-semibold text-secondary">SimpleMaps India layer with live state highlighting</p>
               </div>
               <div className="rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-semibold text-secondary">
@@ -133,11 +133,11 @@ export function Coverage({
 
             <div className="relative overflow-hidden rounded-[1.5rem] border border-secondary/10 bg-[radial-gradient(circle_at_top,#f4f8ef,transparent_48%),linear-gradient(180deg,#ffffff,#f6f7f3)] p-5">
               <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(135deg,rgba(135,225,38,0.08),transparent_40%,rgba(24,32,45,0.04))]" />
-              <svg viewBox="0 0 1000 1000" className="relative z-10 h-full w-full" role="img" aria-label="India coverage map">
+              <svg viewBox="0 0 1000 1000" className="relative z-10 h-full w-full" role="img" aria-labelledby="coverage-map-title">
+                <title id="coverage-map-title">India coverage map</title>
                 {Object.entries(MAP_PATHS).map(([id, path], index) => {
                   const isCovered = activeEntries.some((entry) => entry.id === id);
                   const isActive = activeStateId === id;
-                  const name = MAP_NAMES[id];
 
                   return (
                     <path
@@ -150,10 +150,7 @@ export function Coverage({
                       strokeWidth={isActive ? 3 : 1.6}
                       className={isCovered ? 'cursor-pointer transition-colors duration-200 ease-out' : 'transition-colors duration-200 ease-out'}
                       onMouseEnter={isCovered ? () => setActiveStateId(id) : undefined}
-                      onFocus={isCovered ? () => setActiveStateId(id) : undefined}
                       onClick={isCovered ? () => setActiveStateId(id) : undefined}
-                      tabIndex={isCovered ? 0 : -1}
-                      aria-label={name}
                     />
                   );
                 })}
@@ -169,7 +166,7 @@ export function Coverage({
                     transform: 'translate(-50%, -100%)',
                   }}
                 >
-                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/55">Active state</p>
+                  <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/70">Active state</p>
                   <p className="text-sm font-semibold text-secondary">{activeState.uiLabel}</p>
                 </div>
               )}
@@ -178,13 +175,13 @@ export function Coverage({
 
           <div className="flex flex-col gap-4">
             <div className="rounded-[1.75rem] border border-secondary/10 bg-[linear-gradient(180deg,#1b2430,#141b24)] px-5 py-5 text-white shadow-[0_20px_50px_rgba(15,23,42,0.22)]">
-              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/60">{summaryTitle}</p>
+              <p className="text-xs font-semibold uppercase tracking-[0.22em] text-white/80">{summaryTitle}</p>
               <h3 className="mt-2 text-2xl font-semibold">Rapid response across manufacturing hubs</h3>
-              <p className="mt-2 text-sm leading-relaxed text-white/75">{summaryText}</p>
+              <p className="mt-2 text-sm leading-relaxed text-white/88">{summaryText}</p>
               {activeState && (
                 <div className="mt-4 rounded-2xl border border-white/10 bg-white/10 px-4 py-3">
                   <p className="text-sm font-semibold text-white">{activeState.uiLabel}</p>
-                  <p className="mt-1 text-sm leading-relaxed text-white/70">{activeState.description}</p>
+                  <p className="mt-1 text-sm leading-relaxed text-white/88">{activeState.description}</p>
                 </div>
               )}
             </div>
@@ -209,13 +206,13 @@ export function Coverage({
                       <span className={`mt-1 h-2.5 w-2.5 rounded-full ${isActive ? 'bg-primary' : 'bg-secondary/30'}`} />
                       <div className="space-y-1">
                         <p className="text-sm font-semibold text-secondary">{entry.uiLabel}</p>
-                        <p className="text-xs leading-relaxed text-secondary/65">{entry.description}</p>
+                        <p className="text-xs leading-relaxed text-secondary/80">{entry.description}</p>
                       </div>
                     </div>
                   </button>
                 );
               }) : (
-                <div className="rounded-2xl border border-dashed border-secondary/15 bg-white px-4 py-5 text-sm leading-relaxed text-secondary/65 sm:col-span-2">
+                <div className="rounded-2xl border border-dashed border-secondary/15 bg-white px-4 py-5 text-sm leading-relaxed text-secondary/80 sm:col-span-2">
                   No states are active right now. The map is still visible so you can enable support coverage from the admin panel whenever needed.
                 </div>
               )}

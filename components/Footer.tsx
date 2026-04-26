@@ -40,13 +40,13 @@ export function Footer({
             <p className="text-xs font-semibold uppercase tracking-[0.22em] text-primary">DNR Techno Services</p>
             <h3 className="mt-2 text-2xl font-semibold">{companyName}</h3>
           </div>
-          {footerDescription ? <p className="max-w-md text-white/70">{footerDescription}</p> : null}
+          {footerDescription ? <p className="max-w-md text-white/88">{footerDescription}</p> : null}
         </div>
 
         {hasCompanyLinks ? (
           <div className="space-y-4">
-            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/70">Company</h4>
-            <div className="flex flex-col gap-3 text-white/80">
+            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/85">Company</h4>
+            <div className="flex flex-col gap-3 text-white/92">
               {footerLinks.map((link) => (
                 <Link key={`${link.label}-${link.href}`} href={link.href} className="transition hover:text-primary">
                   {link.label}
@@ -58,8 +58,8 @@ export function Footer({
 
         {hasContact ? (
           <div className="space-y-4">
-            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/70">Contact</h4>
-            <div className="space-y-2 text-white/80">
+            <h4 className="font-semibold uppercase tracking-[0.16em] text-white/85">Contact</h4>
+            <div className="space-y-2 text-white/92">
               {phoneNumbers.map((phone) => (
                 <a key={phone} href={`tel:${phone}`} className="block transition hover:text-primary">
                   {phone}
@@ -75,7 +75,7 @@ export function Footer({
                   {website}
                 </a>
               )}
-              {address && <p className="pt-2 text-white/65">{address}</p>}
+              {address && <p className="pt-2 text-white/82">{address}</p>}
             </div>
           </div>
         ) : null}

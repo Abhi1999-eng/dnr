@@ -59,8 +59,8 @@ export default async function ProductsPage() {
               const imageSrc = resolveProductImage(product);
               return (
                 <Link key={product.slug} href={`/products/${product.slug}`} className="glass flex flex-col gap-4 rounded-2xl border border-accent/30 bg-white p-5 transition hover:-translate-y-1 hover:shadow-lg">
-                  <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-muted/80 bg-muted/60">
-                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-cover" />
+                  <div className="relative aspect-[16/11] w-full overflow-hidden rounded-xl border border-muted/80 bg-white">
+                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-contain object-center p-3" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-secondary">{product.title}</h3>

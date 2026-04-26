@@ -22,16 +22,16 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
       onClick={onClose}
     >
       <div
-          className="bg-white rounded-2xl shadow-2xl max-w-5xl w-[95%] grid md:grid-cols-[1.1fr,0.9fr] gap-6 p-6 relative overflow-hidden"
-          onClick={(e) => e.stopPropagation()}
-        >
+        className="relative grid w-[95%] max-w-[1180px] gap-6 overflow-hidden rounded-[28px] bg-white p-6 shadow-2xl md:grid-cols-[1.15fr,0.85fr] md:p-7"
+        onClick={(e) => e.stopPropagation()}
+      >
           <button className="absolute top-4 right-4 text-secondary hover:text-primary" onClick={onClose} aria-label="Close">
             <X />
           </button>
-          <div className="relative min-h-[260px] rounded-xl overflow-hidden bg-muted border border-muted/60">
+          <div className="relative h-[320px] rounded-2xl overflow-hidden border border-muted/60 bg-slate-50 md:h-[500px]">
             <div
               className="absolute inset-0 transition-transform duration-200"
-              style={{ transform: `scale(${zoom})` }}
+              style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
             >
               {(() => {
                 const imgSrc = resolveProductImage(product);
@@ -40,7 +40,7 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
                   src={imgSrc}
                 alt={product.title}
                 fill
-                className="object-cover"
+                className="object-contain object-center p-5 md:p-6"
                 sizes="(max-width: 768px) 100vw, 50vw"
               />
                 );

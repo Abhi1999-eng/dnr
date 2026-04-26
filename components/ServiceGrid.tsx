@@ -53,8 +53,8 @@ export function ServiceGrid({
                 <p className="text-secondary/80 text-sm leading-relaxed line-clamp-3">{service.description}</p>
               </div>
               <div className="flex items-center justify-between border-t border-secondary/10 pt-3">
-                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/45">Service detail</span>
-                <div className="text-sm font-semibold text-primary transition group-hover:translate-x-1">Learn more →</div>
+                <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Service detail</span>
+                <div className="text-sm font-semibold text-secondary transition group-hover:translate-x-1 group-hover:text-primary">Learn more →</div>
               </div>
             </Link>
           );

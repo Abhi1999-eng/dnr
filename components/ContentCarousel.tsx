@@ -65,7 +65,7 @@ export function ContentCarousel({
             onClick={() => move(-1)}
             disabled={!canPrev}
             aria-label="Previous items"
-            className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ChevronLeft size={18} />
           </button>
@@ -74,7 +74,7 @@ export function ContentCarousel({
             onClick={() => move(1)}
             disabled={!canNext}
             aria-label="Next items"
-            className="rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
           >
             <ChevronRight size={18} />
           </button>
@@ -114,8 +114,10 @@ export function ContentCarousel({
                 type="button"
                 onClick={() => setActiveIndex(pageStart)}
                 aria-label={`Go to slide group ${pageIndex + 1}`}
-                className={`h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/20 hover:bg-secondary/35'}`}
-              />
+                className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
+              >
+                <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
+              </button>
             );
           })}
         </div>

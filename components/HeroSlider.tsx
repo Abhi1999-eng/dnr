@@ -70,17 +70,18 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
     >
       <div className="relative min-h-[450px] overflow-hidden rounded-[24px] border border-secondary/10 bg-secondary">
         <div className="absolute inset-0 transition-opacity duration-500 ease-out">
+          <div className="absolute inset-0 bg-slate-100" />
           <ManagedImage
             key={activeSlide.image}
             src={activeSlide.image}
             alt={activeSlide.title}
             fill
-            className="object-cover"
+            className="object-contain object-center p-5 md:p-7"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 45vw"
             quality={72}
             priority={activeIndex === 0}
           />
-          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,23,42,0.9),rgba(15,23,42,0.42)_52%,rgba(15,23,42,0.18))]" />
+          <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(15,23,42,0.82),rgba(15,23,42,0.42)_48%,rgba(15,23,42,0.22))]" />
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         </div>
 
