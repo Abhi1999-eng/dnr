@@ -69,7 +69,7 @@ export function Nav({
   const ctaExternal = isExternalTarget(headerCtaTarget);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-secondary/10 bg-white/88 text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl">
+    <header className="sticky top-0 z-[120] border-b border-slate-200 bg-white text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
       <div className="container-wide flex items-center justify-between gap-6 py-6">
         <Link href={resolveHref('#hero')} className="group flex items-center gap-4 text-4xl font-bold leading-none tracking-tight text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
           <div className="relative h-18 w-18 min-h-[72px] min-w-[72px] transition-transform duration-300 group-hover:scale-[1.02]">
@@ -81,8 +81,8 @@ export function Nav({
           </div>
         </Link>
 
-        <nav className="hidden items-center gap-3 rounded-full border border-secondary/10 bg-white/70 px-3 py-2 text-base font-medium text-secondary shadow-sm md:flex">
-          <div className="group/products relative">
+        <nav className="relative isolate hidden items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-base font-medium text-secondary shadow-sm md:flex">
+          <div className="group/products relative overflow-visible">
             <Link
               href={resolveHref('#products')}
               onClick={(event) => handleAnchorClick(event, '#products')}
@@ -93,17 +93,17 @@ export function Nav({
             </Link>
 
             {navProducts.length ? (
-              <div className="pointer-events-none invisible absolute left-0 top-full z-[70] w-[320px] origin-top pt-3 opacity-0 transition duration-200 group-hover/products:pointer-events-auto group-hover/products:visible group-hover/products:opacity-100 group-focus-within/products:pointer-events-auto group-focus-within/products:visible group-focus-within/products:opacity-100">
-                <div className="overflow-hidden rounded-[24px] border border-secondary/10 bg-white/98 p-3 shadow-[0_28px_60px_rgba(15,23,42,0.18)] backdrop-blur-xl">
+              <div className="pointer-events-none invisible absolute left-0 top-full z-[9999] w-[340px] origin-top pt-3 opacity-0 transition duration-200 group-hover/products:pointer-events-auto group-hover/products:visible group-hover/products:opacity-100 group-focus-within/products:pointer-events-auto group-focus-within/products:visible group-focus-within/products:opacity-100">
+                <div className="overflow-hidden rounded-[28px] border border-slate-200 bg-white p-3 shadow-[0_32px_80px_rgba(15,23,42,0.18)]">
                   <div className="mb-2 px-3 pb-2">
-                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-secondary/65">Product range</p>
+                    <p className="text-[0.72rem] font-semibold uppercase tracking-[0.22em] text-slate-500">Product range</p>
                   </div>
-                  <div className="max-h-[360px] space-y-1 overflow-y-auto pr-1">
+                  <div className="max-h-[70vh] space-y-1 overflow-y-auto pr-1">
                     {navProducts.map((product) => (
                       <Link
                         key={product.slug}
                         href={`/products/${product.slug}`}
-                        className="flex min-h-12 items-center rounded-2xl px-3 py-3 text-sm font-medium leading-snug text-secondary transition hover:bg-primary/8 hover:text-primary focus-visible:bg-primary/8 focus-visible:text-primary focus-visible:outline-none"
+                        className="flex min-h-12 items-center rounded-2xl px-3 py-3 text-sm font-medium leading-snug text-slate-900 transition hover:bg-lime-50 hover:text-lime-700 focus-visible:bg-lime-50 focus-visible:text-lime-700 focus-visible:outline-none"
                       >
                         {product.title}
                       </Link>
@@ -150,13 +150,13 @@ export function Nav({
       </div>
 
       {open && (
-        <div className="border-t border-secondary/10 bg-white/95 shadow-sm backdrop-blur md:hidden">
+        <div className="border-t border-slate-200 bg-white shadow-sm md:hidden">
           <div className="container-wide flex flex-col gap-3 py-4 text-sm text-secondary">
             <Link href={resolveHref('#hero')} className="py-2" onClick={(event) => handleAnchorClick(event, '#hero')}>
               <span className="touch-target inline-flex items-center">Home</span>
             </Link>
 
-            <div className="rounded-2xl border border-secondary/10 bg-white/70 px-1 py-1">
+            <div className="rounded-2xl border border-slate-200 bg-white px-1 py-1">
               <div className="flex items-center justify-between gap-3">
                 <Link href={resolveHref('#products')} className="flex-1 py-2 pl-3" onClick={(event) => handleAnchorClick(event, '#products')}>
                   <span className="touch-target inline-flex items-center font-medium">Products</span>

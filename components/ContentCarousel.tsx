@@ -57,30 +57,7 @@ export function ContentCarousel({
   }
 
   return (
-    <div className="space-y-5">
-      {showControls ? (
-        <div className="flex items-center justify-end gap-2">
-          <button
-            type="button"
-            onClick={() => move(-1)}
-            disabled={!canPrev}
-            aria-label="Previous items"
-            className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronLeft size={18} />
-          </button>
-          <button
-            type="button"
-            onClick={() => move(1)}
-            disabled={!canNext}
-            aria-label="Next items"
-            className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-          >
-            <ChevronRight size={18} />
-          </button>
-        </div>
-      ) : null}
-
+    <div className="space-y-4">
       <div className={`overflow-hidden rounded-[28px] border border-secondary/10 bg-white/70 p-2 shadow-[0_14px_36px_rgba(15,23,42,0.06)] ${viewportClassName}`}>
         <div
           className="flex transition-transform duration-500 ease-out"
@@ -104,22 +81,45 @@ export function ContentCarousel({
       </div>
 
       {showControls ? (
-        <div className="flex items-center justify-center gap-2">
-          {Array.from({ length: totalPages }).map((_, pageIndex) => {
-            const pageStart = Math.min(pageIndex * cardsPerView, maxStartIndex);
-            const isActive = clampedActiveIndex === pageStart;
-            return (
-              <button
-                key={pageIndex}
-                type="button"
-                onClick={() => setActiveIndex(pageStart)}
-                aria-label={`Go to slide group ${pageIndex + 1}`}
-                className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
-              >
-                <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
-              </button>
-            );
-          })}
+        <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="order-2 flex items-center justify-center gap-2 sm:order-1 sm:justify-start">
+            {Array.from({ length: totalPages }).map((_, pageIndex) => {
+              const pageStart = Math.min(pageIndex * cardsPerView, maxStartIndex);
+              const isActive = clampedActiveIndex === pageStart;
+              return (
+                <button
+                  key={pageIndex}
+                  type="button"
+                  onClick={() => setActiveIndex(pageStart)}
+                  aria-label={`Go to slide group ${pageIndex + 1}`}
+                  className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
+                >
+                  <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="order-1 flex items-center justify-center gap-2 sm:order-2 sm:justify-end">
+            <button
+              type="button"
+              onClick={() => move(-1)}
+              disabled={!canPrev}
+              aria-label="Previous items"
+              className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronLeft size={18} />
+            </button>
+            <button
+              type="button"
+              onClick={() => move(1)}
+              disabled={!canNext}
+              aria-label="Next items"
+              className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <ChevronRight size={18} />
+            </button>
+          </div>
         </div>
       ) : null}
     </div>
