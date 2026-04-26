@@ -1,14 +1,15 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
 import Link from 'next/link';
 import { InquiryForm } from '@/components/InquiryForm';
+import { ManagedImage } from '@/components/ManagedImage';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchProductBySlug, fetchPublicData, fetchRelatedProducts } from '@/lib/data';
+import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildProductJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: product.title,
     description: product.seo?.description || product.shortDescription || product.description,
     path: `/products/${product.slug}`,
-    image: product.seo?.ogImage || product.heroImage || product.image || '/dnr/page_06.png',
+    image: resolveMediaUrl(product.seo?.ogImage || product.heroImage || product.image, '/dnr/page_06.png'),
   });
 }
 
@@ -39,7 +40,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const productData: any = await fetchProductBySlug(slug);
   if (!productData) return notFound();
 
-  const { settings } = await fetchPublicData();
+  const { settings, products } = await fetchPublicData();
   const siteSettings: any = settings || {};
   const related = await fetchRelatedProducts(productData._id, 3);
   const companyName = siteSettings.companyName || 'DNR Techno Services';
@@ -64,6 +65,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <div className="container-wide space-y-10 py-14">
         <div className="grid items-start gap-10 md:grid-cols-[1.1fr,0.9fr]">
@@ -112,8 +114,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
 
           <div className="space-y-4">
             <div className="relative overflow-hidden rounded-2xl border border-muted/80 bg-white">
-              <Image
-                src={productData.heroImage || productData.image || '/dnr/page_06.png'}
+              <ManagedImage
+                src={resolveProductImage(productData)}
                 alt={productData.title}
                 width={960}
                 height={540}
@@ -125,7 +127,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               <div className="grid grid-cols-3 gap-2">
                 {productData.gallery.map((img: string) => (
                   <div key={img} className="relative h-28 overflow-hidden rounded-xl border border-muted/80">
-                    <Image src={img} alt={`${productData.title} gallery image`} fill className="object-cover" sizes="(max-width: 768px) 33vw, 160px" />
+                    <ManagedImage src={resolveMediaUrl(img, '/dnr/page_06.png')} alt={`${productData.title} gallery image`} fill className="object-cover" sizes="(max-width: 768px) 33vw, 160px" />
                   </div>
                 ))}
               </div>

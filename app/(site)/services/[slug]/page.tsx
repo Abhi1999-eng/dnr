@@ -34,7 +34,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [service, related, { settings }] = await Promise.all([
+  const [service, related, { settings, products }] = await Promise.all([
     fetchServiceBySlug(slug),
     fetchRelatedServices(slug, 3),
     fetchPublicData(),
@@ -75,6 +75,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         logo={siteSettings.logo || '/logo-dnr.png'}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={contactHref}
+        products={products || []}
       />
       <main className="container-wide space-y-10 pb-20 pt-16">
         <Link href="/services" className="inline-flex text-sm font-semibold text-primary hover:underline">

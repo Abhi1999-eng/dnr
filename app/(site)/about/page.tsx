@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function AboutPage() {
-  const { homepage, settings } = await fetchPublicData();
+  const { homepage, settings, products } = await fetchPublicData();
   const about = (homepage as any)?.about || { heading: '', body: '', bullets: [] };
   const siteSettings: any = settings || {};
 
@@ -45,6 +45,7 @@ export default async function AboutPage() {
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <main className="container-wide max-w-5xl space-y-10 pb-20 pt-16">
         <div className="space-y-3">

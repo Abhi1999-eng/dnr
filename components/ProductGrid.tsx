@@ -1,11 +1,16 @@
 "use client";
 
-import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
 import { SectionTitle } from './SectionTitle';
-import { ProductModal } from './ProductModal';
 import { ContentCarousel } from './ContentCarousel';
+import { ManagedImage } from './ManagedImage';
 import type { ProductType } from '@/types';
+import { resolveProductImage } from '@/lib/media';
+
+const ProductModal = dynamic(() => import('./ProductModal').then((mod) => mod.ProductModal), {
+  ssr: false,
+});
 
 export function ProductGrid({
   products,
@@ -36,7 +41,7 @@ export function ProductGrid({
       {products.length ? (
         <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }}>
           {products.map((product) => {
-            const imageSrc = product.heroImage || product.image || '/dnr/page_06.png';
+            const imageSrc = resolveProductImage(product);
             return (
               <article
                 key={product._id || product.slug || product.title}
@@ -48,7 +53,7 @@ export function ProductGrid({
                   onClick={enableModal ? () => setSelected(product) : undefined}
                 >
                   <div className="relative aspect-[16/10] w-full overflow-hidden rounded-[20px] border border-secondary/10 bg-muted/40">
-                    <Image src={imageSrc} alt={product.title} fill className="object-cover transition duration-500 group-hover:scale-[1.04]" sizes="(max-width: 768px) 100vw, 33vw" />
+                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-cover transition duration-500 group-hover:scale-[1.04]" sizes="(max-width: 768px) 100vw, 33vw" />
                     <div className="absolute inset-0 bg-gradient-to-t from-secondary/18 via-transparent to-transparent" />
                   </div>
                   <div className="flex-1 space-y-2">
@@ -58,8 +63,8 @@ export function ProductGrid({
                     </p>
                   </div>
                   <div className="flex items-center justify-between border-t border-secondary/10 pt-3">
-                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/45">Machinery range</span>
-                    {enableModal ? <span className="text-sm font-semibold text-primary transition group-hover:translate-x-1">View details →</span> : null}
+                    <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Machinery range</span>
+                    {enableModal ? <span className="text-sm font-semibold text-secondary transition group-hover:translate-x-1 group-hover:text-primary">View details →</span> : null}
                   </div>
                 </button>
               </article>

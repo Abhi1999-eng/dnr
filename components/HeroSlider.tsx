@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from 'react';
-import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ProductType } from '@/types';
+import { ManagedImage } from './ManagedImage';
+import { resolveProductImage } from '@/lib/media';
 
 type Slide = {
   image: string;
@@ -35,7 +36,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
       .filter((product) => product.heroImage || product.image)
       .slice(0, 5)
       .map((product) => ({
-        image: product.heroImage || product.image || '/dnr/page_06.png',
+        image: resolveProductImage(product),
         title: product.title,
         description:
           product.shortDescription ||
@@ -69,7 +70,8 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
     >
       <div className="relative min-h-[450px] overflow-hidden rounded-[24px] border border-secondary/10 bg-secondary">
         <div className="absolute inset-0 transition-opacity duration-500 ease-out">
-          <Image
+          <ManagedImage
+            key={activeSlide.image}
             src={activeSlide.image}
             alt={activeSlide.title}
             fill
@@ -97,14 +99,14 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
               <button
                 onClick={() => goTo(activeIndex - 1)}
                 aria-label="Previous slide"
-                className="rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white hover:text-secondary"
+                className="touch-target rounded-full border border-white/25 bg-white/15 p-2 text-white transition hover:bg-white hover:text-secondary"
               >
                 <ChevronLeft size={18} />
               </button>
               <button
                 onClick={() => goTo(activeIndex + 1)}
                 aria-label="Next slide"
-                className="rounded-full border border-white/20 bg-white/10 p-2 text-white transition hover:bg-white hover:text-secondary"
+                className="touch-target rounded-full border border-white/25 bg-white/15 p-2 text-white transition hover:bg-white hover:text-secondary"
               >
                 <ChevronRight size={18} />
               </button>
@@ -114,22 +116,22 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
           <div className="max-w-lg space-y-4">
             <div className="space-y-2">
               <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Precision machinery • support-ready</p>
-              <h3 className="text-2xl font-semibold leading-tight text-white md:text-3xl">{activeSlide.title}</h3>
-              <p className="max-w-md text-sm leading-relaxed text-white/80 md:text-base">{activeSlide.description}</p>
+              <p className="text-2xl font-semibold leading-tight text-white md:text-3xl">{activeSlide.title}</p>
+              <p className="max-w-md text-sm leading-relaxed text-white/90 md:text-base">{activeSlide.description}</p>
             </div>
 
             <div className="grid gap-3 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-2xl font-semibold text-white">Live</p>
-                <p className="text-xs uppercase tracking-[0.18em] text-white/65">Product updates</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-white/85">Product updates</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-2xl font-semibold text-white">Fast</p>
-                <p className="text-xs uppercase tracking-[0.18em] text-white/65">Service response</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-white/85">Service response</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
                 <p className="text-2xl font-semibold text-white">Plant</p>
-                <p className="text-xs uppercase tracking-[0.18em] text-white/65">Ready support</p>
+                <p className="text-xs uppercase tracking-[0.18em] text-white/85">Ready support</p>
               </div>
             </div>
           </div>
@@ -139,9 +141,11 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
               <button
                 key={`${slide.title}-${slideIndex}`}
                 onClick={() => goTo(slideIndex)}
-                className={`h-2.5 rounded-full transition-all ${slideIndex === activeIndex ? 'w-10 bg-primary' : 'w-2.5 bg-white/35 hover:bg-white/70'}`}
+                className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${slideIndex === activeIndex ? 'bg-white/10' : 'bg-transparent hover:bg-white/10'}`}
                 aria-label={`Show ${slide.title}`}
-              />
+              >
+                <span className={`block h-2.5 rounded-full transition-all ${slideIndex === activeIndex ? 'w-10 bg-primary' : 'w-2.5 bg-white/70'}`} />
+              </button>
             ))}
           </div>
         </div>

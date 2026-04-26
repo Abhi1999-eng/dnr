@@ -23,7 +23,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ContactPage() {
-  const { settings } = await fetchPublicData();
+  const { settings, products } = await fetchPublicData();
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';
@@ -49,6 +49,7 @@ export default async function ContactPage() {
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <main className="container-wide max-w-6xl space-y-8 pb-20 pt-16">
         <div className="space-y-3">
@@ -62,7 +63,7 @@ export default async function ContactPage() {
         <div id="contact" className="grid gap-8 rounded-3xl border border-secondary/10 bg-white p-8 shadow-lg shadow-secondary/10 lg:grid-cols-[0.9fr,1.1fr] scroll-mt-28">
           <div className="space-y-5">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-secondary/50">Quick contact</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.2em] text-secondary/70">Quick contact</p>
               <h2 className="mt-2 text-2xl font-semibold text-secondary">Reach the DNR team</h2>
             </div>
             <div className="space-y-3">
@@ -80,17 +81,17 @@ export default async function ContactPage() {
                   const external = item.type === 'whatsapp' || String(href).startsWith('http');
                   return (
                     <a key={`${item.label}-${item.value}`} href={href} target={external ? '_blank' : undefined} rel={external ? 'noopener noreferrer' : undefined} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4 transition hover:border-primary/40 hover:bg-primary/5">
-                      <p className="text-sm text-secondary/60">{item.label}</p>
+                      <p className="text-sm text-secondary/75">{item.label}</p>
                       <p className="text-lg font-semibold text-secondary">{item.value}</p>
                     </a>
                   );
                 })
               ) : (
                 <>
-                  {primaryPhone && <a href={`tel:${primaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Primary phone</p><p className="text-lg font-semibold text-secondary">{primaryPhone}</p></a>}
-                  {secondaryPhone && <a href={`tel:${secondaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Secondary phone</p><p className="text-lg font-semibold text-secondary">{secondaryPhone}</p></a>}
-                  {email && <a href={`mailto:${email}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">Email</p><p className="text-lg font-semibold text-secondary">{email}</p></a>}
-                  {whatsappNumber && <a href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/60">WhatsApp</p><p className="text-lg font-semibold text-secondary">{whatsappNumber}</p></a>}
+                  {primaryPhone && <a href={`tel:${primaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/75">Primary phone</p><p className="text-lg font-semibold text-secondary">{primaryPhone}</p></a>}
+                  {secondaryPhone && <a href={`tel:${secondaryPhone}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/75">Secondary phone</p><p className="text-lg font-semibold text-secondary">{secondaryPhone}</p></a>}
+                  {email && <a href={`mailto:${email}`} className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/75">Email</p><p className="text-lg font-semibold text-secondary">{email}</p></a>}
+                  {whatsappNumber && <a href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="block rounded-2xl border border-secondary/10 bg-muted/30 px-4 py-4"><p className="text-sm text-secondary/75">WhatsApp</p><p className="text-lg font-semibold text-secondary">{whatsappNumber}</p></a>}
                 </>
               )}
             </div>

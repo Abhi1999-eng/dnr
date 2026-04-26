@@ -15,6 +15,7 @@ import { Testimonials } from '@/components/Testimonials';
 import { TrustSection } from '@/components/TrustSection';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -28,7 +29,7 @@ export async function generateMetadata(): Promise<Metadata> {
     siteSettings.seo?.description ||
     homepageData?.hero?.subheading ||
     'DNR Techno Services supplies industrial machinery, commissioning, and plant support services for high-uptime manufacturing teams.';
-  const image = products?.[0]?.heroImage || products?.[0]?.image || siteSettings.seo?.ogImage || siteSettings.logo || '/logo-dnr.png';
+  const image = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
 
   return createPageMetadata({
     title,
@@ -81,7 +82,7 @@ export default async function HomePage() {
   const coverageStateLabels = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.label]));
   const coverageStates = coverageEntries.map((item: any) => item.stateId);
   const productsSection = sections.products || {};
-  const heroImage = products?.[0]?.heroImage || products?.[0]?.image || siteSettings.seo?.ogImage || siteSettings.logo || '/logo-dnr.png';
+  const heroImage = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
   const structuredData = [
     buildOrganizationJsonLd(siteSettings),
     buildWebsiteJsonLd(),
@@ -103,6 +104,7 @@ export default async function HomePage() {
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <main className="container-wide space-y-16 pb-20 pt-14">
         {(sections.hero?.visible ?? true) && (
@@ -170,7 +172,7 @@ export default async function HomePage() {
           <section id="about" className="glass grid gap-8 rounded-3xl border border-secondary/10 bg-white/95 p-10 shadow-lg shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
-              {about.heading ? <h3 className="text-3xl font-semibold text-secondary">{about.heading}</h3> : null}
+              {about.heading ? <h2 className="text-3xl font-semibold text-secondary">{about.heading}</h2> : null}
               {about.body ? <p className="text-secondary/80">{about.body}</p> : null}
             </div>
             {about.bullets.length ? (
@@ -210,12 +212,12 @@ export default async function HomePage() {
         {(sections.whyChoose?.visible ?? true) && whyCards.length > 0 && (
           <section id="why" className="glass rounded-3xl border border-accent/30 bg-white/90 p-10">
             <p className="pill inline-flex">Why choose DNR</p>
-            <h3 className="mt-4 text-3xl font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h3>
+            <h2 className="mt-4 text-3xl font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
             {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
             <div className="mt-5 grid gap-4 md:grid-cols-2">
               {whyCards.map((item: any) => (
                 <div key={item.title} className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-sm">
-                  <h4 className="text-lg font-semibold text-secondary">{item.title}</h4>
+                  <h3 className="text-lg font-semibold text-secondary">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-secondary/75">{item.description}</p>
                 </div>
               ))}
@@ -248,8 +250,8 @@ export default async function HomePage() {
                       {industry.title.slice(0, 2).toUpperCase()}
                     </span>
                     <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/50">Industry</p>
-                      <h4 className="text-lg font-semibold text-secondary">{industry.title}</h4>
+                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Industry</p>
+                      <h3 className="text-lg font-semibold text-secondary">{industry.title}</h3>
                     </div>
                   </div>
                   <p className="text-sm leading-relaxed text-secondary/80">{industry.description}</p>
@@ -289,7 +291,7 @@ export default async function HomePage() {
           <section id="contact" className="glass grid gap-8 rounded-3xl border border-accent/30 bg-white/90 p-10 scroll-mt-28 md:grid-cols-2">
             <div className="space-y-4">
               <p className="pill inline-flex">{sections.inquiry?.kicker || 'Inquiry'}</p>
-              <h3 className="text-3xl font-semibold text-secondary">{siteSettings.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an expert'}</h3>
+              <h2 className="text-3xl font-semibold text-secondary">{siteSettings.inquiryForm?.heading || sections.inquiry?.title || 'Talk to an expert'}</h2>
               <p className="text-secondary/80">
                 {siteSettings.inquiryForm?.description ||
                   siteSettings.inquiryIntro ||
@@ -313,7 +315,7 @@ export default async function HomePage() {
                       return (
                         <a
                           key={`${item.label}-${item.value}`}
-                          className="font-semibold text-primary hover:underline"
+                          className="font-semibold text-secondary hover:text-primary hover:underline"
                           href={href}
                           target={opensExternally ? '_blank' : undefined}
                           rel={opensExternally ? 'noopener noreferrer' : undefined}
@@ -324,10 +326,10 @@ export default async function HomePage() {
                     })
                   ) : (
                     <>
-                      {primaryPhone ? <a className="font-semibold text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a> : null}
-                      {email ? <a className="font-semibold text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a> : null}
+                      {primaryPhone ? <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`tel:${primaryPhone}`}>Call: {primaryPhone}</a> : null}
+                      {email ? <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`mailto:${email}`}>Email: {email}</a> : null}
                       {whatsappNumber ? (
-                        <a className="font-semibold text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
+                        <a className="font-semibold text-secondary hover:text-primary hover:underline" href={`https://wa.me/${String(whatsappNumber).replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer">
                           WhatsApp: {whatsappNumber}
                         </a>
                       ) : null}

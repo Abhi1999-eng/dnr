@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function ServicesPage() {
-  const { services, homepage, settings } = await fetchPublicData();
+  const { services, homepage, settings, products } = await fetchPublicData();
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';
@@ -41,6 +41,7 @@ export default async function ServicesPage() {
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <main className="container-wide space-y-10 pb-20 pt-16">
         <div className="space-y-2">

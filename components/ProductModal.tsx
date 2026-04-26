@@ -1,9 +1,9 @@
-import { motion, AnimatePresence } from 'framer-motion';
-import Image from 'next/image';
 import { X, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DescriptionBlock } from './DescriptionBlock';
+import { ManagedImage } from './ManagedImage';
 import type { ProductType } from '@/types';
+import { resolveProductImage } from '@/lib/media';
 
 export function ProductModal({ product, onClose }: { product: ProductType; onClose: () => void }) {
   const [zoom, setZoom] = useState(1);
@@ -17,19 +17,12 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
   }, [onClose]);
 
   return (
-    <AnimatePresence>
-      <motion.div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={onClose}
-      >
-        <motion.div
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur"
+      onClick={onClose}
+    >
+      <div
           className="bg-white rounded-2xl shadow-2xl max-w-5xl w-[95%] grid md:grid-cols-[1.1fr,0.9fr] gap-6 p-6 relative overflow-hidden"
-          initial={{ y: 40, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 40, opacity: 0 }}
           onClick={(e) => e.stopPropagation()}
         >
           <button className="absolute top-4 right-4 text-secondary hover:text-primary" onClick={onClose} aria-label="Close">
@@ -41,9 +34,9 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
               style={{ transform: `scale(${zoom})` }}
             >
               {(() => {
-                const imgSrc = product.heroImage || product.image || '/dnr/page_06.png';
+                const imgSrc = resolveProductImage(product);
                 return (
-              <Image
+              <ManagedImage
                   src={imgSrc}
                 alt={product.title}
                 fill
@@ -54,13 +47,13 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
               })()}
             </div>
             <div className="absolute bottom-3 right-3 flex items-center gap-2 bg-white/90 backdrop-blur px-3 py-2 rounded-full shadow">
-              <button onClick={() => setZoom((z) => Math.min(z + 0.25, 3))} className="text-secondary hover:text-primary" aria-label="Zoom in">
+              <button onClick={() => setZoom((z) => Math.min(z + 0.25, 3))} className="touch-target text-secondary hover:text-primary" aria-label="Zoom in">
                 <ZoomIn size={18} />
               </button>
-              <button onClick={() => setZoom((z) => Math.max(z - 0.25, 1))} className="text-secondary hover:text-primary" aria-label="Zoom out">
+              <button onClick={() => setZoom((z) => Math.max(z - 0.25, 1))} className="touch-target text-secondary hover:text-primary" aria-label="Zoom out">
                 <ZoomOut size={18} />
               </button>
-              <button onClick={() => setZoom(1)} className="text-secondary hover:text-primary" aria-label="Reset zoom">
+              <button onClick={() => setZoom(1)} className="touch-target text-secondary hover:text-primary" aria-label="Reset zoom">
                 <RefreshCw size={18} />
               </button>
             </div>
@@ -117,8 +110,7 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
               )}
             </div>
           </div>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
+        </div>
+    </div>
   );
 }

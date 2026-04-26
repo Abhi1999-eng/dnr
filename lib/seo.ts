@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
+import { resolveMediaUrl } from './media';
 
 export const SITE_NAME = 'DNR Techno Services';
 export const SITE_URL = 'https://dnrtechnoservices.com';
 export const DEFAULT_DESCRIPTION =
   'DNR Techno Services supplies industrial machinery, installation support, commissioning, and plant-focused engineering services across India.';
-export const DEFAULT_OG_IMAGE = '/logo-dnr.png';
+const DEFAULT_OG_IMAGE = '/logo-dnr.png';
 
 export function absoluteUrl(path = '/') {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
@@ -135,7 +136,7 @@ export function buildWebsiteJsonLd() {
 }
 
 export function buildProductJsonLd(product: any) {
-  const image = product?.heroImage || product?.image || DEFAULT_OG_IMAGE;
+  const image = resolveMediaUrl(product?.heroImage || product?.image, DEFAULT_OG_IMAGE);
   return {
     '@context': 'https://schema.org',
     '@type': 'Product',

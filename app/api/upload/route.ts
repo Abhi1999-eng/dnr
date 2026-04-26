@@ -3,6 +3,7 @@ import { writeFile, mkdir } from 'fs/promises';
 import path from 'path';
 import { verifyToken } from '@/lib/auth';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { sanitizeUploadFilename } from '@/lib/media';
 
 const bucket = process.env.S3_BUCKET;
 const region = process.env.AWS_REGION;
@@ -11,7 +12,7 @@ const hasS3 = bucket && region && process.env.AWS_ACCESS_KEY_ID && process.env.A
 async function uploadToS3(file: File, buffer: Buffer) {
   if (!hasS3) return null;
   const client = new S3Client({ region });
-  const key = `uploads/${Date.now()}-${file.name}`.replace(/\\s+/g, '-');
+  const key = `uploads/${Date.now()}-${sanitizeUploadFilename(file.name)}`;
   await client.send(
     new PutObjectCommand({
       Bucket: bucket,
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
   // Local dev fallback: save to /public/uploads
   const uploadsDir = path.join(process.cwd(), 'public', 'uploads');
   await mkdir(uploadsDir, { recursive: true });
-  const filename = `${Date.now()}-${file.name}`.replace(/\\s+/g, '-');
+  const filename = `${Date.now()}-${sanitizeUploadFilename(file.name)}`;
   const filepath = path.join(uploadsDir, filename);
   await writeFile(filepath, buffer);
   const url = `/uploads/${filename}`;

@@ -1,11 +1,12 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { Footer } from '@/components/Footer';
+import { ManagedImage } from '@/components/ManagedImage';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
+import { resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
@@ -18,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
       products?.[0]?.shortDescription ||
       'Browse industrial machinery and product solutions from DNR Techno Services for casting, machining, testing, and fabrication environments.',
     path: '/products',
-    image: products?.[0]?.heroImage || products?.[0]?.image || '/dnr/page_06.png',
+    image: resolveProductImage(products?.[0]),
   });
 }
 
@@ -43,6 +44,7 @@ export default async function ProductsPage() {
         logo={logo}
         headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
         headerCtaTarget={headerCtaHref}
+        products={products || []}
       />
       <div className="container-wide space-y-10 py-16">
         <div className="space-y-3">
@@ -54,17 +56,17 @@ export default async function ProductsPage() {
         {products?.length ? (
           <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
             {products.map((product: any) => {
-              const imageSrc = product.heroImage || product.image || '/dnr/page_06.png';
+              const imageSrc = resolveProductImage(product);
               return (
                 <Link key={product.slug} href={`/products/${product.slug}`} className="glass flex flex-col gap-4 rounded-2xl border border-accent/30 bg-white p-5 transition hover:-translate-y-1 hover:shadow-lg">
                   <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl border border-muted/80 bg-muted/60">
-                    <Image src={imageSrc} alt={product.title} fill className="object-cover" />
+                    <ManagedImage src={imageSrc} alt={product.title} fill className="object-cover" />
                   </div>
                   <div className="space-y-2">
                     <h3 className="text-xl font-semibold text-secondary">{product.title}</h3>
                     <p className="line-clamp-3 text-sm text-secondary/80">{product.shortDescription || product.description}</p>
                   </div>
-                  <span className="text-sm font-semibold text-primary">View details →</span>
+                  <span className="text-sm font-semibold text-secondary">View details →</span>
                 </Link>
               );
             })}
