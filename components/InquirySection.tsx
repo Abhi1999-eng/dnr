@@ -80,20 +80,20 @@ export function InquirySection({
   const contacts = buildQuickLinks(quickLinks, fallbackPhone, fallbackEmail, fallbackWhatsapp);
 
   return (
-    <section id={id} className="scroll-mt-28 rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] md:p-10">
-      <div className="grid gap-8 md:grid-cols-[0.88fr,1.12fr] md:gap-10">
-        <div className="space-y-6">
-          <div className="space-y-4">
+    <section id={id} className="scroll-mt-28 rounded-[32px] border border-slate-200 bg-white px-5 py-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)] md:px-8 md:py-8">
+      <div className="grid items-start gap-6 md:grid-cols-[minmax(0,0.82fr)_minmax(460px,0.98fr)] md:gap-8">
+        <div className="space-y-5">
+          <div className="space-y-3">
             <p className="pill inline-flex">{kicker}</p>
             <div className="space-y-3">
-              <h2 className="text-3xl font-semibold text-secondary md:text-[2.15rem]">{heading}</h2>
-              <p className="max-w-xl text-base leading-relaxed text-secondary/80">{description}</p>
+              <h2 className="text-3xl font-semibold text-secondary md:text-[2.05rem]">{heading}</h2>
+              <p className="max-w-lg text-[1.02rem] leading-relaxed text-secondary/78">{description}</p>
             </div>
           </div>
 
-          <div className="rounded-[28px] border border-slate-200 bg-slate-50/80 p-5 shadow-sm">
+          <div className="max-w-xl rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.94))] p-4 shadow-sm md:p-5">
             <p className="text-sm font-semibold uppercase tracking-[0.18em] text-secondary/70">Quick contact</p>
-            <div className="mt-4 grid gap-3">
+            <div className="mt-4 grid gap-2.5">
               {contacts.map((item) => {
                 const Icon = item.icon;
                 return (
@@ -104,7 +104,7 @@ export function InquirySection({
                     rel={item.external ? 'noopener noreferrer' : undefined}
                     className="group flex min-h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-secondary transition hover:border-primary/30 hover:bg-primary/5 hover:text-primary"
                   >
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                    <span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                       <Icon size={18} aria-hidden="true" />
                     </span>
                     <span>{item.label}</span>
@@ -115,9 +115,9 @@ export function InquirySection({
           </div>
         </div>
 
-        <div className="rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-5 shadow-sm md:p-6">
-          <div className="mb-5 space-y-2">
-            <h3 className="text-xl font-semibold text-secondary">{formTitle}</h3>
+        <div className="w-full rounded-[28px] border border-slate-200 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-4 shadow-sm md:max-w-[620px] md:justify-self-end md:p-5">
+          <div className="mb-4 space-y-1.5">
+            <h3 className="text-[1.1rem] font-semibold text-secondary">{formTitle}</h3>
             <p className="text-sm leading-relaxed text-secondary/70">We usually respond within one business day with the right product or support recommendation.</p>
           </div>
           <InquiryForm config={config} initialValues={{ productInterest: initialProductInterest || '' }} />

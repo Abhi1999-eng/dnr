@@ -57,11 +57,11 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
   }
 
   return (
-    <form onSubmit={submit} className="space-y-5">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form onSubmit={submit} className="space-y-4">
+      <div className="grid gap-3.5 md:grid-cols-2">
         {fields.name && (
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-secondary">{labels.name}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.name}</span>
             <input
               aria-label={labels.name}
               className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
@@ -74,7 +74,7 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         )}
         {fields.company && (
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-secondary">{labels.company}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.company}</span>
             <input
               aria-label={labels.company}
               className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
@@ -86,7 +86,7 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         )}
         {fields.phone && (
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-secondary">{labels.phone}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.phone}</span>
             <input
               aria-label={labels.phone}
               className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
@@ -98,7 +98,7 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         )}
         {fields.email && (
           <label className="space-y-2">
-            <span className="text-sm font-semibold text-secondary">{labels.email}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.email}</span>
             <input
               aria-label={labels.email}
               className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
@@ -111,7 +111,7 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         )}
         {fields.productInterest && (
           <label className="space-y-2 md:col-span-2">
-            <span className="text-sm font-semibold text-secondary">{labels.productInterest}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.productInterest}</span>
             <input
               aria-label={labels.productInterest}
               className="min-h-12 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
@@ -123,11 +123,11 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         )}
         {fields.message && (
           <label className="space-y-2 md:col-span-2">
-            <span className="text-sm font-semibold text-secondary">{labels.message}</span>
+            <span className="text-[0.92rem] font-semibold text-secondary">{labels.message}</span>
             <textarea
               aria-label={labels.message}
-              className="min-h-[140px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
-              rows={5}
+              className="min-h-[120px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-secondary shadow-sm outline-none transition placeholder:text-secondary/45 focus:border-primary focus:shadow-[0_0_0_4px_rgba(139,197,63,0.12)]"
+              rows={4}
               placeholder={labels.message}
               value={form.message}
               onChange={(e) => setForm({ ...form, message: e.target.value })}
@@ -135,7 +135,7 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
           </label>
         )}
       </div>
-      <button type="submit" className="btn-primary min-h-12 w-full justify-center text-base shadow-lg shadow-primary/20 md:w-auto md:min-w-[220px]" disabled={status === 'submitting'}>
+      <button type="submit" className="btn-primary min-h-12 w-full justify-center text-base shadow-lg shadow-primary/20 md:w-full" disabled={status === 'submitting'}>
         {status === 'submitting' ? 'Sending…' : labels.submit}
       </button>
       {status === 'done' && <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Thanks, we’ll contact you shortly.</p>}
