@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { ChangeEvent, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import useSWR from 'swr';
@@ -7,7 +8,7 @@ import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
 
-const fetcher = (url: string) => fetch(url).then((r) => r.json());
+const fetcher = (url: string) => fetch(url, { cache: 'no-store' }).then((r) => r.json());
 
 type LogoForm = {
   name: string;
@@ -56,6 +57,7 @@ export default function AdminClientLogosPage() {
     }
     const { url } = await res.json();
     setForm((current) => ({ ...current, logoImage: url }));
+    e.target.value = ''; 
     setFeedback({ type: 'success', message: 'Logo uploaded successfully' });
   }
 
@@ -75,7 +77,7 @@ export default function AdminClientLogosPage() {
       }
       setForm(emptyForm);
       setEditingId(null);
-      await mutate();
+      await mutate(undefined, { revalidate: true });
       router.refresh();
       setFeedback({ type: 'success', message: editingId ? 'Logo updated successfully' : 'Logo added successfully' });
     } catch (error) {
@@ -101,7 +103,7 @@ export default function AdminClientLogosPage() {
         setEditingId(null);
         setForm(emptyForm);
       }
-      await mutate();
+      await mutate(undefined, { revalidate: true });
       router.refresh();
       setFeedback({ type: 'success', message: 'Logo deleted successfully' });
     } catch (error) {
@@ -133,9 +135,16 @@ export default function AdminClientLogosPage() {
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
           <div className="grid gap-3 md:grid-cols-2">
+            <div className="md:col-span-2 text-xs text-slate-400">{editingId ? 'Editing selected logo' : 'Add a new brand logo'}</div>
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Brand name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="External URL (optional)" value={form.externalUrl} onChange={(e) => setForm({ ...form, externalUrl: e.target.value })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Logo image URL" value={form.logoImage} onChange={(e) => setForm({ ...form, logoImage: e.target.value })} />
+            {form.logoImage ? (
+              <div className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
+                <p className="mb-2 text-xs uppercase tracking-[0.18em] text-slate-400">Preview</p>
+                <Image src={form.logoImage} alt={form.name || 'Logo preview'} width={160} height={64} className="h-16 w-auto object-contain" unoptimized={form.logoImage.startsWith('/uploads/')} />
+              </div>
+            ) : null}
             <div className="flex items-center gap-3 md:col-span-2">
               <input type="file" onChange={handleUpload} className="text-xs text-slate-200" />
               {uploading && <span className="text-xs text-emerald-300">Uploading…</span>}

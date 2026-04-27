@@ -14,7 +14,7 @@ import { StructuredData } from '@/components/StructuredData';
 import { Testimonials } from '@/components/Testimonials';
 import { TrustSection } from '@/components/TrustSection';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
+import { fetchLiveClientLogos, fetchLiveProducts, fetchPublicData } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd, createPageMetadata } from '@/lib/seo';
 
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [{ testimonials, homepage, settings, services, clientLogos }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
+  const [{ testimonials, homepage, settings, services }, products, clientLogos] = await Promise.all([fetchPublicData(), fetchLiveProducts(), fetchLiveClientLogos()]);
   const homepageData: any = homepage || {};
   const siteSettings: any = settings || {};
 

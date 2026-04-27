@@ -29,7 +29,7 @@ export function ClientLogosSection({
       <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
         {logos.map((logo) => {
           const content = logo.logoImage ? (
-            <div className="relative h-20 w-full grayscale transition duration-300 group-hover:grayscale-0">
+            <div className="relative h-20 w-full">
               <Image src={logo.logoImage} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" />
             </div>
           ) : (

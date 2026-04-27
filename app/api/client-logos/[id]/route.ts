@@ -1,5 +1,8 @@
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 import { NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { ClientLogo } from '@/models/ClientLogo';
 import { verifyToken } from '@/lib/auth';
@@ -13,11 +16,13 @@ export async function PUT(req: Request, context: RouteContext) {
   if (!token || !verifyToken(token)) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   const { id } = await context.params;
   const body = await req.json();
+  console.log('[logos] update payload:', { id, ...body });
   await connectDB();
-  const updated = await ClientLogo.findByIdAndUpdate(id, body, { new: true });
+  const updated = await ClientLogo.findByIdAndUpdate(id, body, { new: true, runValidators: true });
   revalidateTag('client-logos', 'max');
   revalidateTag('public-data', 'max');
-  return NextResponse.json(updated);
+  revalidatePath('/');
+  return NextResponse.json(updated, { headers: { 'Cache-Control': 'no-store, max-age=0' } });
 }
 
 export async function DELETE(req: Request, context: RouteContext) {
@@ -28,5 +33,6 @@ export async function DELETE(req: Request, context: RouteContext) {
   await ClientLogo.findByIdAndDelete(id);
   revalidateTag('client-logos', 'max');
   revalidateTag('public-data', 'max');
-  return NextResponse.json({ ok: true });
+  revalidatePath('/');
+  return NextResponse.json({ ok: true }, { headers: { 'Cache-Control': 'no-store, max-age=0' } });
 }
