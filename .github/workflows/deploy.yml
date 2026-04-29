@@ -26,7 +26,22 @@ jobs:
             echo "Cleaning previous build artifacts"
             rm -rf node_modules .next
             echo "Running npm ci"
-            npm ci
+            install_ok=0
+            for attempt in 1 2 3; do
+              echo "Install attempt ${attempt}"
+              rm -rf node_modules
+              npm cache clean --force || true
+              if npm ci && [ -x node_modules/.bin/next ]; then
+                install_ok=1
+                break
+              fi
+              echo "Install attempt ${attempt} failed or produced an incomplete node_modules tree"
+              sleep 5
+            done
+            if [ "$install_ok" -ne 1 ]; then
+              echo "npm ci failed after 3 attempts"
+              exit 1
+            fi
             echo "Running build"
             build_ok=0
             for attempt in 1 2 3; do
