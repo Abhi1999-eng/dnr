@@ -43,6 +43,9 @@ export const metadata: Metadata = {
     description: DEFAULT_DESCRIPTION,
     images: [absoluteUrl('/logo-dnr.png')],
   },
+  verification: {
+    google: 'WoE4_Bs_wryQrkbXrk0laWms2ez6G257TLP8gLVq-5w',
+  },
   category: 'Industrial Machinery',
 };
 
