@@ -140,9 +140,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           kicker="Quote request"
           heading="Request a Quote"
           description={`Interested in ${productData.title}? Share your details and our team will contact you.`}
-          formTitle="Tell us about your requirement"
+          formTitle="Share your requirement"
           config={siteSettings.inquiryForm}
           initialProductInterest={productData.title}
+          formContext={{ pageType: 'product', productTitle: productData.title, productUrl: `/products/${productData.slug}` }}
           quickLinks={siteSettings.quickContactLinks}
           fallbackPhone={primaryPhone}
           fallbackEmail={siteSettings.email}

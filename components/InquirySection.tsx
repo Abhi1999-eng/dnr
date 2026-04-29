@@ -25,6 +25,7 @@ type InquirySectionProps = {
   fallbackPhone?: string;
   fallbackEmail?: string;
   fallbackWhatsapp?: string;
+  formContext?: Partial<{ pageType: string; productTitle: string; productUrl: string }>;
 };
 
 function normalizeWhatsappNumber(value?: string) {
@@ -73,6 +74,7 @@ export function InquirySection({
   fallbackPhone,
   fallbackEmail,
   fallbackWhatsapp,
+  formContext,
 }: InquirySectionProps) {
   const contacts = buildQuickLinks(quickLinks, fallbackPhone, fallbackEmail, fallbackWhatsapp);
 
@@ -121,7 +123,7 @@ export function InquirySection({
             <p className="text-sm leading-relaxed text-secondary/70">We usually respond within one business day with the right product or support recommendation.</p>
           </div>
 
-          <InquiryForm config={config} initialValues={{ productInterest: initialProductInterest || '' }} />
+          <InquiryForm config={config} initialValues={{ productInterest: initialProductInterest || '' }} context={formContext} />
         </div>
       </div>
     </section>

@@ -10,6 +10,7 @@ type InquiryFormConfig = {
 type InquiryFormProps = {
   config?: InquiryFormConfig;
   initialValues?: Partial<{ name: string; company: string; phone: string; email: string; productInterest: string; message: string }>;
+  context?: Partial<{ pageType: string; productTitle: string; productUrl: string }>;
 };
 
 const defaultLabels = {
@@ -46,7 +47,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export function InquiryForm({ config, initialValues }: InquiryFormProps) {
+export function InquiryForm({ config, initialValues, context }: InquiryFormProps) {
   const startingValues = useMemo(
     () => ({ name: '', company: '', phone: '', email: '', productInterest: '', message: '', ...(initialValues || {}) }),
     [initialValues]
@@ -69,7 +70,13 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
     const res = await fetch('/api/inquiries', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body: JSON.stringify({
+        ...form,
+        pageUrl: typeof window !== 'undefined' ? window.location.href : '',
+        pageType: context?.pageType || '',
+        productTitle: context?.productTitle || form.productInterest || '',
+        productUrl: context?.productUrl || '',
+      }),
     });
 
     setStatus(res.ok ? 'done' : 'error');
@@ -167,9 +174,9 @@ export function InquiryForm({ config, initialValues }: InquiryFormProps) {
         </button>
       </div>
 
-      {status === 'done' ? <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Thanks, we’ll contact you shortly.</p> : null}
+      {status === 'done' ? <p className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">Thanks, your inquiry has been sent. Our team will contact you soon.</p> : null}
       {status === 'error' ? (
-        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">Please add your name and at least one contact method so we can respond.</p>
+        <p className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600">Unable to send inquiry right now. Please call or WhatsApp us.</p>
       ) : null}
     </form>
   );
