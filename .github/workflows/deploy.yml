@@ -28,7 +28,21 @@ jobs:
             echo "Running npm ci"
             npm ci
             echo "Running build"
-            npm run build
+            build_ok=0
+            for attempt in 1 2 3; do
+              echo "Build attempt ${attempt}"
+              rm -rf .next
+              if npm run build; then
+                build_ok=1
+                break
+              fi
+              echo "Build attempt ${attempt} failed; retrying after a clean install trace reset"
+              sleep 5
+            done
+            if [ "$build_ok" -ne 1 ]; then
+              echo "Build failed after 3 attempts"
+              exit 1
+            fi
             echo "Restarting PM2"
             pm2 restart dnr-modern || pm2 start /home/ubuntu/dnr/ecosystem.config.cjs
             pm2 save
