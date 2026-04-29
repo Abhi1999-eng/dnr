@@ -24,38 +24,32 @@ jobs:
             git fetch origin
             git reset --hard origin/main
             echo "Cleaning previous build artifacts"
-            rm -rf node_modules .next
-            echo "Running npm ci"
-            install_ok=0
+            deploy_ok=0
             for attempt in 1 2 3; do
-              echo "Install attempt ${attempt}"
-              rm -rf node_modules
+              echo "Deploy attempt ${attempt}"
+              rm -rf node_modules .next
               npm cache clean --force || true
-              if npm ci && [ -x node_modules/.bin/next ]; then
-                install_ok=1
-                break
+              echo "Running npm ci"
+              if ! npm ci; then
+                echo "npm ci failed on attempt ${attempt}"
+                sleep 5
+                continue
               fi
-              echo "Install attempt ${attempt} failed or produced an incomplete node_modules tree"
-              sleep 5
-            done
-            if [ "$install_ok" -ne 1 ]; then
-              echo "npm ci failed after 3 attempts"
-              exit 1
-            fi
-            echo "Running build"
-            build_ok=0
-            for attempt in 1 2 3; do
-              echo "Build attempt ${attempt}"
-              rm -rf .next
+              if [ ! -x node_modules/.bin/next ]; then
+                echo "next binary missing after npm ci on attempt ${attempt}"
+                sleep 5
+                continue
+              fi
+              echo "Running build"
               if npm run build; then
-                build_ok=1
+                deploy_ok=1
                 break
               fi
-              echo "Build attempt ${attempt} failed; retrying after a clean install trace reset"
+              echo "Build failed on attempt ${attempt}"
               sleep 5
             done
-            if [ "$build_ok" -ne 1 ]; then
-              echo "Build failed after 3 attempts"
+            if [ "$deploy_ok" -ne 1 ]; then
+              echo "Deployment build failed after 3 attempts"
               exit 1
             fi
             echo "Restarting PM2"
