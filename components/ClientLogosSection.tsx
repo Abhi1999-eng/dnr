@@ -2,6 +2,7 @@ import Image from 'next/image';
 import { SectionTitle } from './SectionTitle';
 import { ClientLogoType } from '@/types';
 import { ContentCarousel } from './ContentCarousel';
+import { isDirectUploadAsset, resolveMediaUrl } from '@/lib/media';
 
 function initials(name: string) {
   return name
@@ -30,7 +31,7 @@ export function ClientLogosSection({
         {logos.map((logo) => {
           const content = logo.logoImage ? (
             <div className="relative h-20 w-full">
-              <Image src={logo.logoImage} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" />
+              <Image src={resolveMediaUrl(logo.logoImage, '/logo-dnr.png')} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" unoptimized={isDirectUploadAsset(logo.logoImage)} />
             </div>
           ) : (
             <div className="flex h-20 w-full items-center justify-center rounded-2xl bg-muted/50 text-center">
