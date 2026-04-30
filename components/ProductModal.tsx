@@ -64,7 +64,7 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
               <span className="px-2 py-1 rounded-full bg-muted border border-muted/80">Product details</span>
             </div>
             <h3 className="text-2xl font-semibold">{product.title}</h3>
-            <DescriptionBlock content={product.description || product.shortDescription || ''} maxPreview={240} />
+            <DescriptionBlock content={product.shortDescription || product.description || ''} maxPreview={240} />
             {product.features?.length ? (
               <div>
                 <p className="font-semibold">Features</p>

@@ -17,14 +17,19 @@ function slugify(text: string) {
 
 function normalizeProductPayload(body: any) {
   const heroImage = body.heroImage || body.image || '';
+  const gallery = Array.isArray(body.galleryImages)
+    ? body.galleryImages.filter(Boolean)
+    : Array.isArray(body.gallery)
+      ? body.gallery.filter(Boolean)
+      : [];
   return {
     title: body.title || '',
     slug: body.slug || slugify(body.title || 'product'),
     shortDescription: body.shortDescription || '',
-    description: body.description || '',
+    description: body.longDescription ?? body.description ?? '',
     image: body.image || heroImage,
     heroImage,
-    gallery: Array.isArray(body.gallery) ? body.gallery.filter(Boolean) : [],
+    gallery,
     specs: Array.isArray(body.specs) ? body.specs : [],
     applications: Array.isArray(body.applications) ? body.applications.filter(Boolean) : [],
     features: Array.isArray(body.features) ? body.features.filter(Boolean) : [],

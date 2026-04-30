@@ -48,6 +48,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
   const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
+  const shortDescription = String(productData.shortDescription || '').trim();
+  const longDescription = String(productData.description || '').trim();
   const structuredData = [
     buildBreadcrumbJsonLd([
       { name: 'Home', url: absoluteUrl('/') },
@@ -72,7 +74,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           <div className="space-y-6">
             <p className="pill inline-flex">Product</p>
             <h1 className="text-4xl font-semibold">{productData.title}</h1>
-            <DescriptionBlock content={productData.description || productData.shortDescription || ''} maxPreview={260} />
+            <DescriptionBlock content={shortDescription} maxPreview={260} />
             <div className="grid gap-4">
               {productData.features?.length ? (
                 <div className="space-y-2">
@@ -134,6 +136,16 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
             ) : null}
           </div>
         </div>
+
+        {longDescription ? (
+          <section className="space-y-4 rounded-3xl border border-muted/80 bg-white p-6 shadow-sm">
+            <div className="space-y-1">
+              <p className="pill inline-flex">Overview</p>
+              <h2 className="text-2xl font-semibold text-secondary">Product Details</h2>
+            </div>
+            <div className="whitespace-pre-line leading-relaxed text-secondary/80">{longDescription}</div>
+          </section>
+        ) : null}
 
         <InquirySection
           id="quote"

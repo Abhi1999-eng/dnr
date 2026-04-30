@@ -34,6 +34,9 @@ type BulkUploadSummary = {
   total: number;
 };
 
+const SHORT_DESCRIPTION_LIMIT = 300;
+const LONG_DESCRIPTION_LIMIT = 2000;
+
 const emptyForm: FormState = {
   title: '',
   slug: '',
@@ -49,6 +52,16 @@ function slugify(value: string) {
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/(^-|-$)+/g, '');
+}
+
+function getDescriptionError(form: FormState) {
+  if (form.shortDescription.length > SHORT_DESCRIPTION_LIMIT) {
+    return `Description must be ${SHORT_DESCRIPTION_LIMIT} characters or fewer.`;
+  }
+  if (form.description.length > LONG_DESCRIPTION_LIMIT) {
+    return `Long description must be ${LONG_DESCRIPTION_LIMIT} characters or fewer.`;
+  }
+  return '';
 }
 
 export default function AdminProductsPage() {
@@ -81,34 +94,48 @@ export default function AdminProductsPage() {
   }
 
   async function handleFile(e: ChangeEvent<HTMLInputElement>, target: 'hero' | 'gallery', mode: 'create' | 'edit') {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (!files.length) return;
 
-    const fd = new FormData();
-    fd.append('file', file);
     setUploading(true);
 
     try {
-      const res = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { Authorization: token ? `Bearer ${token}` : '' },
-        body: fd,
-      });
-
-      if (!res.ok) throw new Error('Upload failed');
-      const { url } = await res.json();
-
       if (target === 'hero') {
+        const fd = new FormData();
+        fd.append('file', files[0]);
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { Authorization: token ? `Bearer ${token}` : '' },
+          body: fd,
+        });
+
+        if (!res.ok) throw new Error('Upload failed');
+        const { url } = await res.json();
         if (mode === 'edit') {
           setEditForm((current) => ({ ...current, image: url }));
         } else {
           setForm((current) => ({ ...current, image: url }));
         }
       } else {
+        const fd = new FormData();
+        files.forEach((file) => fd.append('galleryImages', file));
+        const res = await fetch('/api/upload', {
+          method: 'POST',
+          headers: { Authorization: token ? `Bearer ${token}` : '' },
+          body: fd,
+        });
+
+        if (!res.ok) throw new Error('Upload failed');
+        const payload = await res.json();
+        const urls = Array.isArray(payload.urls)
+          ? payload.urls
+          : payload.url
+            ? [payload.url]
+            : [];
         if (mode === 'edit') {
-          setEditForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
+          setEditForm((current) => ({ ...current, gallery: [...current.gallery, ...urls] }));
         } else {
-          setForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
+          setForm((current) => ({ ...current, gallery: [...current.gallery, ...urls] }));
         }
       }
       setFeedback({ type: 'success', message: 'Image uploaded successfully' });
@@ -125,10 +152,16 @@ export default function AdminProductsPage() {
 
     try {
       const currentForm = mode === 'edit' ? editForm : form;
+      const descriptionError = getDescriptionError(currentForm);
+      if (descriptionError) {
+        throw new Error(descriptionError);
+      }
       const payload = {
         ...currentForm,
         slug: currentForm.slug || slugify(currentForm.title),
         heroImage: currentForm.image,
+        longDescription: currentForm.description,
+        galleryImages: currentForm.gallery,
       };
 
       const url = mode === 'edit' && editingId ? `/api/products/${editingId}` : '/api/products';
@@ -244,6 +277,7 @@ export default function AdminProductsPage() {
   function renderProductForm(mode: 'create' | 'edit') {
     const currentForm = mode === 'edit' ? editForm : form;
     const setCurrentForm = mode === 'edit' ? setEditForm : setForm;
+    const descriptionError = getDescriptionError(currentForm);
 
     return (
       <>
@@ -261,36 +295,46 @@ export default function AdminProductsPage() {
             <input className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" value={currentForm.slug} onChange={(e) => setCurrentForm((current) => ({ ...current, slug: e.target.value }))} />
           </label>
           <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
-            <span>Short description</span>
+            <span>Description</span>
             <textarea
               className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
               rows={2}
+              maxLength={SHORT_DESCRIPTION_LIMIT}
               value={currentForm.shortDescription}
               onChange={(e) => setCurrentForm((current) => ({ ...current, shortDescription: e.target.value }))}
             />
+            <span className={`block text-xs ${currentForm.shortDescription.length > SHORT_DESCRIPTION_LIMIT ? 'text-red-300' : 'text-slate-400'}`}>
+              {currentForm.shortDescription.length} / {SHORT_DESCRIPTION_LIMIT} characters
+            </span>
           </label>
           <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
             <span>Long description</span>
             <textarea
               className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
               rows={5}
+              maxLength={LONG_DESCRIPTION_LIMIT}
               value={currentForm.description}
               onChange={(e) => setCurrentForm((current) => ({ ...current, description: e.target.value }))}
             />
+            <span className={`block text-xs ${currentForm.description.length > LONG_DESCRIPTION_LIMIT ? 'text-red-300' : 'text-slate-400'}`}>
+              {currentForm.description.length} / {LONG_DESCRIPTION_LIMIT} characters
+            </span>
           </label>
         </div>
+
+        {descriptionError ? <p className="text-sm text-red-300">{descriptionError}</p> : null}
 
         <div className="grid gap-3 md:grid-cols-2">
           <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
             <p className="text-sm font-semibold text-white">Main image</p>
-            <input type="file" onChange={(e) => handleFile(e, 'hero', mode)} className="text-xs text-slate-200" />
+            <input type="file" accept="image/*" onChange={(e) => handleFile(e, 'hero', mode)} className="text-xs text-slate-200" />
             {uploading ? <span className="text-xs text-accent">Uploading…</span> : null}
             {currentForm.image ? <p className="break-all text-xs text-accent">{currentForm.image}</p> : <p className="text-xs text-slate-400">Upload or replace the main product image.</p>}
           </div>
 
           <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
             <p className="text-sm font-semibold text-white">Gallery images</p>
-            <input type="file" onChange={(e) => handleFile(e, 'gallery', mode)} className="text-xs text-slate-200" />
+            <input type="file" multiple accept="image/*" onChange={(e) => handleFile(e, 'gallery', mode)} className="text-xs text-slate-200" />
             {currentForm.gallery.length ? (
               <div className="space-y-2">
                 {currentForm.gallery.map((image, index) => (
@@ -318,11 +362,11 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => saveProduct(mode)}
-            disabled={saving || !currentForm.title.trim()}
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-          >
+            <button
+              onClick={() => saveProduct(mode)}
+              disabled={saving || !currentForm.title.trim() || Boolean(descriptionError)}
+              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+            >
             {saving ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Add product'}
           </button>
           {mode === 'edit' ? (
