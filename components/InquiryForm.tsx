@@ -34,10 +34,10 @@ const defaultFields = {
 };
 
 const inputClassName =
-  'h-14 w-full rounded-2xl border border-slate-200 bg-white px-5 text-base text-secondary outline-none transition placeholder:text-secondary/40 focus:border-lime-500 focus:ring-4 focus:ring-lime-100';
+  'h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm text-secondary outline-none transition placeholder:text-secondary/40 focus:border-lime-500 focus:ring-4 focus:ring-lime-100';
 
 const textareaClassName =
-  'min-h-[150px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-5 py-4 text-base text-secondary outline-none transition placeholder:text-secondary/40 focus:border-lime-500 focus:ring-4 focus:ring-lime-100';
+  'min-h-[120px] w-full resize-none rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-secondary outline-none transition placeholder:text-secondary/40 focus:border-lime-500 focus:ring-4 focus:ring-lime-100';
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -86,8 +86,8 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
   }
 
   return (
-    <form onSubmit={submit} className="mt-6 grid gap-4">
-      <div className="grid gap-4 md:grid-cols-2">
+    <form onSubmit={submit} className="mt-5 grid gap-3">
+      <div className="grid gap-3 md:grid-cols-2">
         {fields.name ? (
           <Field label={labels.name}>
             <input
@@ -114,7 +114,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
         ) : null}
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-3 md:grid-cols-2">
         {fields.phone ? (
           <Field label={labels.phone}>
             <input
@@ -169,7 +169,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
       <div className="pt-1">
         <button
           type="submit"
-          className="inline-flex h-14 min-w-[220px] items-center justify-center rounded-2xl bg-primary px-7 text-base font-semibold text-secondary transition hover:brightness-[0.97] disabled:cursor-not-allowed disabled:opacity-70 max-md:w-full"
+          className="inline-flex h-12 min-w-[200px] items-center justify-center rounded-2xl bg-primary px-6 text-sm font-semibold text-secondary transition hover:brightness-[0.97] disabled:cursor-not-allowed disabled:opacity-70 max-md:w-full"
           disabled={status === 'submitting'}
         >
           {status === 'submitting' ? 'Sending…' : labels.submit}
