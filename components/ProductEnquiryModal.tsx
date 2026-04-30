@@ -92,7 +92,7 @@ export function ProductEnquiryModal({
     <>
       <div className="fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="fixed left-1/2 top-[52%] z-[90] flex max-h-[85vh] w-[calc(100%-2rem)] max-w-[820px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[30px] bg-white shadow-[0_30px_90px_rgba(15,23,42,0.24)]"
+        className="fixed left-1/2 top-[52%] z-[90] flex max-h-[90vh] w-[calc(100%-2rem)] max-w-[1080px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] md:max-h-[76vh] md:w-[calc(100%-3rem)]"
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -107,8 +107,8 @@ export function ProductEnquiryModal({
           <X size={18} />
         </button>
 
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-6">
-          <div className="space-y-2">
+        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-4">
+          <div className="space-y-1.5">
             <p className="pill inline-flex">Product enquiry</p>
             <div className="space-y-1">
               <h2 className="pr-14 text-xl font-semibold text-secondary sm:text-2xl">Enquire About This Product</h2>
@@ -119,9 +119,9 @@ export function ProductEnquiryModal({
           </div>
         </div>
 
-        <div className="overflow-y-auto px-5 py-4 sm:px-6 sm:py-5">
-          <div className="grid gap-4 lg:grid-cols-[0.34fr_0.66fr]">
-          <div className="space-y-3 self-start rounded-[24px] border border-slate-200 bg-slate-50/80 p-4">
+        <div className="overflow-y-auto p-5">
+          <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
+          <div className="space-y-3 self-start rounded-[22px] border border-slate-200 bg-slate-50/80 p-4">
             <div className="space-y-2">
               <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/60">Selected product</p>
               <p className="text-lg font-semibold text-secondary">{productName}</p>
@@ -137,7 +137,7 @@ export function ProductEnquiryModal({
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
                       rel={item.external ? 'noopener noreferrer' : undefined}
-                      className="flex min-h-[48px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-secondary transition hover:border-primary/35 hover:bg-primary/5"
+                      className="flex min-h-[46px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-secondary transition hover:border-primary/35 hover:bg-primary/5"
                     >
                       <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/12 text-primary">
                         <Icon size={16} aria-hidden="true" />
@@ -150,7 +150,7 @@ export function ProductEnquiryModal({
             </div>
           </div>
 
-          <div className="rounded-[26px] border border-slate-200 bg-white p-4">
+          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
             <InquiryForm
               initialValues={{ productInterest: productName }}
               context={{ pageType: 'product', productTitle: productName, productUrl: productUrl || (productSlug ? `/products/${productSlug}` : '') }}
