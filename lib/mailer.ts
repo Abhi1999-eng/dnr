@@ -21,7 +21,7 @@ const SMTP_CONFIG = {
   user: 'dnrenquiry@gmail.com',
   pass: 'aiso ytph bhoe mcwm',
   from: 'dnrenquiry@gmail.com',
-  to: 'abhishekchaubey1999@gmail.com',
+  to: 'dnr.techservices@gmail.com',
 } as const;
 
 const transporter = nodemailer.createTransport({
