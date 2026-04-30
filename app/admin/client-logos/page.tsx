@@ -7,6 +7,7 @@ import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
+import { AdminEditModal } from '@/components/AdminEditModal';
 
 const fetcher = (url: string) => fetch(url, { cache: 'no-store' }).then((r) => r.json());
 
@@ -31,6 +32,7 @@ export default function AdminClientLogosPage() {
   const router = useRouter();
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
   const [form, setForm] = useState<LogoForm>(emptyForm);
+  const [editForm, setEditForm] = useState<LogoForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -39,7 +41,12 @@ export default function AdminClientLogosPage() {
 
   const logos = useMemo(() => (Array.isArray(data) ? data : []).slice().sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0)), [data]);
 
-  async function handleUpload(e: ChangeEvent<HTMLInputElement>) {
+  function resetEditForm() {
+    setEditingId(null);
+    setEditForm(emptyForm);
+  }
+
+  async function handleUpload(e: ChangeEvent<HTMLInputElement>, mode: 'create' | 'edit') {
     const file = e.target.files?.[0];
     if (!file) return;
     const fd = new FormData();
@@ -56,30 +63,38 @@ export default function AdminClientLogosPage() {
       return;
     }
     const { url } = await res.json();
-    setForm((current) => ({ ...current, logoImage: url }));
+    if (mode === 'edit') {
+      setEditForm((current) => ({ ...current, logoImage: url }));
+    } else {
+      setForm((current) => ({ ...current, logoImage: url }));
+    }
     e.target.value = ''; 
     setFeedback({ type: 'success', message: 'Logo uploaded successfully' });
   }
 
-  async function save() {
+  async function save(mode: 'create' | 'edit') {
     setSaving(true);
     try {
-      const url = editingId ? `/api/client-logos/${editingId}` : '/api/client-logos';
-      const method = editingId ? 'PUT' : 'POST';
+      const currentForm = mode === 'edit' ? editForm : form;
+      const url = mode === 'edit' && editingId ? `/api/client-logos/${editingId}` : '/api/client-logos';
+      const method = mode === 'edit' && editingId ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(currentForm),
       });
       if (!res.ok) {
         const error = await res.json().catch(() => ({}));
         throw new Error(error.message || 'Unable to save logo');
       }
-      setForm(emptyForm);
-      setEditingId(null);
+      if (mode === 'edit') {
+        resetEditForm();
+      } else {
+        setForm(emptyForm);
+      }
       await mutate(undefined, { revalidate: true });
       router.refresh();
-      setFeedback({ type: 'success', message: editingId ? 'Logo updated successfully' : 'Logo added successfully' });
+      setFeedback({ type: 'success', message: mode === 'edit' ? 'Logo updated successfully' : 'Logo added successfully' });
     } catch (error) {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save logo' });
     } finally {
@@ -100,8 +115,7 @@ export default function AdminClientLogosPage() {
         throw new Error(error.message || 'Unable to delete logo');
       }
       if (editingId === id) {
-        setEditingId(null);
-        setForm(emptyForm);
+        resetEditForm();
       }
       await mutate(undefined, { revalidate: true });
       router.refresh();
@@ -115,13 +129,53 @@ export default function AdminClientLogosPage() {
 
   function startEdit(item: any) {
     setEditingId(item._id);
-    setForm({
+    setEditForm({
       name: item.name || '',
       logoImage: item.logoImage || '',
       externalUrl: item.externalUrl || '',
       sortOrder: item.sortOrder || 0,
       active: item.active !== false,
     });
+  }
+
+  function renderLogoForm(mode: 'create' | 'edit') {
+    const currentForm = mode === 'edit' ? editForm : form;
+    const setCurrentForm = mode === 'edit' ? setEditForm : setForm;
+
+    return (
+      <>
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="md:col-span-2 text-xs text-slate-400">{mode === 'edit' ? 'Editing selected logo' : 'Add a new brand logo'}</div>
+          <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Brand name" value={currentForm.name} onChange={(e) => setCurrentForm({ ...currentForm, name: e.target.value })} />
+          <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="External URL (optional)" value={currentForm.externalUrl} onChange={(e) => setCurrentForm({ ...currentForm, externalUrl: e.target.value })} />
+          <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Logo image URL" value={currentForm.logoImage} onChange={(e) => setCurrentForm({ ...currentForm, logoImage: e.target.value })} />
+          {currentForm.logoImage ? (
+            <div className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
+              <p className="mb-2 text-xs uppercase tracking-[0.18em] text-slate-400">Preview</p>
+              <Image src={currentForm.logoImage} alt={currentForm.name || 'Logo preview'} width={160} height={64} className="h-16 w-auto object-contain" unoptimized={currentForm.logoImage.startsWith('/uploads/')} />
+            </div>
+          ) : null}
+          <div className="flex items-center gap-3 md:col-span-2">
+            <input type="file" onChange={(e) => handleUpload(e, mode)} className="text-xs text-slate-200" />
+            {uploading && <span className="text-xs text-emerald-300">Uploading…</span>}
+            <input className="w-32 rounded-lg border border-white/10 bg-white/5 px-3 py-2" type="number" placeholder="Sort order" value={currentForm.sortOrder} onChange={(e) => setCurrentForm({ ...currentForm, sortOrder: Number(e.target.value) })} />
+            <label className="flex items-center gap-2 text-sm text-slate-200">
+              <input type="checkbox" checked={currentForm.active} onChange={(e) => setCurrentForm({ ...currentForm, active: e.target.checked })} /> Active
+            </label>
+          </div>
+        </div>
+        <div className="flex gap-3">
+          <button onClick={() => save(mode)} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+            {saving ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Add logo'}
+          </button>
+          {mode === 'edit' ? (
+            <button onClick={resetEditForm} className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white">
+              Cancel
+            </button>
+          ) : null}
+        </div>
+      </>
+    );
   }
 
   return (
@@ -134,36 +188,11 @@ export default function AdminClientLogosPage() {
         {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="md:col-span-2 text-xs text-slate-400">{editingId ? 'Editing selected logo' : 'Add a new brand logo'}</div>
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Brand name" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="External URL (optional)" value={form.externalUrl} onChange={(e) => setForm({ ...form, externalUrl: e.target.value })} />
-            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Logo image URL" value={form.logoImage} onChange={(e) => setForm({ ...form, logoImage: e.target.value })} />
-            {form.logoImage ? (
-              <div className="md:col-span-2 rounded-xl border border-white/10 bg-white/5 p-3">
-                <p className="mb-2 text-xs uppercase tracking-[0.18em] text-slate-400">Preview</p>
-                <Image src={form.logoImage} alt={form.name || 'Logo preview'} width={160} height={64} className="h-16 w-auto object-contain" unoptimized={form.logoImage.startsWith('/uploads/')} />
-              </div>
-            ) : null}
-            <div className="flex items-center gap-3 md:col-span-2">
-              <input type="file" onChange={handleUpload} className="text-xs text-slate-200" />
-              {uploading && <span className="text-xs text-emerald-300">Uploading…</span>}
-              <input className="w-32 rounded-lg border border-white/10 bg-white/5 px-3 py-2" type="number" placeholder="Sort order" value={form.sortOrder} onChange={(e) => setForm({ ...form, sortOrder: Number(e.target.value) })} />
-              <label className="flex items-center gap-2 text-sm text-slate-200">
-                <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> Active
-              </label>
-            </div>
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold text-white">Add logo</h2>
+            <p className="text-sm text-slate-400">Create a new associated brand here. Editing an existing logo opens in a modal.</p>
           </div>
-          <div className="flex gap-3">
-            <button onClick={save} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
-              {saving ? (editingId ? 'Saving…' : 'Adding…') : editingId ? 'Update logo' : 'Add logo'}
-            </button>
-            {editingId && (
-              <button onClick={() => { setEditingId(null); setForm(emptyForm); }} className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white">
-                Cancel
-              </button>
-            )}
-          </div>
+          {renderLogoForm('create')}
         </div>
 
         {!logos.length ? (
@@ -194,6 +223,9 @@ export default function AdminClientLogosPage() {
           </div>
         )}
       </div>
+      <AdminEditModal open={Boolean(editingId)} onClose={resetEditForm} title="Edit client logo" description="Update the selected client or brand logo without leaving the list.">
+        <div className="space-y-4">{renderLogoForm('edit')}</div>
+      </AdminEditModal>
     </AdminShell>
   );
 }

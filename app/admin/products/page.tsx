@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
+import { AdminEditModal } from '@/components/AdminEditModal';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -57,6 +58,7 @@ export default function AdminProductsPage() {
   const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
 
   const [form, setForm] = useState<FormState>(emptyForm);
+  const [editForm, setEditForm] = useState<FormState>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -71,10 +73,14 @@ export default function AdminProductsPage() {
 
   function resetForm() {
     setForm(emptyForm);
+  }
+
+  function resetEditForm() {
+    setEditForm(emptyForm);
     setEditingId(null);
   }
 
-  async function handleFile(e: ChangeEvent<HTMLInputElement>, target: 'hero' | 'gallery') {
+  async function handleFile(e: ChangeEvent<HTMLInputElement>, target: 'hero' | 'gallery', mode: 'create' | 'edit') {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -93,9 +99,17 @@ export default function AdminProductsPage() {
       const { url } = await res.json();
 
       if (target === 'hero') {
-        setForm((current) => ({ ...current, image: url }));
+        if (mode === 'edit') {
+          setEditForm((current) => ({ ...current, image: url }));
+        } else {
+          setForm((current) => ({ ...current, image: url }));
+        }
       } else {
-        setForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
+        if (mode === 'edit') {
+          setEditForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
+        } else {
+          setForm((current) => ({ ...current, gallery: [...current.gallery, url] }));
+        }
       }
       setFeedback({ type: 'success', message: 'Image uploaded successfully' });
     } catch (error) {
@@ -106,18 +120,19 @@ export default function AdminProductsPage() {
     }
   }
 
-  async function saveProduct() {
+  async function saveProduct(mode: 'create' | 'edit') {
     setSaving(true);
 
     try {
+      const currentForm = mode === 'edit' ? editForm : form;
       const payload = {
-        ...form,
-        slug: form.slug || slugify(form.title),
-        heroImage: form.image,
+        ...currentForm,
+        slug: currentForm.slug || slugify(currentForm.title),
+        heroImage: currentForm.image,
       };
 
-      const url = editingId ? `/api/products/${editingId}` : '/api/products';
-      const method = editingId ? 'PUT' : 'POST';
+      const url = mode === 'edit' && editingId ? `/api/products/${editingId}` : '/api/products';
+      const method = mode === 'edit' && editingId ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
         headers: {
@@ -132,10 +147,14 @@ export default function AdminProductsPage() {
         throw new Error(error.message || 'Unable to save product');
       }
 
-      resetForm();
+      if (mode === 'edit') {
+        resetEditForm();
+      } else {
+        resetForm();
+      }
       await mutate();
       router.refresh();
-      setFeedback({ type: 'success', message: isEditing ? 'Product updated successfully' : 'Product added successfully' });
+      setFeedback({ type: 'success', message: mode === 'edit' ? 'Product updated successfully' : 'Product added successfully' });
     } catch (error) {
       setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save product' });
     } finally {
@@ -186,7 +205,7 @@ export default function AdminProductsPage() {
 
   function startEdit(product: any) {
     setEditingId(product._id);
-    setForm({
+    setEditForm({
       title: product.title || '',
       slug: product.slug || '',
       shortDescription: product.shortDescription || '',
@@ -211,7 +230,7 @@ export default function AdminProductsPage() {
         throw new Error(error.message || 'Unable to delete product');
       }
 
-      if (editingId === id) resetForm();
+      if (editingId === id) resetEditForm();
       await mutate();
       router.refresh();
       setFeedback({ type: 'success', message: 'Product deleted successfully' });
@@ -220,6 +239,100 @@ export default function AdminProductsPage() {
     } finally {
       setDeletingId(null);
     }
+  }
+
+  function renderProductForm(mode: 'create' | 'edit') {
+    const currentForm = mode === 'edit' ? editForm : form;
+    const setCurrentForm = mode === 'edit' ? setEditForm : setForm;
+
+    return (
+      <>
+        <div className="grid gap-3 md:grid-cols-2">
+          <label className="space-y-2 text-sm text-slate-200">
+            <span>Product title</span>
+            <input
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              value={currentForm.title}
+              onChange={(e) => setCurrentForm((current) => ({ ...current, title: e.target.value, slug: current.slug || slugify(e.target.value) }))}
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-200">
+            <span>Slug</span>
+            <input className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" value={currentForm.slug} onChange={(e) => setCurrentForm((current) => ({ ...current, slug: e.target.value }))} />
+          </label>
+          <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
+            <span>Short description</span>
+            <textarea
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              rows={2}
+              value={currentForm.shortDescription}
+              onChange={(e) => setCurrentForm((current) => ({ ...current, shortDescription: e.target.value }))}
+            />
+          </label>
+          <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
+            <span>Long description</span>
+            <textarea
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              rows={5}
+              value={currentForm.description}
+              onChange={(e) => setCurrentForm((current) => ({ ...current, description: e.target.value }))}
+            />
+          </label>
+        </div>
+
+        <div className="grid gap-3 md:grid-cols-2">
+          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-sm font-semibold text-white">Main image</p>
+            <input type="file" onChange={(e) => handleFile(e, 'hero', mode)} className="text-xs text-slate-200" />
+            {uploading ? <span className="text-xs text-accent">Uploading…</span> : null}
+            {currentForm.image ? <p className="break-all text-xs text-accent">{currentForm.image}</p> : <p className="text-xs text-slate-400">Upload or replace the main product image.</p>}
+          </div>
+
+          <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
+            <p className="text-sm font-semibold text-white">Gallery images</p>
+            <input type="file" onChange={(e) => handleFile(e, 'gallery', mode)} className="text-xs text-slate-200" />
+            {currentForm.gallery.length ? (
+              <div className="space-y-2">
+                {currentForm.gallery.map((image, index) => (
+                  <div key={`${image}-${index}`} className="flex items-center justify-between gap-3 text-xs text-slate-300">
+                    <span className="truncate">{image}</span>
+                    <button
+                      type="button"
+                      className="rounded-full border border-red-400/20 px-2 py-1 text-red-200"
+                      onClick={() =>
+                        setCurrentForm((current) => ({
+                          ...current,
+                          gallery: current.gallery.filter((_, galleryIndex) => galleryIndex !== index),
+                        }))
+                      }
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs text-slate-400">Optional extra images for the product detail page.</p>
+            )}
+          </div>
+        </div>
+
+        <div className="flex flex-wrap gap-3">
+          <button
+            onClick={() => saveProduct(mode)}
+            disabled={saving || !currentForm.title.trim()}
+            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
+          >
+            {saving ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Add product'}
+          </button>
+          {mode === 'edit' ? (
+            <button onClick={resetEditForm} className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white">
+              Cancel
+            </button>
+          ) : null}
+        </div>
+      </>
+    );
   }
 
   return (
@@ -336,85 +449,11 @@ export default function AdminProductsPage() {
         </div>
 
         <div className="glass space-y-4 rounded-2xl border border-white/10 p-5">
-          <div className="grid gap-3 md:grid-cols-2">
-            <label className="space-y-2 text-sm text-slate-200">
-              <span>Product title</span>
-              <input
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-                value={form.title}
-                onChange={(e) => setForm((current) => ({ ...current, title: e.target.value, slug: current.slug || slugify(e.target.value) }))}
-              />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200">
-              <span>Slug</span>
-              <input className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" value={form.slug} onChange={(e) => setForm((current) => ({ ...current, slug: e.target.value }))} />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
-              <span>Short description</span>
-              <textarea
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-                rows={2}
-                value={form.shortDescription}
-                onChange={(e) => setForm((current) => ({ ...current, shortDescription: e.target.value }))}
-              />
-            </label>
-            <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
-              <span>Long description</span>
-              <textarea
-                className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
-                rows={5}
-                value={form.description}
-                onChange={(e) => setForm((current) => ({ ...current, description: e.target.value }))}
-              />
-            </label>
+          <div className="space-y-1">
+            <h2 className="text-lg font-semibold text-white">Add product</h2>
+            <p className="text-sm text-slate-400">Create a new product here. Editing existing products now opens in a modal so you can stay on the list view.</p>
           </div>
-
-          <div className="grid gap-3 md:grid-cols-2">
-            <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm font-semibold text-white">Main image</p>
-              <input type="file" onChange={(e) => handleFile(e, 'hero')} className="text-xs text-slate-200" />
-              {uploading ? <span className="text-xs text-accent">Uploading…</span> : null}
-              {form.image ? <p className="break-all text-xs text-accent">{form.image}</p> : <p className="text-xs text-slate-400">Upload or replace the main product image.</p>}
-            </div>
-
-            <div className="space-y-2 rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-sm font-semibold text-white">Gallery images</p>
-              <input type="file" onChange={(e) => handleFile(e, 'gallery')} className="text-xs text-slate-200" />
-              {form.gallery.length ? (
-                <div className="space-y-2">
-                  {form.gallery.map((image, index) => (
-                    <div key={`${image}-${index}`} className="flex items-center justify-between gap-3 text-xs text-slate-300">
-                      <span className="truncate">{image}</span>
-                      <button
-                        type="button"
-                        className="rounded-full border border-red-400/20 px-2 py-1 text-red-200"
-                        onClick={() => setForm((current) => ({ ...current, gallery: current.gallery.filter((_, galleryIndex) => galleryIndex !== index) }))}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs text-slate-400">Optional extra images for the product detail page.</p>
-              )}
-            </div>
-          </div>
-
-          <div className="flex flex-wrap gap-3">
-            <button
-              onClick={saveProduct}
-              disabled={saving || !form.title.trim()}
-              className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {saving ? 'Saving…' : isEditing ? 'Update product' : 'Add product'}
-            </button>
-            {isEditing ? (
-              <button onClick={resetForm} className="rounded-full border border-white/15 px-4 py-2 text-sm font-semibold text-white">
-                Cancel edit
-              </button>
-            ) : null}
-          </div>
+          {renderProductForm('create')}
         </div>
 
         {!products.length ? (
@@ -461,6 +500,9 @@ export default function AdminProductsPage() {
           </div>
         )}
       </div>
+      <AdminEditModal open={isEditing} onClose={resetEditForm} title="Edit product" description="Update the selected product without leaving the products list.">
+        <div className="space-y-4">{renderProductForm('edit')}</div>
+      </AdminEditModal>
     </AdminShell>
   );
 }
