@@ -192,6 +192,10 @@ export default async function HomePage() {
           <ProductGrid
             id="products"
             products={products || []}
+            quickLinks={quickLinks}
+            fallbackPhone={primaryPhone || '+919711196735'}
+            fallbackWhatsapp={whatsappNumber || '+919711196735'}
+            fallbackEmail={email || 'dnr.techservices@gmail.com'}
             enableModal
             title={productsSection.title || 'Products'}
             kicker={productsSection.kicker || 'Explore the machinery, systems, and solutions DNR supports for production-driven industrial environments.'}

@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react';
 type InquiryFormConfig = {
   fields?: Partial<Record<'name' | 'company' | 'phone' | 'email' | 'productInterest' | 'message', boolean>>;
   labels?: Partial<Record<'name' | 'company' | 'phone' | 'email' | 'productInterest' | 'message' | 'submit', string>>;
+  placeholders?: Partial<Record<'name' | 'company' | 'phone' | 'email' | 'productInterest' | 'message', string>>;
 };
 
 type InquiryFormProps = {
@@ -58,6 +59,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
 
   const labels = { ...defaultLabels, ...(config?.labels || {}) };
   const fields = { ...defaultFields, ...(config?.fields || {}) };
+  const placeholders = { ...defaultLabels, ...(config?.placeholders || {}) };
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -91,7 +93,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
             <input
               aria-label={labels.name}
               className={inputClassName}
-              placeholder={labels.name}
+              placeholder={placeholders.name}
               value={form.name}
               onChange={(e) => setForm({ ...form, name: e.target.value })}
               required
@@ -104,7 +106,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
             <input
               aria-label={labels.company}
               className={inputClassName}
-              placeholder={labels.company}
+              placeholder={placeholders.company}
               value={form.company}
               onChange={(e) => setForm({ ...form, company: e.target.value })}
             />
@@ -118,7 +120,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
             <input
               aria-label={labels.phone}
               className={inputClassName}
-              placeholder={labels.phone}
+              placeholder={placeholders.phone}
               value={form.phone}
               onChange={(e) => setForm({ ...form, phone: e.target.value })}
             />
@@ -130,7 +132,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
             <input
               aria-label={labels.email}
               className={inputClassName}
-              placeholder={labels.email}
+              placeholder={placeholders.email}
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
@@ -144,7 +146,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
           <input
             aria-label={labels.productInterest}
             className={inputClassName}
-            placeholder={labels.productInterest}
+            placeholder={placeholders.productInterest}
             value={form.productInterest}
             onChange={(e) => setForm({ ...form, productInterest: e.target.value })}
           />
@@ -156,7 +158,7 @@ export function InquiryForm({ config, initialValues, context }: InquiryFormProps
           <textarea
             aria-label={labels.message}
             className={textareaClassName}
-            placeholder={labels.message}
+            placeholder={placeholders.message}
             rows={5}
             value={form.message}
             onChange={(e) => setForm({ ...form, message: e.target.value })}

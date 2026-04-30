@@ -14,6 +14,10 @@ const ProductModal = dynamic(() => import('./ProductModal').then((mod) => mod.Pr
 
 export function ProductGrid({
   products,
+  quickLinks,
+  fallbackPhone,
+  fallbackWhatsapp,
+  fallbackEmail,
   id = 'products',
   title = 'Products we support',
   kicker = 'Production-ready machinery and engineering support for casting, machining, fabrication, automation, and testing lines.',
@@ -24,6 +28,10 @@ export function ProductGrid({
   emptyDescription = 'Add products from the admin panel and they will appear here automatically.',
 }: {
   products: ProductType[];
+  quickLinks?: { label: string; value?: string; type?: 'phone' | 'email' | 'whatsapp' | 'custom'; href?: string }[];
+  fallbackPhone?: string;
+  fallbackWhatsapp?: string;
+  fallbackEmail?: string;
   id?: string;
   title?: string;
   kicker?: string;
@@ -89,7 +97,16 @@ export function ProductGrid({
   return (
     <>
       {embedded ? content : <section id={id} className="container-wide mt-16 scroll-mt-28 space-y-8">{content}</section>}
-      {enableModal && selected ? <ProductModal product={selected} onClose={() => setSelected(null)} /> : null}
+      {enableModal && selected ? (
+        <ProductModal
+          product={selected}
+          onClose={() => setSelected(null)}
+          quickLinks={quickLinks}
+          fallbackPhone={fallbackPhone}
+          fallbackWhatsapp={fallbackWhatsapp}
+          fallbackEmail={fallbackEmail}
+        />
+      ) : null}
     </>
   );
 }

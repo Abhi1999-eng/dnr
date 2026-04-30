@@ -2,10 +2,32 @@ import { X, ZoomIn, ZoomOut, RefreshCw } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { DescriptionBlock } from './DescriptionBlock';
 import { ManagedImage } from './ManagedImage';
+import { ProductEnquiryActions } from './ProductEnquiryActions';
 import type { ProductType } from '@/types';
 import { resolveProductImage } from '@/lib/media';
 
-export function ProductModal({ product, onClose }: { product: ProductType; onClose: () => void }) {
+type QuickLink = {
+  label: string;
+  value?: string;
+  type?: 'phone' | 'email' | 'whatsapp' | 'custom';
+  href?: string;
+};
+
+export function ProductModal({
+  product,
+  onClose,
+  quickLinks,
+  fallbackPhone,
+  fallbackWhatsapp,
+  fallbackEmail,
+}: {
+  product: ProductType;
+  onClose: () => void;
+  quickLinks?: QuickLink[];
+  fallbackPhone?: string;
+  fallbackWhatsapp?: string;
+  fallbackEmail?: string;
+}) {
   const [zoom, setZoom] = useState(1);
 
   useEffect(() => {
@@ -15,6 +37,10 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
     document.addEventListener('keydown', handler);
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
+
+  useEffect(() => {
+    setZoom(1);
+  }, [product._id, product.slug, product.title]);
 
   return (
     <div
@@ -100,10 +126,18 @@ export function ProductModal({ product, onClose }: { product: ProductType; onClo
                 </div>
               </div>
             ) : null}
-            <div className="flex gap-3 pt-2">
-              <a href="#contact" className="btn-primary text-sm">
-                Enquire Now
-              </a>
+            <div className="pt-2">
+              <ProductEnquiryActions
+                productName={product.title}
+                productSlug={product.slug}
+                productUrl={product.slug ? `/products/${product.slug}` : ''}
+                quickLinks={quickLinks}
+                fallbackPhone={fallbackPhone}
+                fallbackWhatsapp={fallbackWhatsapp}
+                fallbackEmail={fallbackEmail}
+              />
+            </div>
+            <div className="flex gap-3">
               {product.slug && (
                 <a href={`/products/${product.slug}`} className="btn-ghost text-sm">
                   View Full Product

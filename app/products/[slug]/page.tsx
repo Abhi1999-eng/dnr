@@ -6,6 +6,7 @@ import { ManagedImage } from '@/components/ManagedImage';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
+import { ProductEnquiryActions } from '@/components/ProductEnquiryActions';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedProducts } from '@/lib/data';
@@ -47,6 +48,9 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const logo = siteSettings.logo || '/logo-dnr.png';
   const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
   const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
+  const whatsappNumber = siteSettings.whatsappNumber || primaryPhone || '+919711196735';
+  const email = siteSettings.email || 'dnr.techservices@gmail.com';
+  const quickLinks = (siteSettings.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
   const shortDescription = String(productData.shortDescription || '').trim();
   const longDescription = String(productData.description || '').trim();
@@ -94,6 +98,16 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
                 ))}
               </div>
             ) : null}
+
+            <ProductEnquiryActions
+              productName={productData.title}
+              productSlug={productData.slug}
+              productUrl={`/products/${productData.slug}`}
+              quickLinks={quickLinks}
+              fallbackPhone={primaryPhone || '+919711196735'}
+              fallbackWhatsapp={whatsappNumber}
+              fallbackEmail={email}
+            />
 
             <div className="grid gap-4">
               {productData.features?.length ? (
@@ -176,10 +190,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           config={siteSettings.inquiryForm}
           initialProductInterest={productData.title}
           formContext={{ pageType: 'product', productTitle: productData.title, productUrl: `/products/${productData.slug}` }}
-          quickLinks={siteSettings.quickContactLinks}
-          fallbackPhone={primaryPhone}
-          fallbackEmail={siteSettings.email}
-          fallbackWhatsapp={siteSettings.whatsappNumber}
+          quickLinks={quickLinks}
+          fallbackPhone={primaryPhone || '+919711196735'}
+          fallbackEmail={email}
+          fallbackWhatsapp={whatsappNumber}
         />
 
         {related.length ? (
