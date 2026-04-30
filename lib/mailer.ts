@@ -14,26 +14,26 @@ type InquiryEmailPayload = {
   submittedAt: string;
 };
 
-function requiredEnv(name: string) {
-  const value = process.env[name];
-  if (!value) throw new Error(`Missing ${name} configuration`);
-  return value;
-}
+const SMTP_CONFIG = {
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
+  user: 'dnrenquiry@gmail.com',
+  pass: 'aiso ytph bhoe mcwm',
+  from: 'dnrenquiry@gmail.com',
+  to: 'dnr.techservices@gmail.com',
+} as const;
 
-function getTransporter() {
-  const host = requiredEnv('SMTP_HOST');
-  const port = Number(process.env.SMTP_PORT || '465');
-  const secure = String(process.env.SMTP_SECURE || 'true').toLowerCase() === 'true';
-  const user = requiredEnv('SMTP_USER');
-  const pass = requiredEnv('SMTP_PASS');
-
-  return nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: { user, pass },
-  });
-}
+const transporter = nodemailer.createTransport({
+  service: 'gmail',
+  host: SMTP_CONFIG.host,
+  port: SMTP_CONFIG.port,
+  secure: SMTP_CONFIG.secure,
+  auth: {
+    user: SMTP_CONFIG.user,
+    pass: SMTP_CONFIG.pass,
+  },
+});
 
 function escapeHtml(value: string) {
   return value
@@ -45,9 +45,6 @@ function escapeHtml(value: string) {
 }
 
 export async function sendInquiryEmail(payload: InquiryEmailPayload) {
-  const transporter = getTransporter();
-  const from = requiredEnv('MAIL_FROM');
-  const to = requiredEnv('MAIL_TO');
   const subject = payload.productTitle
     ? `New DNR Product Inquiry - ${payload.productTitle}`
     : 'New DNR Website Inquiry';
@@ -94,12 +91,32 @@ export async function sendInquiryEmail(payload: InquiryEmailPayload) {
       </div>
     </div>`;
 
-  await transporter.sendMail({
-    from,
-    to,
+  console.log('[inquiry] preparing email', {
+    subject,
+    from: SMTP_CONFIG.from,
+    to: SMTP_CONFIG.to,
+    replyTo: payload.email || null,
+  });
+
+  await transporter.verify();
+
+  const info = await transporter.sendMail({
+    from: SMTP_CONFIG.from,
+    to: SMTP_CONFIG.to,
+    envelope: {
+      from: SMTP_CONFIG.from,
+      to: [SMTP_CONFIG.to],
+    },
     subject,
     replyTo: payload.email || undefined,
     text,
     html,
+  });
+
+  console.log('[inquiry] email sent', {
+    messageId: info.messageId,
+    accepted: info.accepted,
+    rejected: info.rejected,
+    response: info.response,
   });
 }
