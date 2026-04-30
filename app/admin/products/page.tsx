@@ -34,8 +34,8 @@ type BulkUploadSummary = {
   total: number;
 };
 
-const SHORT_DESCRIPTION_LIMIT = 300;
-const LONG_DESCRIPTION_LIMIT = 2000;
+const SHORT_DESCRIPTION_LIMIT = 500;
+const LONG_DESCRIPTION_LIMIT = 1000;
 
 const emptyForm: FormState = {
   title: '',

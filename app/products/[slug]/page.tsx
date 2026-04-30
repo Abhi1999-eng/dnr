@@ -50,6 +50,11 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
   const shortDescription = String(productData.shortDescription || '').trim();
   const longDescription = String(productData.description || '').trim();
+  const keyPoints = [
+    productData.features?.length ? `${productData.features.length} feature${productData.features.length === 1 ? '' : 's'}` : '',
+    productData.applications?.length ? `${productData.applications.length} application${productData.applications.length === 1 ? '' : 's'}` : '',
+    productData.specs?.length ? `${productData.specs.length} specification${productData.specs.length === 1 ? '' : 's'}` : '',
+  ].filter(Boolean);
   const structuredData = [
     buildBreadcrumbJsonLd([
       { name: 'Home', url: absoluteUrl('/') },
@@ -70,11 +75,26 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
         products={products || []}
       />
       <div className="container-wide space-y-10 py-14">
-        <div className="grid items-start gap-10 md:grid-cols-[1.1fr,0.9fr]">
-          <div className="space-y-6">
-            <p className="pill inline-flex">Product</p>
-            <h1 className="text-4xl font-semibold">{productData.title}</h1>
-            <DescriptionBlock content={shortDescription} maxPreview={260} />
+        <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:gap-10">
+          <div className="space-y-6 rounded-[28px] border border-muted/70 bg-white p-6 shadow-sm md:p-8">
+            <div className="space-y-4">
+              <p className="pill inline-flex">Product</p>
+              <div className="space-y-3">
+                <h1 className="text-4xl font-semibold text-secondary">{productData.title}</h1>
+                <DescriptionBlock content={shortDescription} maxPreview={320} />
+              </div>
+            </div>
+
+            {keyPoints.length ? (
+              <div className="grid gap-3 sm:grid-cols-3">
+                {keyPoints.map((point) => (
+                  <div key={point} className="rounded-2xl border border-muted/80 bg-slate-50 px-4 py-3 text-sm font-medium text-secondary/80">
+                    {point}
+                  </div>
+                ))}
+              </div>
+            ) : null}
+
             <div className="grid gap-4">
               {productData.features?.length ? (
                 <div className="space-y-2">
@@ -115,13 +135,13 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
 
           <div className="space-y-4">
-            <div className="flex h-[340px] items-center justify-center overflow-hidden rounded-2xl border border-muted/80 bg-slate-50 p-4 md:h-[520px] md:p-6">
+            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-muted/80 bg-slate-50 p-4 md:aspect-[5/4] md:p-6">
               <ManagedImage
                 src={resolveProductImage(productData)}
                 alt={productData.title}
                 width={1600}
                 height={1200}
-                className="max-h-full w-full object-contain object-center"
+                className="max-h-full max-w-full object-contain object-center"
                 priority
               />
             </div>
@@ -143,7 +163,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               <p className="pill inline-flex">Overview</p>
               <h2 className="text-2xl font-semibold text-secondary">Product Details</h2>
             </div>
-            <div className="whitespace-pre-line leading-relaxed text-secondary/80">{longDescription}</div>
+            <div className="max-w-4xl whitespace-pre-line text-base leading-8 text-secondary/80">{longDescription}</div>
           </section>
         ) : null}
 
