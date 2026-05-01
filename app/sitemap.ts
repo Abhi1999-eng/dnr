@@ -5,13 +5,6 @@ import { Service } from '@/models/Service';
 import { absoluteUrl, SITE_URL } from '@/lib/seo';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  await connectDB();
-
-  const [products, services] = await Promise.all([
-    Product.find({}, { slug: 1, updatedAt: 1 }).lean(),
-    Service.find({ active: { $ne: false } }, { slug: 1, updatedAt: 1 }).lean(),
-  ]);
-
   const staticPages: MetadataRoute.Sitemap = [
     '',
     '/about',
@@ -25,7 +18,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: path === '' ? 1 : 0.8,
   }));
 
-  const productPages: MetadataRoute.Sitemap = products
+  try {
+    await connectDB();
+
+    const [products, services] = await Promise.all([
+      Product.find({}, { slug: 1, updatedAt: 1 }).lean(),
+      Service.find({ active: { $ne: false } }, { slug: 1, updatedAt: 1 }).lean(),
+    ]);
+
+    const productPages: MetadataRoute.Sitemap = products
     .filter((product: any) => product.slug)
     .map((product: any) => ({
       url: absoluteUrl(`/products/${product.slug}`),
@@ -34,7 +35,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  const servicePages: MetadataRoute.Sitemap = services
+    const servicePages: MetadataRoute.Sitemap = services
     .filter((service: any) => service.slug)
     .map((service: any) => ({
       url: absoluteUrl(`/services/${service.slug}`),
@@ -43,5 +44,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.7,
     }));
 
-  return [...staticPages, ...productPages, ...servicePages];
+    return [...staticPages, ...productPages, ...servicePages];
+  } catch (error) {
+    console.warn('[sitemap] falling back to static routes only', error);
+    return staticPages;
+  }
 }

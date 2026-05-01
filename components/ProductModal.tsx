@@ -38,10 +38,6 @@ export function ProductModal({
     return () => document.removeEventListener('keydown', handler);
   }, [onClose]);
 
-  useEffect(() => {
-    setZoom(1);
-  }, [product._id, product.slug, product.title]);
-
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur"

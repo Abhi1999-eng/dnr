@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ProductType } from '@/types';
 import { ManagedImage } from './ManagedImage';
@@ -30,6 +30,10 @@ const fallbackSlides: Slide[] = [
   },
 ];
 
+const AUTOPLAY_INTERVAL = 3000;
+const RESUME_DELAY = 5000;
+const EASING = 'cubic-bezier(0.22, 1, 0.36, 1)';
+
 export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
   const slides = useMemo<Slide[]>(() => {
     const productSlides = products
@@ -49,27 +53,74 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
 
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (paused || slides.length <= 1) return;
+    if (typeof window === 'undefined' || !window.matchMedia) return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const updateMotionPreference = () => setPrefersReducedMotion(mediaQuery.matches);
+
+    updateMotionPreference();
+    mediaQuery.addEventListener('change', updateMotionPreference);
+    return () => mediaQuery.removeEventListener('change', updateMotionPreference);
+  }, []);
+
+  useEffect(() => {
+    if (paused || prefersReducedMotion || slides.length <= 1) return;
     const id = setInterval(() => {
       setIndex((prev) => (prev + 1) % slides.length);
-    }, 3500);
+    }, AUTOPLAY_INTERVAL);
     return () => clearInterval(id);
-  }, [paused, slides.length]);
+  }, [paused, prefersReducedMotion, slides.length]);
+
+  useEffect(() => {
+    return () => {
+      if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    };
+  }, []);
 
   const activeIndex = slides.length ? index % slides.length : 0;
   const activeSlide = slides[activeIndex];
-  const goTo = (nextIndex: number) => setIndex((nextIndex + slides.length) % slides.length);
+
+  function scheduleResume() {
+    if (prefersReducedMotion) return;
+    if (resumeTimerRef.current) clearTimeout(resumeTimerRef.current);
+    resumeTimerRef.current = setTimeout(() => {
+      setPaused(false);
+      resumeTimerRef.current = null;
+    }, RESUME_DELAY);
+  }
+
+  function pauseForInteraction() {
+    setPaused(true);
+    scheduleResume();
+  }
+
+  const goTo = (nextIndex: number, triggeredByUser = true) => {
+    if (triggeredByUser) pauseForInteraction();
+    setIndex((nextIndex + slides.length) % slides.length);
+  };
 
   return (
     <div
       className="relative rounded-[30px] border border-secondary/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,245,249,0.92))] p-4 shadow-[0_28px_70px_rgba(15,23,42,0.16)]"
       onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
+      onMouseLeave={() => scheduleResume()}
+      onFocusCapture={() => setPaused(true)}
+      onBlurCapture={() => scheduleResume()}
+      onTouchStart={() => pauseForInteraction()}
     >
       <div className="relative min-h-[450px] overflow-hidden rounded-[24px] border border-secondary/10 bg-secondary">
-        <div className="absolute inset-0 transition-opacity duration-500 ease-out">
+        <div
+          className="absolute inset-0 will-change-opacity"
+          style={{
+            transitionDuration: prefersReducedMotion ? '0ms' : '820ms',
+            transitionTimingFunction: EASING,
+            transitionProperty: 'opacity',
+          }}
+        >
           <div className="absolute inset-0 bg-slate-100" />
           <ManagedImage
             key={activeSlide.image}
@@ -98,6 +149,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
             </div>
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => goTo(activeIndex - 1)}
                 aria-label="Previous slide"
                 className="touch-target rounded-full border border-white/25 bg-white/15 p-2 text-white transition hover:bg-white hover:text-secondary"
@@ -105,6 +157,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
                 <ChevronLeft size={18} />
               </button>
               <button
+                type="button"
                 onClick={() => goTo(activeIndex + 1)}
                 aria-label="Next slide"
                 className="touch-target rounded-full border border-white/25 bg-white/15 p-2 text-white transition hover:bg-white hover:text-secondary"
@@ -141,6 +194,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
             {slides.map((slide, slideIndex) => (
               <button
                 key={`${slide.title}-${slideIndex}`}
+                type="button"
                 onClick={() => goTo(slideIndex)}
                 className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${slideIndex === activeIndex ? 'bg-white/10' : 'bg-transparent hover:bg-white/10'}`}
                 aria-label={`Show ${slide.title}`}
