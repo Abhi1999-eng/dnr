@@ -106,25 +106,25 @@ export default async function HomePage() {
         headerCtaTarget={headerCtaHref}
         products={products || []}
       />
-      <main className="container-wide space-y-12 pb-14 pt-8">
+      <main className="container-wide space-y-12 pb-14 pt-6 md:pt-8">
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] py-8 shadow-[0_20px_56px_rgba(15,23,42,0.07)] md:py-10 lg:py-12"
+            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] py-6 shadow-[0_18px_48px_rgba(15,23,42,0.07)] md:py-8 lg:py-10"
           >
-            <div className="grid items-center gap-8 px-4 sm:px-6 md:px-8 lg:grid-cols-[minmax(0,0.98fr)_minmax(420px,1.02fr)] lg:gap-10 lg:px-8">
+            <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 sm:px-6 md:px-8 lg:max-h-[550px] lg:grid-cols-[minmax(0,0.98fr)_minmax(390px,1.02fr)] lg:gap-8 lg:px-8">
             <div className="absolute -left-16 top-10 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
             <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-secondary/5 blur-3xl" />
-            <div className="space-y-4">
-              <div className="space-y-2.5">
+            <div className="space-y-3.5">
+              <div className="space-y-2">
                 <span className="pill inline-flex">{heroTagline}</span>
                 <div className="space-y-3">
-                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight text-secondary md:text-5xl lg:text-[56px]">{heroHeading}</h1>
-                  <p className="max-w-xl text-base leading-7 text-secondary/80 md:text-lg">{heroSubheading}</p>
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight text-secondary md:text-5xl lg:text-[52px]">{heroHeading}</h1>
+                  <p className="max-w-xl text-sm leading-6 text-secondary/80 md:text-base lg:text-lg">{heroSubheading}</p>
                 </div>
               </div>
 
-              <div className="flex flex-wrap gap-3">
+              <div className="flex flex-wrap gap-2.5">
                 <Link href="#products" className="btn-primary shadow-md">
                   {heroPrimaryCta}
                 </Link>
@@ -133,33 +133,33 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              <div className="flex flex-wrap gap-2.5 text-sm text-secondary/75">
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Industrial machinery support</span>
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Installation and commissioning</span>
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Responsive service coordination</span>
+              <div className="flex flex-wrap gap-2 text-xs text-secondary/75 md:text-sm">
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Industrial machinery support</span>
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Installation and commissioning</span>
+                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Responsive service coordination</span>
               </div>
 
               {heroStats.length ? (
                 <div className={`grid gap-4 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                   {heroStats.map((stat: any) => (
-                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
-                      <p className="text-[1.7rem] font-semibold text-secondary">{stat.value}</p>
+                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                      <p className="text-[1.5rem] font-semibold text-secondary">{stat.value}</p>
                       <p className="mt-1 text-sm text-secondary/75">{stat.label}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="grid gap-3 md:grid-cols-3">
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
-                    <p className="text-[1.7rem] font-semibold text-secondary">All</p>
+                <div className="grid gap-2.5 md:grid-cols-3">
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                    <p className="text-[1.5rem] font-semibold text-secondary">All</p>
                     <p className="mt-1 text-sm text-secondary/75">Products added in admin appear automatically</p>
                   </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
-                    <p className="text-[1.7rem] font-semibold text-secondary">Pan-India</p>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                    <p className="text-[1.5rem] font-semibold text-secondary">Pan-India</p>
                     <p className="mt-1 text-sm text-secondary/75">Support aligned to key manufacturing hubs</p>
                   </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
-                    <p className="text-[1.7rem] font-semibold text-secondary">Fast</p>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                    <p className="text-[1.5rem] font-semibold text-secondary">Fast</p>
                     <p className="mt-1 text-sm text-secondary/75">Talk to an expert for machine guidance and service planning</p>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export default async function HomePage() {
           <section id="about" className="glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
-              {about.heading ? <h2 className="text-[1.7rem] font-semibold text-secondary">{about.heading}</h2> : null}
+              {about.heading ? <h2 className="text-[1.5rem] font-semibold text-secondary">{about.heading}</h2> : null}
               {about.body ? <p className="text-secondary/80">{about.body}</p> : null}
             </div>
             {about.bullets.length ? (
