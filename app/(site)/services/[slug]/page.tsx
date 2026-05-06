@@ -106,12 +106,12 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
             </div>
           </div>
 
-          <div className="relative min-h-[300px] overflow-hidden rounded-[26px] border border-secondary/10 bg-secondary/5 shadow-lg shadow-secondary/10">
+          <div className="relative flex min-h-[280px] items-center justify-center overflow-hidden rounded-[26px] border border-secondary/10 bg-slate-50 p-6 shadow-lg shadow-secondary/10 md:min-h-[320px] md:p-8">
             <ManagedImage
               src={serviceImage}
               alt={serviceData.title}
               fill
-              className="object-cover"
+              className="object-contain object-center p-4 md:p-6"
               sizes="(max-width: 768px) 100vw, 45vw"
             />
           </div>
