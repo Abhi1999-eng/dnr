@@ -63,10 +63,10 @@ export default async function HomePage() {
 
   const sections = homepageData?.sections || {};
   const hero = homepageData?.hero || {};
-  const heroHeading = hero.heading || 'Industrial machinery and engineering support for high-uptime plants';
+  const heroHeading = hero.heading || 'Reliable machinery and engineering support for high-uptime manufacturing.';
   const heroSubheading =
     hero.subheading ||
-    'DNR Techno Services delivers machinery, commissioning, and responsive support for casting, machining, automation, testing, and fabrication requirements.';
+    'DNR Techno Services helps production teams source the right machinery and keep operations moving with practical support for installation, commissioning, maintenance, and spare parts.';
   const heroPrimaryCta = hero.ctaPrimary || 'View products';
   const heroSecondaryCta = hero.ctaSecondary || siteSettings.headerCtaLabel || 'Talk to an Expert';
   const heroTagline = hero.tagline || 'DNR Techno Services — Your service partner';
@@ -110,62 +110,66 @@ export default async function HomePage() {
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] py-6 shadow-[0_18px_48px_rgba(15,23,42,0.07)] md:py-8 lg:py-10"
+            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(247,249,251,0.98),rgba(234,243,223,0.84))] py-6 shadow-[0_18px_48px_rgba(15,23,42,0.07)] md:py-8 lg:py-10"
           >
-            <div className="mx-auto grid max-w-7xl items-center gap-6 px-4 sm:px-6 md:px-8 lg:max-h-[550px] lg:grid-cols-[minmax(0,0.98fr)_minmax(390px,1.02fr)] lg:gap-8 lg:px-8">
-            <div className="absolute -left-16 top-10 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-secondary/5 blur-3xl" />
-            <div className="space-y-3.5">
-              <div className="space-y-2">
-                <span className="pill inline-flex">{heroTagline}</span>
+            <div className="absolute -left-14 top-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute right-0 top-0 h-44 w-44 rounded-full bg-secondary/5 blur-3xl" />
+            <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(400px,0.92fr)] lg:gap-10 lg:px-8">
+              <div className="relative z-10 space-y-5">
                 <div className="space-y-3">
-                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight text-secondary md:text-5xl lg:text-[52px]">{heroHeading}</h1>
-                  <p className="max-w-xl text-sm leading-6 text-secondary/80 md:text-base lg:text-lg">{heroSubheading}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-secondary/60 md:text-xs">Industrial Machinery &amp; Engineering Support</p>
+                  <div className="space-y-3">
+                    <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-tight text-secondary md:text-5xl lg:text-[52px]">{heroHeading}</h1>
+                    <p className="max-w-xl text-sm leading-6 text-secondary/80 md:text-base lg:text-lg">{heroSubheading}</p>
+                  </div>
                 </div>
-              </div>
 
-              <div className="flex flex-wrap gap-2.5">
-                <Link href="#products" className="btn-primary shadow-md">
-                  {heroPrimaryCta}
-                </Link>
-                <Link href={headerCtaHref} className="btn-ghost border-secondary/15 bg-white text-secondary shadow-sm">
-                  {heroSecondaryCta}
-                </Link>
-              </div>
+                <div className="flex flex-wrap gap-2.5">
+                  <Link href="#products" className="btn-primary shadow-sm">
+                    {heroPrimaryCta}
+                  </Link>
+                  <Link href={headerCtaHref} className="btn-ghost border-secondary/15 bg-white text-secondary shadow-sm">
+                    {heroSecondaryCta}
+                  </Link>
+                </div>
 
-              <div className="flex flex-wrap gap-2 text-xs text-secondary/75 md:text-sm">
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Industrial machinery support</span>
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Installation and commissioning</span>
-                <span className="rounded-full border border-secondary/10 bg-white/80 px-3.5 py-1.5 shadow-sm">Responsive service coordination</span>
-              </div>
+                <div className="flex flex-wrap gap-2 text-xs text-secondary/75 md:text-sm">
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Industrial machinery support</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Installation &amp; commissioning</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Responsive service coordination</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Spare parts &amp; maintenance</span>
+                </div>
 
-              {heroStats.length ? (
-                <div className={`grid gap-4 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
-                  {heroStats.map((stat: any) => (
-                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                      <p className="text-[1.5rem] font-semibold text-secondary">{stat.value}</p>
-                      <p className="mt-1 text-sm text-secondary/75">{stat.label}</p>
+                {heroStats.length ? (
+                  <div className={`grid gap-2.5 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
+                    {heroStats.map((stat: any) => (
+                      <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                        <p className="text-[1.35rem] font-semibold text-secondary">{stat.value}</p>
+                        <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">{stat.label}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="grid gap-2.5 md:grid-cols-3">
+                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                      <p className="text-[1.35rem] font-semibold text-secondary">All</p>
+                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Products added in admin appear automatically</p>
                     </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="grid gap-2.5 md:grid-cols-3">
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                    <p className="text-[1.5rem] font-semibold text-secondary">All</p>
-                    <p className="mt-1 text-sm text-secondary/75">Products added in admin appear automatically</p>
+                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                      <p className="text-[1.35rem] font-semibold text-secondary">Pan-India</p>
+                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Support aligned to key manufacturing hubs</p>
+                    </div>
+                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
+                      <p className="text-[1.35rem] font-semibold text-secondary">Fast</p>
+                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Talk to an expert for machine guidance and service planning</p>
+                    </div>
                   </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                    <p className="text-[1.5rem] font-semibold text-secondary">Pan-India</p>
-                    <p className="mt-1 text-sm text-secondary/75">Support aligned to key manufacturing hubs</p>
-                  </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                    <p className="text-[1.5rem] font-semibold text-secondary">Fast</p>
-                    <p className="mt-1 text-sm text-secondary/75">Talk to an expert for machine guidance and service planning</p>
-                  </div>
-                </div>
-              )}
-            </div>
-            <HeroSlider products={products || []} />
+                )}
+              </div>
+
+              <div className="relative z-10">
+                <HeroSlider products={products || []} />
+              </div>
             </div>
           </section>
         )}
