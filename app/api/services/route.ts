@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Service } from '@/models/Service';
 import { verifyToken } from '@/lib/auth';
+import { normalizeExpectedOutcomes } from '@/lib/service-outcomes';
 
 export async function GET() {
   await connectDB();
@@ -19,6 +20,7 @@ export async function POST(req: Request) {
   const payload = {
     ...body,
     image: body.image ?? body.imageUrl ?? body.coverImage ?? '',
+    expectedOutcomes: normalizeExpectedOutcomes(body.expectedOutcomes ?? body.whatYouCanExpect),
   };
   await connectDB();
   const created: any = await Service.create(payload);

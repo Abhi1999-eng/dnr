@@ -8,6 +8,7 @@ import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminEditModal } from '@/components/AdminEditModal';
 import { resolveMediaUrl } from '@/lib/media';
+import { expectedOutcomesToTextarea } from '@/lib/service-outcomes';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -16,6 +17,7 @@ type ServiceForm = {
   description: string;
   longDescription: string;
   image: string;
+  expectedOutcomes: string;
   slug: string;
   sortOrder: number;
   active: boolean;
@@ -26,6 +28,7 @@ const emptyForm: ServiceForm = {
   description: '',
   longDescription: '',
   image: '',
+  expectedOutcomes: '',
   slug: '',
   sortOrder: 1,
   active: true,
@@ -139,6 +142,7 @@ export default function AdminServicesPage() {
       description: service.description || '',
       longDescription: service.longDescription || '',
       image: service.image || '',
+      expectedOutcomes: expectedOutcomesToTextarea(service.expectedOutcomes),
       slug: service.slug || '',
       sortOrder: service.sortOrder || 0,
       active: service.active !== false,
@@ -157,6 +161,7 @@ export default function AdminServicesPage() {
           <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="Short description" value={currentForm.description} onChange={(e) => setCurrentForm({ ...currentForm, description: e.target.value })} />
           <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={5} placeholder="Long description for the detail page" value={currentForm.longDescription} onChange={(e) => setCurrentForm({ ...currentForm, longDescription: e.target.value })} />
           <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Image URL" value={currentForm.image} onChange={(e) => setCurrentForm({ ...currentForm, image: e.target.value })} />
+          <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={5} placeholder="What you can expect (one point per line)" value={currentForm.expectedOutcomes} onChange={(e) => setCurrentForm({ ...currentForm, expectedOutcomes: e.target.value })} />
           <div className="flex items-center gap-3 md:col-span-2">
             <input type="file" accept="image/*" onChange={(e) => handleFile(e, mode)} className="text-xs text-slate-200" />
             {uploading && <span className="text-xs text-emerald-300">Uploading…</span>}
@@ -208,6 +213,7 @@ export default function AdminServicesPage() {
                     <p className="text-lg font-semibold text-white">{service.title}</p>
                     <p className="mt-1 text-sm text-slate-400">{service.description}</p>
                     {service.longDescription ? <p className="mt-2 line-clamp-2 text-xs text-slate-500">{service.longDescription}</p> : null}
+                    {service.expectedOutcomes?.length ? <p className="mt-2 text-xs text-slate-500">Expectations: {service.expectedOutcomes.length}</p> : null}
                   </div>
                   <div className="flex gap-3 text-sm">
                     <button onClick={() => startEdit(service)} className="text-emerald-300 hover:underline">Edit</button>

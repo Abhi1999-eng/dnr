@@ -3,6 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Service } from '@/models/Service';
 import { verifyToken } from '@/lib/auth';
+import { normalizeExpectedOutcomes } from '@/lib/service-outcomes';
 
 async function authorize(req: NextRequest) {
   const token = req.headers.get('authorization')?.replace('Bearer ', '');
@@ -18,6 +19,7 @@ export async function PUT(req: NextRequest, context: RouteContext<'/api/services
   const payload = {
     ...body,
     image: body.image ?? body.imageUrl ?? body.coverImage ?? '',
+    expectedOutcomes: normalizeExpectedOutcomes(body.expectedOutcomes ?? body.whatYouCanExpect),
   };
 
   await connectDB();

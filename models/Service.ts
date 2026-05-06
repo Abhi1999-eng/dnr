@@ -8,6 +8,7 @@ const ServiceSchema = new Schema(
     description: { type: String, required: true },
     longDescription: { type: String, default: '' },
     image: { type: String },
+    expectedOutcomes: { type: [String], default: [] },
     slug: { type: String, unique: true, index: true },
     sortOrder: { type: Number, default: 0 },
     active: { type: Boolean, default: true },

@@ -9,6 +9,7 @@ import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
 import { resolveServiceImage } from '@/lib/media';
+import { normalizeExpectedOutcomes } from '@/lib/service-outcomes';
 
 export const revalidate = 300;
 
@@ -65,11 +66,13 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
 
   const serviceImage = resolveServiceImage(serviceData);
 
-  const supportPoints = [
-    'Clear project coordination and technical alignment before work begins',
-    'Practical support for uptime, commissioning, and production continuity',
-    'Responsive communication so plant teams know the next step quickly',
-  ];
+  const supportPoints = normalizeExpectedOutcomes(serviceData.expectedOutcomes).length
+    ? normalizeExpectedOutcomes(serviceData.expectedOutcomes)
+    : [
+        'Clear project coordination and technical alignment before work begins',
+        'Practical support for uptime, commissioning, and production continuity',
+        'Responsive communication so plant teams know the next step quickly',
+      ];
 
   return (
     <div className="min-h-screen bg-background text-secondary">
