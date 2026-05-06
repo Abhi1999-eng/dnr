@@ -106,20 +106,21 @@ export default async function HomePage() {
         headerCtaTarget={headerCtaHref}
         products={products || []}
       />
-      <main className="container-wide space-y-12 pb-14 pt-10">
+      <main className="container-wide space-y-12 pb-14 pt-8">
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative grid items-center gap-8 overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] p-5 shadow-[0_20px_56px_rgba(15,23,42,0.07)] md:grid-cols-[minmax(0,0.98fr)_minmax(470px,1.02fr)] md:p-9"
+            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] py-8 shadow-[0_20px_56px_rgba(15,23,42,0.07)] md:py-10 lg:py-12"
           >
+            <div className="grid items-center gap-8 px-4 sm:px-6 md:px-8 lg:grid-cols-[minmax(0,0.98fr)_minmax(420px,1.02fr)] lg:gap-10 lg:px-8">
             <div className="absolute -left-16 top-10 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
             <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-secondary/5 blur-3xl" />
-            <div className="space-y-5">
-              <div className="space-y-3">
+            <div className="space-y-4">
+              <div className="space-y-2.5">
                 <span className="pill inline-flex">{heroTagline}</span>
                 <div className="space-y-3">
-                  <h1 className="max-w-3xl text-[2.7rem] font-semibold leading-[1.02] text-secondary md:text-[3.5rem] lg:text-[4.1rem]">{heroHeading}</h1>
-                  <p className="max-w-2xl text-base leading-relaxed text-secondary/80 md:text-[1rem]">{heroSubheading}</p>
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.05] tracking-tight text-secondary md:text-5xl lg:text-[56px]">{heroHeading}</h1>
+                  <p className="max-w-xl text-base leading-7 text-secondary/80 md:text-lg">{heroSubheading}</p>
                 </div>
               </div>
 
@@ -132,7 +133,7 @@ export default async function HomePage() {
                 </Link>
               </div>
 
-              <div className="flex flex-wrap gap-3 text-sm text-secondary/75">
+              <div className="flex flex-wrap gap-2.5 text-sm text-secondary/75">
                 <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Industrial machinery support</span>
                 <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Installation and commissioning</span>
                 <span className="rounded-full border border-secondary/10 bg-white/80 px-4 py-2 shadow-sm">Responsive service coordination</span>
@@ -165,6 +166,7 @@ export default async function HomePage() {
               )}
             </div>
             <HeroSlider products={products || []} />
+            </div>
           </section>
         )}
 

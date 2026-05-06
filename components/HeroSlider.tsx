@@ -112,7 +112,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
       onBlurCapture={() => scheduleResume()}
       onTouchStart={() => pauseForInteraction()}
     >
-      <div className="relative min-h-[380px] overflow-hidden rounded-[22px] border border-secondary/10 bg-secondary">
+      <div className="relative h-[430px] overflow-hidden rounded-[22px] border border-secondary/10 bg-secondary md:h-[480px] lg:h-[520px]">
         <div
           className="absolute inset-0 will-change-opacity"
           style={{
@@ -174,17 +174,17 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
               <p className="max-w-md text-[13px] leading-relaxed text-white/90 md:text-base">{activeSlide.description}</p>
             </div>
 
-            <div className="grid gap-2.5 sm:grid-cols-3">
+            <div className="grid gap-2 sm:grid-cols-3">
               <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
-                <p className="text-xl font-semibold text-white">Live</p>
+                <p className="text-lg font-semibold text-white">Live</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Product updates</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
-                <p className="text-xl font-semibold text-white">Fast</p>
+                <p className="text-lg font-semibold text-white">Fast</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Service response</p>
               </div>
               <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
-                <p className="text-xl font-semibold text-white">Plant</p>
+                <p className="text-lg font-semibold text-white">Plant</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Ready support</p>
               </div>
             </div>
