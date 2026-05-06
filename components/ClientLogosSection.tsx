@@ -27,14 +27,20 @@ export function ClientLogosSection({
   return (
     <section id="clients" className="container-wide mt-16 space-y-8">
       <SectionTitle title={title} kicker={kicker} />
-      <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
+      <ContentCarousel
+        itemsPerView={{ mobile: 2, tablet: 3, desktop: 5, wide: 6 }}
+        autoPlayInterval={1800}
+        advanceBy={1}
+        controlsMode="none"
+        viewportClassName="border-transparent bg-transparent p-0 shadow-none"
+      >
         {logos.map((logo) => {
           const content = logo.logoImage ? (
-            <div className="relative h-20 w-full">
+            <div className="relative h-16 w-full sm:h-18 md:h-20">
               <Image src={resolveMediaUrl(logo.logoImage, '/logo-dnr.png')} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" unoptimized={isDirectUploadAsset(logo.logoImage)} />
             </div>
           ) : (
-            <div className="flex h-20 w-full items-center justify-center rounded-2xl bg-muted/50 text-center">
+            <div className="flex h-16 w-full items-center justify-center rounded-2xl bg-muted/50 text-center sm:h-18 md:h-20">
               <div>
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-full bg-primary/15 text-sm font-semibold text-secondary">
                   {initials(logo.name)}
@@ -45,9 +51,9 @@ export function ClientLogosSection({
           );
 
           const card = (
-            <div className="group flex h-full min-h-[148px] flex-col justify-center rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-5 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
+            <div className="group flex h-full min-h-[132px] flex-col justify-center rounded-[24px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.97))] p-4 shadow-[0_14px_32px_rgba(15,23,42,0.08)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(15,23,42,0.12)]">
               {content}
-              <p className="mt-4 text-center text-sm font-semibold text-secondary">{logo.name}</p>
+              <p className="mt-3 text-center text-sm font-semibold text-secondary">{logo.name}</p>
             </div>
           );
 

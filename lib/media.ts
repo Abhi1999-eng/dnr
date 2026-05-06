@@ -51,6 +51,10 @@ export function resolveProductImage(product?: { heroImage?: string; image?: stri
   return resolveMediaUrl(product?.heroImage || product?.image, fallback);
 }
 
+export function resolveServiceImage(service?: { image?: string | null; imageUrl?: string | null; coverImage?: string | null } | null, fallback = '/dnr/page_21.png') {
+  return resolveMediaUrl(service?.image || service?.imageUrl || service?.coverImage, fallback);
+}
+
 export function isDirectUploadAsset(src?: string | null) {
   if (!src) return false;
   return resolveMediaUrl(src).includes('/uploads/');

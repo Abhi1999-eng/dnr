@@ -7,6 +7,7 @@ import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminEditModal } from '@/components/AdminEditModal';
+import { resolveMediaUrl } from '@/lib/media';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -82,13 +83,13 @@ export default function AdminServicesPage() {
     setSaving(true);
     try {
       const currentForm = mode === 'edit' ? editForm : form;
-      const payload = { ...form, slug: form.slug || slugify(form.title) };
+      const normalizedImage = currentForm.image.trim() ? resolveMediaUrl(currentForm.image, '') : currentForm.image;
       const url = mode === 'edit' && editingId ? `/api/services/${editingId}` : '/api/services';
       const method = mode === 'edit' && editingId ? 'PUT' : 'POST';
       const res = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json', Authorization: token ? `Bearer ${token}` : '' },
-        body: JSON.stringify({ ...currentForm, slug: currentForm.slug || slugify(currentForm.title) }),
+        body: JSON.stringify({ ...currentForm, image: normalizedImage || '', slug: currentForm.slug || slugify(currentForm.title) }),
       });
       if (!res.ok) {
         const error = await res.json().catch(() => ({}));
@@ -157,7 +158,7 @@ export default function AdminServicesPage() {
           <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={5} placeholder="Long description for the detail page" value={currentForm.longDescription} onChange={(e) => setCurrentForm({ ...currentForm, longDescription: e.target.value })} />
           <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Image URL" value={currentForm.image} onChange={(e) => setCurrentForm({ ...currentForm, image: e.target.value })} />
           <div className="flex items-center gap-3 md:col-span-2">
-            <input type="file" onChange={(e) => handleFile(e, mode)} className="text-xs text-slate-200" />
+            <input type="file" accept="image/*" onChange={(e) => handleFile(e, mode)} className="text-xs text-slate-200" />
             {uploading && <span className="text-xs text-emerald-300">Uploading…</span>}
           </div>
           <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 w-40" type="number" placeholder="Sort order" value={currentForm.sortOrder} onChange={(e) => setCurrentForm({ ...currentForm, sortOrder: Number(e.target.value) })} />
@@ -166,7 +167,7 @@ export default function AdminServicesPage() {
           </label>
         </div>
         <div className="flex gap-3">
-          <button onClick={() => save(mode)} disabled={saving} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
+          <button onClick={() => save(mode)} disabled={saving || uploading} className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-slate-900 disabled:cursor-not-allowed disabled:opacity-60">
             {saving ? 'Saving…' : mode === 'edit' ? 'Save changes' : 'Add service'}
           </button>
           {mode === 'edit' ? (

@@ -1,13 +1,14 @@
 import type { Metadata } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Nav } from '@/components/Nav';
 import { Footer } from '@/components/Footer';
 import { StructuredData } from '@/components/StructuredData';
+import { ManagedImage } from '@/components/ManagedImage';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
+import { resolveServiceImage } from '@/lib/media';
 
 export const revalidate = 300;
 
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     title: service.title,
     description: service.longDescription || service.description,
     path: `/services/${service.slug}`,
-    image: service.image || '/dnr/page_21.png',
+    image: resolveServiceImage(service),
   });
 }
 
@@ -61,6 +62,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
     serviceData.longDescription ||
     serviceData.description ||
     'Talk to DNR Techno Services for service planning, implementation support, and plant-side guidance tailored to your operating requirements.';
+
+  const serviceImage = resolveServiceImage(serviceData);
 
   const supportPoints = [
     'Clear project coordination and technical alignment before work begins',
@@ -101,8 +104,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
           </div>
 
           <div className="relative min-h-[300px] overflow-hidden rounded-[26px] border border-secondary/10 bg-secondary/5 shadow-lg shadow-secondary/10">
-            <Image
-              src={serviceData.image || '/dnr/page_21.png'}
+            <ManagedImage
+              src={serviceImage}
               alt={serviceData.title}
               fill
               className="object-cover"

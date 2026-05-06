@@ -14,6 +14,8 @@ type ContentCarouselProps = {
   viewportClassName?: string;
   autoPlay?: boolean;
   autoPlayInterval?: number;
+  advanceBy?: number;
+  controlsMode?: 'full' | 'arrows' | 'none';
 };
 
 const AUTOPLAY_INTERVAL = 3000;
@@ -26,6 +28,8 @@ export function ContentCarousel({
   viewportClassName = '',
   autoPlay = true,
   autoPlayInterval = AUTOPLAY_INTERVAL,
+  advanceBy,
+  controlsMode = 'full',
 }: ContentCarouselProps) {
   const items = useMemo(() => Children.toArray(children), [children]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -34,11 +38,14 @@ export function ContentCarousel({
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const gapRem = 1.25;
-  const totalPages = Math.max(1, Math.ceil(items.length / cardsPerView));
   const maxStartIndex = Math.max(0, items.length - cardsPerView);
   const clampedActiveIndex = Math.min(activeIndex, maxStartIndex);
+  const step = Math.max(1, advanceBy ?? cardsPerView);
+  const totalPages = Math.max(1, Math.ceil((maxStartIndex + 1) / step));
   const canNavigate = maxStartIndex > 0;
-  const showControls = totalPages > 1;
+  const showDots = controlsMode === 'full' && totalPages > 1;
+  const showArrows = controlsMode !== 'none' && canNavigate;
+  const showControls = showDots || showArrows;
 
   useEffect(() => {
     const updateCardsPerView = () => {
@@ -77,13 +84,13 @@ export function ContentCarousel({
     const id = setInterval(() => {
       setActiveIndex((current) => {
         const normalizedCurrent = Math.min(current, maxStartIndex);
-        const next = normalizedCurrent + cardsPerView;
+        const next = normalizedCurrent + step;
         return next > maxStartIndex ? 0 : next;
       });
     }, autoPlayInterval);
 
     return () => clearInterval(id);
-  }, [autoPlay, autoPlayInterval, canNavigate, cardsPerView, isPaused, maxStartIndex, prefersReducedMotion]);
+  }, [autoPlay, autoPlayInterval, canNavigate, isPaused, maxStartIndex, prefersReducedMotion, step]);
 
   useEffect(() => {
     return () => {
@@ -112,11 +119,11 @@ export function ContentCarousel({
       const normalizedCurrent = Math.min(current, maxStartIndex);
 
       if (direction === 1) {
-        const next = normalizedCurrent + cardsPerView;
+        const next = normalizedCurrent + step;
         return next > maxStartIndex ? 0 : next;
       }
 
-      const prev = normalizedCurrent - cardsPerView;
+      const prev = normalizedCurrent - step;
       return prev < 0 ? maxStartIndex : prev;
     });
   }
@@ -158,8 +165,8 @@ export function ContentCarousel({
       {showControls ? (
         <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="order-2 flex items-center justify-center gap-2 sm:order-1 sm:justify-start">
-            {Array.from({ length: totalPages }).map((_, pageIndex) => {
-              const pageStart = Math.min(pageIndex * cardsPerView, maxStartIndex);
+            {showDots ? Array.from({ length: totalPages }).map((_, pageIndex) => {
+              const pageStart = Math.min(pageIndex * step, maxStartIndex);
               const isActive = clampedActiveIndex === pageStart;
               return (
                 <button
@@ -175,27 +182,29 @@ export function ContentCarousel({
                   <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
                 </button>
               );
-            })}
+            }) : null}
           </div>
 
-          <div className="order-1 flex items-center justify-center gap-2 sm:order-2 sm:justify-end">
-            <button
-              type="button"
-              onClick={() => move(-1)}
-              aria-label="Previous items"
-              className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronLeft size={18} />
-            </button>
-            <button
-              type="button"
-              onClick={() => move(1)}
-              aria-label="Next items"
-              className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary disabled:cursor-not-allowed disabled:opacity-40"
-            >
-              <ChevronRight size={18} />
-            </button>
-          </div>
+          {showArrows ? (
+            <div className="order-1 flex items-center justify-center gap-2 sm:order-2 sm:justify-end">
+              <button
+                type="button"
+                onClick={() => move(-1)}
+                aria-label="Previous items"
+                className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+              >
+                <ChevronLeft size={18} />
+              </button>
+              <button
+                type="button"
+                onClick={() => move(1)}
+                aria-label="Next items"
+                className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+              >
+                <ChevronRight size={18} />
+              </button>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>

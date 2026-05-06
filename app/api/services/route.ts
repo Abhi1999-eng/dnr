@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { revalidateTag } from 'next/cache';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { connectDB } from '@/lib/db';
 import { Service } from '@/models/Service';
 import { verifyToken } from '@/lib/auth';
@@ -16,9 +16,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
   }
   const body = await req.json();
+  const payload = {
+    ...body,
+    image: body.image ?? body.imageUrl ?? body.coverImage ?? '',
+  };
   await connectDB();
-  const created = await Service.create(body);
+  const created: any = await Service.create(payload);
   revalidateTag('services', 'max');
   revalidateTag('public-data', 'max');
+  revalidatePath('/');
+  revalidatePath('/services');
+  if (created?.slug) revalidatePath(`/services/${created.slug}`);
   return NextResponse.json(created, { status: 201 });
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { resolveMediaUrl } from './media';
+import { resolveMediaUrl, resolveServiceImage } from './media';
 
 export const SITE_NAME = 'DNR Techno Services';
 export const SITE_URL = 'https://dnrtechnoservices.com';
@@ -153,7 +153,7 @@ export function buildProductJsonLd(product: any) {
 }
 
 export function buildServiceJsonLd(service: any) {
-  const image = service?.image || DEFAULT_OG_IMAGE;
+  const image = resolveServiceImage(service, DEFAULT_OG_IMAGE);
   return {
     '@context': 'https://schema.org',
     '@type': 'Service',

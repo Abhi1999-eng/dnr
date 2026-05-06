@@ -1,7 +1,8 @@
-import Image from 'next/image';
 import Link from 'next/link';
 import { SectionTitle } from './SectionTitle';
 import { ContentCarousel } from './ContentCarousel';
+import { ManagedImage } from './ManagedImage';
+import { resolveServiceImage } from '@/lib/media';
 
 export type ServiceType = {
   _id?: string;
@@ -30,7 +31,7 @@ export function ServiceGrid({
       <SectionTitle title={title} kicker={kicker} />
       <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }}>
         {services.map((service) => {
-          const imgSrc = service.image || '/dnr/page_21.png';
+          const imgSrc = resolveServiceImage(service);
           const href = service.slug ? `/services/${service.slug}` : '/services';
           return (
             <Link
@@ -39,7 +40,7 @@ export function ServiceGrid({
               className="glass group flex flex-col gap-4 rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(247,249,251,0.97))] p-5 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_54px_rgba(15,23,42,0.13)]"
             >
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[20px] border border-secondary/10 bg-muted/40">
-                <Image
+                <ManagedImage
                   src={imgSrc}
                   alt={service.title}
                   fill
