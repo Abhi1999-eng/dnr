@@ -106,20 +106,20 @@ export default async function HomePage() {
         headerCtaTarget={headerCtaHref}
         products={products || []}
       />
-      <main className="container-wide space-y-16 pb-20 pt-14">
+      <main className="container-wide space-y-12 pb-14 pt-10">
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative grid items-center gap-10 overflow-hidden rounded-[34px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] p-7 shadow-[0_25px_80px_rgba(15,23,42,0.08)] md:grid-cols-[minmax(0,0.98fr)_minmax(470px,1.02fr)] md:p-12"
+            className="relative grid items-center gap-8 overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(245,247,250,0.96),rgba(230,244,214,0.82))] p-5 shadow-[0_20px_56px_rgba(15,23,42,0.07)] md:grid-cols-[minmax(0,0.98fr)_minmax(470px,1.02fr)] md:p-9"
           >
             <div className="absolute -left-16 top-10 h-36 w-36 rounded-full bg-primary/10 blur-3xl" />
             <div className="absolute bottom-0 right-0 h-48 w-48 rounded-full bg-secondary/5 blur-3xl" />
-            <div className="space-y-7">
-              <div className="space-y-4">
+            <div className="space-y-5">
+              <div className="space-y-3">
                 <span className="pill inline-flex">{heroTagline}</span>
-                <div className="space-y-4">
-                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] text-secondary md:text-[4.25rem]">{heroHeading}</h1>
-                  <p className="max-w-2xl text-lg leading-relaxed text-secondary/80 md:text-[1.075rem]">{heroSubheading}</p>
+                <div className="space-y-3">
+                  <h1 className="max-w-3xl text-[2.7rem] font-semibold leading-[1.02] text-secondary md:text-[3.5rem] lg:text-[4.1rem]">{heroHeading}</h1>
+                  <p className="max-w-2xl text-base leading-relaxed text-secondary/80 md:text-[1rem]">{heroSubheading}</p>
                 </div>
               </div>
 
@@ -141,24 +141,24 @@ export default async function HomePage() {
               {heroStats.length ? (
                 <div className={`grid gap-4 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
                   {heroStats.map((stat: any) => (
-                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
-                      <p className="text-3xl font-semibold text-secondary">{stat.value}</p>
+                    <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
+                      <p className="text-[1.7rem] font-semibold text-secondary">{stat.value}</p>
                       <p className="mt-1 text-sm text-secondary/75">{stat.label}</p>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
-                    <p className="text-3xl font-semibold text-secondary">All</p>
+                <div className="grid gap-3 md:grid-cols-3">
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
+                    <p className="text-[1.7rem] font-semibold text-secondary">All</p>
                     <p className="mt-1 text-sm text-secondary/75">Products added in admin appear automatically</p>
                   </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
-                    <p className="text-3xl font-semibold text-secondary">Pan-India</p>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
+                    <p className="text-[1.7rem] font-semibold text-secondary">Pan-India</p>
                     <p className="mt-1 text-sm text-secondary/75">Support aligned to key manufacturing hubs</p>
                   </div>
-                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-5 py-4 shadow-sm">
-                    <p className="text-3xl font-semibold text-secondary">Fast</p>
+                  <div className="rounded-2xl border border-secondary/10 bg-white/90 px-4 py-3.5 shadow-sm">
+                    <p className="text-[1.7rem] font-semibold text-secondary">Fast</p>
                     <p className="mt-1 text-sm text-secondary/75">Talk to an expert for machine guidance and service planning</p>
                   </div>
                 </div>
@@ -169,16 +169,16 @@ export default async function HomePage() {
         )}
 
         {about.heading || about.body || about.bullets.length ? (
-          <section id="about" className="glass grid gap-8 rounded-3xl border border-secondary/10 bg-white/95 p-10 shadow-lg shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
+          <section id="about" className="glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
-              {about.heading ? <h2 className="text-3xl font-semibold text-secondary">{about.heading}</h2> : null}
+              {about.heading ? <h2 className="text-[1.7rem] font-semibold text-secondary">{about.heading}</h2> : null}
               {about.body ? <p className="text-secondary/80">{about.body}</p> : null}
             </div>
             {about.bullets.length ? (
-              <div className="grid gap-4 text-secondary/90 sm:grid-cols-2">
+              <div className="grid gap-3 text-secondary/90 sm:grid-cols-2">
                 {about.bullets.map((bullet: string) => (
-                  <div key={bullet} className="flex items-start gap-3 rounded-2xl border border-secondary/10 bg-white p-4 text-base shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+                  <div key={bullet} className="flex items-start gap-3 rounded-2xl border border-secondary/10 bg-white p-3.5 text-sm md:text-[0.95rem] shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
                     <span className="mt-1.5 h-3 w-3 rounded-full bg-primary" />
                     <span>{bullet}</span>
                   </div>
@@ -214,13 +214,13 @@ export default async function HomePage() {
         )}
 
         {(sections.whyChoose?.visible ?? true) && whyCards.length > 0 && (
-          <section id="why" className="glass rounded-3xl border border-accent/30 bg-white/90 p-10">
+          <section id="why" className="glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
             <p className="pill inline-flex">Why choose DNR</p>
-            <h2 className="mt-4 text-3xl font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
+            <h2 className="mt-4 text-[1.7rem] font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
             {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
-            <div className="mt-5 grid gap-4 md:grid-cols-2">
+            <div className="mt-4 grid gap-3 md:grid-cols-2">
               {whyCards.map((item: any) => (
-                <div key={item.title} className="rounded-2xl border border-secondary/10 bg-white p-5 shadow-sm">
+                <div key={item.title} className="rounded-2xl border border-secondary/10 bg-white p-4 shadow-sm">
                   <h3 className="text-lg font-semibold text-secondary">{item.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-secondary/75">{item.description}</p>
                 </div>
@@ -240,17 +240,17 @@ export default async function HomePage() {
         />
 
         {(sections.industries?.visible ?? true) && industries.length > 0 && (
-          <section id="industries" className="container-wide space-y-6">
+          <section id="industries" className="container-wide space-y-5">
             <div>
               <p className="pill inline-flex">Industries & applications</p>
-              <h3 className="mt-3 text-3xl font-semibold text-secondary">{sections.industries?.title || 'Where DNR machinery runs'}</h3>
+              <h3 className="mt-3 text-[1.7rem] font-semibold text-secondary">{sections.industries?.title || 'Where DNR machinery runs'}</h3>
               <p className="mt-1 text-secondary/75">{sections.industries?.kicker || 'Capability across casting cells, machining lines, automation, and finishing.'}</p>
             </div>
             <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
               {industries.map((industry: any) => (
-                <div key={industry.title} className="h-full rounded-[28px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-6 shadow-[0_16px_36px_rgba(15,23,42,0.08)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
-                  <div className="mb-4 flex items-center gap-3">
-                    <span className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/15 font-semibold text-secondary shadow-inner">
+                <div key={industry.title} className="h-full rounded-[24px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-5 shadow-[0_14px_30px_rgba(15,23,42,0.07)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
+                  <div className="mb-3 flex items-center gap-3">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 font-semibold text-secondary shadow-inner">
                       {industry.title.slice(0, 2).toUpperCase()}
                     </span>
                     <div>

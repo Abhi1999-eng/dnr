@@ -105,14 +105,14 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
 
   return (
     <div
-      className="relative rounded-[30px] border border-secondary/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,245,249,0.92))] p-4 shadow-[0_28px_70px_rgba(15,23,42,0.16)]"
+      className="relative rounded-[26px] border border-secondary/10 bg-[linear-gradient(180deg,rgba(255,255,255,0.96),rgba(241,245,249,0.92))] p-3 shadow-[0_22px_56px_rgba(15,23,42,0.14)]"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => scheduleResume()}
       onFocusCapture={() => setPaused(true)}
       onBlurCapture={() => scheduleResume()}
       onTouchStart={() => pauseForInteraction()}
     >
-      <div className="relative min-h-[450px] overflow-hidden rounded-[24px] border border-secondary/10 bg-secondary">
+      <div className="relative min-h-[380px] overflow-hidden rounded-[22px] border border-secondary/10 bg-secondary">
         <div
           className="absolute inset-0 will-change-opacity"
           style={{
@@ -127,7 +127,7 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
             src={activeSlide.image}
             alt={activeSlide.title}
             fill
-            className="object-contain object-center p-5 md:p-7"
+            className="object-contain object-center p-4 md:p-5"
             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 45vw"
             quality={72}
             priority={activeIndex === 0}
@@ -136,15 +136,15 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
           <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-secondary via-secondary/40 to-transparent" />
         </div>
 
-        <div className="relative z-10 flex h-full min-h-[450px] flex-col justify-between p-6 md:p-8">
+        <div className="relative z-10 flex h-full min-h-[380px] flex-col justify-between p-6 md:p-8">
           <div className="flex items-start justify-between gap-4">
-            <div className="space-y-3">
-              <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/85">
+            <div className="space-y-2.5">
+              <span className="inline-flex rounded-full border border-white/15 bg-white/10 px-3.5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85">
                 Machinery range
               </span>
-              <div className="hidden rounded-2xl border border-white/10 bg-white/10 px-4 py-3 text-left text-white/80 shadow-lg shadow-black/10 backdrop-blur-sm md:block">
+              <div className="hidden rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 text-left text-white/80 shadow-lg shadow-black/10 backdrop-blur-sm md:block">
                 <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">Live product surface</p>
-                <p className="mt-1 text-sm leading-relaxed">Every product added in admin appears here automatically, so the hero stays current without extra setup.</p>
+                <p className="mt-1 text-[13px] leading-relaxed">Every product added in admin appears here automatically, so the hero stays current without extra setup.</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -167,24 +167,24 @@ export function HeroSlider({ products = [] }: { products?: ProductType[] }) {
             </div>
           </div>
 
-          <div className="max-w-lg space-y-4">
+          <div className="max-w-lg space-y-3">
             <div className="space-y-2">
-              <p className="text-sm font-semibold uppercase tracking-[0.18em] text-primary">Precision machinery • support-ready</p>
-              <p className="text-2xl font-semibold leading-tight text-white md:text-3xl">{activeSlide.title}</p>
-              <p className="max-w-md text-sm leading-relaxed text-white/90 md:text-base">{activeSlide.description}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-primary">Precision machinery • support-ready</p>
+              <p className="text-[1.65rem] font-semibold leading-tight text-white md:text-[2.1rem]">{activeSlide.title}</p>
+              <p className="max-w-md text-[13px] leading-relaxed text-white/90 md:text-base">{activeSlide.description}</p>
             </div>
 
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                <p className="text-2xl font-semibold text-white">Live</p>
+            <div className="grid gap-2.5 sm:grid-cols-3">
+              <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
+                <p className="text-xl font-semibold text-white">Live</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Product updates</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                <p className="text-2xl font-semibold text-white">Fast</p>
+              <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
+                <p className="text-xl font-semibold text-white">Fast</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Service response</p>
               </div>
-              <div className="rounded-2xl border border-white/10 bg-white/10 px-4 py-3 backdrop-blur-sm">
-                <p className="text-2xl font-semibold text-white">Plant</p>
+              <div className="rounded-2xl border border-white/10 bg-white/10 px-3.5 py-2.5 backdrop-blur-sm">
+                <p className="text-xl font-semibold text-white">Plant</p>
                 <p className="text-xs uppercase tracking-[0.18em] text-white/85">Ready support</p>
               </div>
             </div>

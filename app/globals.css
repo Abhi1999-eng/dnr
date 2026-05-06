@@ -31,9 +31,9 @@ body {
 }
 
 .container-wide {
-  max-width: 1440px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding-inline: clamp(1.5rem, 2.4vw, 2.75rem);
+  padding-inline: clamp(1rem, 2vw, 2rem);
 }
 
 .gradient-text {
@@ -56,10 +56,10 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  min-height: 2.5rem;
-  padding: 0.5rem 0.9rem;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.8rem;
   border-radius: 9999px;
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 600;
   background: linear-gradient(120deg, rgba(139, 197, 63, 0.12), rgba(31, 39, 48, 0.06));
   color: #1f2730;
@@ -71,9 +71,9 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3rem;
-  padding: 0.95rem 1.25rem;
-  border-radius: 14px;
+  min-height: 2.75rem;
+  padding: 0.8rem 1.1rem;
+  border-radius: 12px;
   background: linear-gradient(120deg, #8bc53f, #6aa12f 70%, #5c8b27);
   color: #0f1a10;
   font-weight: 700;
@@ -101,9 +101,9 @@ select:focus-visible {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3rem;
-  padding: 0.95rem 1.15rem;
-  border-radius: 14px;
+  min-height: 2.75rem;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
   border: 1px solid rgba(31, 39, 48, 0.12);
   color: #1f2730;
   background: rgba(139, 197, 63, 0.08);
@@ -117,8 +117,8 @@ select:focus-visible {
 }
 
 .touch-target {
-  min-width: 3rem;
-  min-height: 3rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
 }
 
 @keyframes pulse-soft {

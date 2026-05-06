@@ -25,7 +25,7 @@ export function ClientLogosSection({
   if (!logos.length) return null;
 
   return (
-    <section id="clients" className="container-wide mt-16 space-y-8">
+    <section id="clients" className="container-wide mt-12 space-y-6">
       <SectionTitle title={title} kicker={kicker} />
       <ContentCarousel
         itemsPerView={{ mobile: 2, tablet: 3, desktop: 5, wide: 6 }}
