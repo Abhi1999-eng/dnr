@@ -6,7 +6,6 @@ import { Coverage } from '@/components/Coverage';
 import { FloatingSupport } from '@/components/FloatingSupport';
 import { InquirySection } from '@/components/InquirySection';
 import { Footer } from '@/components/Footer';
-import { HeroSlider } from '@/components/HeroSlider';
 import { Nav } from '@/components/Nav';
 import { ProductGrid } from '@/components/ProductGrid';
 import { ServiceGrid } from '@/components/ServiceGrid';
@@ -82,7 +81,7 @@ export default async function HomePage() {
   const coverageStateLabels = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.label]));
   const coverageStates = coverageEntries.map((item: any) => item.stateId);
   const productsSection = sections.products || {};
-  const heroImage = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
+  const heroMetaImage = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
   const structuredData = [
     buildOrganizationJsonLd(siteSettings),
     buildWebsiteJsonLd(),
@@ -92,7 +91,7 @@ export default async function HomePage() {
       name: heroHeading,
       description: heroSubheading,
       url: absoluteUrl('/'),
-      primaryImageOfPage: heroImage.startsWith('http') ? heroImage : absoluteUrl(heroImage),
+      primaryImageOfPage: heroMetaImage.startsWith('http') ? heroMetaImage : absoluteUrl(heroMetaImage),
     },
   ];
 
@@ -110,65 +109,59 @@ export default async function HomePage() {
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(247,249,251,0.98),rgba(234,243,223,0.84))] py-6 shadow-[0_18px_48px_rgba(15,23,42,0.07)] md:py-8 lg:py-10"
+            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(180deg,#fffefb,rgba(248,250,252,0.98),rgba(237,245,228,0.72))] py-10 shadow-[0_18px_46px_rgba(15,23,42,0.06)] md:py-12 lg:py-14"
           >
-            <div className="absolute -left-14 top-12 h-32 w-32 rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute right-0 top-0 h-44 w-44 rounded-full bg-secondary/5 blur-3xl" />
-            <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(400px,0.92fr)] lg:gap-10 lg:px-8">
-              <div className="relative z-10 space-y-5">
+            <div className="absolute -left-10 top-8 h-28 w-28 rounded-full bg-primary/10 blur-3xl" />
+            <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-secondary/5 blur-3xl" />
+            <div className="mx-auto grid max-w-7xl items-center gap-8 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(360px,0.8fr)] lg:gap-10 lg:px-8">
+              <div className="relative z-10 space-y-5 lg:max-w-3xl">
                 <div className="space-y-3">
-                  <p className="text-[11px] font-semibold uppercase tracking-[0.24em] text-secondary/60 md:text-xs">Industrial Machinery &amp; Engineering Support</p>
-                  <div className="space-y-3">
-                    <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-tight text-secondary md:text-5xl lg:text-[52px]">{heroHeading}</h1>
-                    <p className="max-w-xl text-sm leading-6 text-secondary/80 md:text-base lg:text-lg">{heroSubheading}</p>
-                  </div>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-secondary/60 md:text-xs">INDUSTRIAL MACHINERY &amp; ENGINEERING SUPPORT</p>
+                  <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-tight text-secondary md:text-5xl lg:text-[58px]">Industrial Machinery Support, Built for Uptime.</h1>
+                  <p className="max-w-2xl text-sm leading-6 text-secondary/80 md:text-base lg:line-clamp-2 lg:text-lg">DNR Techno Services helps manufacturers source machinery, plan installations, coordinate service, and maintain spare-parts continuity with dependable technical support.</p>
                 </div>
 
                 <div className="flex flex-wrap gap-2.5">
                   <Link href="#products" className="btn-primary shadow-sm">
-                    {heroPrimaryCta}
+                    View Products
                   </Link>
                   <Link href={headerCtaHref} className="btn-ghost border-secondary/15 bg-white text-secondary shadow-sm">
-                    {heroSecondaryCta}
+                    Talk to an Expert
                   </Link>
                 </div>
 
                 <div className="flex flex-wrap gap-2 text-xs text-secondary/75 md:text-sm">
-                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Industrial machinery support</span>
-                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Installation &amp; commissioning</span>
-                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Responsive service coordination</span>
-                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Spare parts &amp; maintenance</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Machinery sourcing</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Installation support</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Maintenance coordination</span>
+                  <span className="rounded-full border border-secondary/10 bg-white/90 px-3 py-1.5 shadow-sm">Spare parts support</span>
                 </div>
+              </div>
 
-                {heroStats.length ? (
-                  <div className={`grid gap-2.5 ${heroStats.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'}`}>
-                    {heroStats.map((stat: any) => (
-                      <div key={`${stat.label}-${stat.value}`} className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                        <p className="text-[1.35rem] font-semibold text-secondary">{stat.value}</p>
-                        <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">{stat.label}</p>
+              <div className="relative z-10 overflow-hidden rounded-[26px] border border-white/10 bg-[linear-gradient(180deg,#202a35,#121923)] px-5 py-5 text-white shadow-[0_20px_48px_rgba(15,23,42,0.16)]">
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(139,197,63,0.12),transparent_42%,rgba(255,255,255,0.04))]" />
+                <div className="absolute inset-y-0 right-10 w-px bg-white/8" />
+                <div className="absolute left-5 top-5 h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_20px_rgba(139,197,63,0.45)]" />
+                <div className="relative space-y-5">
+                  <div className="space-y-2 border-b border-white/10 pb-4">
+                    <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary/90">PLANT-READY SUPPORT</p>
+                    <h2 className="text-2xl font-semibold leading-tight md:text-[1.9rem]">Practical support for production teams</h2>
+                    <p className="text-sm leading-6 text-white/78">From machinery selection to service planning, we help manufacturers keep technical requirements moving without unnecessary delays.</p>
+                  </div>
+
+                  <div className="space-y-3">
+                    {[
+                      ['01', 'Machinery sourcing'],
+                      ['02', 'Installation & commissioning'],
+                      ['03', 'Maintenance & spare parts'],
+                    ].map(([index, label]) => (
+                      <div key={index} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 backdrop-blur-sm">
+                        <span className="text-sm font-semibold tracking-[0.18em] text-primary">{index}</span>
+                        <span className="text-sm font-medium text-white/92 md:text-[0.95rem]">{label}</span>
                       </div>
                     ))}
                   </div>
-                ) : (
-                  <div className="grid gap-2.5 md:grid-cols-3">
-                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                      <p className="text-[1.35rem] font-semibold text-secondary">All</p>
-                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Products added in admin appear automatically</p>
-                    </div>
-                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                      <p className="text-[1.35rem] font-semibold text-secondary">Pan-India</p>
-                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Support aligned to key manufacturing hubs</p>
-                    </div>
-                    <div className="rounded-2xl border border-secondary/10 bg-white/90 px-3.5 py-3 shadow-sm">
-                      <p className="text-[1.35rem] font-semibold text-secondary">Fast</p>
-                      <p className="mt-1 text-xs leading-relaxed text-secondary/70 md:text-sm">Talk to an expert for machine guidance and service planning</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              <div className="relative z-10">
-                <HeroSlider products={products || []} />
+                </div>
               </div>
             </div>
           </section>
