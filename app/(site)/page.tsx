@@ -8,6 +8,7 @@ import { InquirySection } from '@/components/InquirySection';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { ProductGrid } from '@/components/ProductGrid';
+import { Reveal } from '@/components/Reveal';
 import { ServiceGrid } from '@/components/ServiceGrid';
 import { StructuredData } from '@/components/StructuredData';
 import { Testimonials } from '@/components/Testimonials';
@@ -168,7 +169,8 @@ export default async function HomePage() {
         )}
 
         {about.heading || about.body || about.bullets.length ? (
-          <section id="about" className="glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
+          <Reveal>
+            <section id="about" className="glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
               {about.heading ? <h2 className="text-[1.5rem] font-semibold text-secondary">{about.heading}</h2> : null}
@@ -176,15 +178,18 @@ export default async function HomePage() {
             </div>
             {about.bullets.length ? (
               <div className="grid gap-3 text-secondary/90 sm:grid-cols-2">
-                {about.bullets.map((bullet: string) => (
-                  <div key={bullet} className="flex items-start gap-3 rounded-2xl border border-secondary/10 bg-white p-3.5 text-sm md:text-[0.95rem] shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
-                    <span className="mt-1.5 h-3 w-3 rounded-full bg-primary" />
-                    <span>{bullet}</span>
-                  </div>
+                {about.bullets.map((bullet: string, index: number) => (
+                  <Reveal key={bullet} delay={index * 0.05} className="h-full">
+                    <div className="flex h-full items-start gap-3 rounded-2xl border border-secondary/10 bg-white p-3.5 text-sm md:text-[0.95rem] shadow-sm transition hover:-translate-y-1 hover:border-primary/40 hover:shadow-lg">
+                      <span className="mt-1.5 h-3 w-3 rounded-full bg-primary" />
+                      <span>{bullet}</span>
+                    </div>
+                  </Reveal>
                 ))}
               </div>
             ) : null}
-          </section>
+            </section>
+          </Reveal>
         ) : null}
 
         {(productsSection.visible ?? true) && (
@@ -213,19 +218,23 @@ export default async function HomePage() {
         )}
 
         {(sections.whyChoose?.visible ?? true) && whyCards.length > 0 && (
-          <section id="why" className="glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
+          <Reveal>
+            <section id="why" className="glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
             <p className="pill inline-flex">Why choose DNR</p>
             <h2 className="mt-4 text-[1.7rem] font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
             {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
             <div className="mt-4 grid gap-3 md:grid-cols-2">
-              {whyCards.map((item: any) => (
-                <div key={item.title} className="rounded-2xl border border-secondary/10 bg-white p-4 shadow-sm">
-                  <h3 className="text-lg font-semibold text-secondary">{item.title}</h3>
-                  <p className="mt-2 text-sm leading-relaxed text-secondary/75">{item.description}</p>
-                </div>
+              {whyCards.map((item: any, index: number) => (
+                <Reveal key={item.title} delay={index * 0.06} className="h-full">
+                  <div className="h-full rounded-2xl border border-secondary/10 bg-white p-4 shadow-sm">
+                    <h3 className="text-lg font-semibold text-secondary">{item.title}</h3>
+                    <p className="mt-2 text-sm leading-relaxed text-secondary/75">{item.description}</p>
+                  </div>
+                </Reveal>
               ))}
             </div>
-          </section>
+            </section>
+          </Reveal>
         )}
 
         <Coverage
@@ -246,19 +255,21 @@ export default async function HomePage() {
               <p className="mt-1 text-secondary/75">{sections.industries?.kicker || 'Capability across casting cells, machining lines, automation, and finishing.'}</p>
             </div>
             <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 3, wide: 4 }}>
-              {industries.map((industry: any) => (
-                <div key={industry.title} className="h-full rounded-[24px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-5 shadow-[0_14px_30px_rgba(15,23,42,0.07)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
-                  <div className="mb-3 flex items-center gap-3">
-                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 font-semibold text-secondary shadow-inner">
-                      {industry.title.slice(0, 2).toUpperCase()}
-                    </span>
-                    <div>
-                      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Industry</p>
-                      <h3 className="text-lg font-semibold text-secondary">{industry.title}</h3>
+              {industries.map((industry: any, index: number) => (
+                <Reveal key={industry.title} delay={index * 0.06} className="h-full">
+                  <div className="h-full rounded-[24px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(245,247,250,0.96))] p-5 shadow-[0_14px_30px_rgba(15,23,42,0.07)] transition hover:-translate-y-1 hover:shadow-[0_22px_44px_rgba(15,23,42,0.12)]">
+                    <div className="mb-3 flex items-center gap-3">
+                      <span className="inline-flex h-10 w-10 items-center justify-center rounded-2xl bg-primary/15 font-semibold text-secondary shadow-inner">
+                        {industry.title.slice(0, 2).toUpperCase()}
+                      </span>
+                      <div>
+                        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Industry</p>
+                        <h3 className="text-lg font-semibold text-secondary">{industry.title}</h3>
+                      </div>
                     </div>
+                    <p className="text-sm leading-relaxed text-secondary/80">{industry.description}</p>
                   </div>
-                  <p className="text-sm leading-relaxed text-secondary/80">{industry.description}</p>
-                </div>
+                </Reveal>
               ))}
             </ContentCarousel>
           </section>

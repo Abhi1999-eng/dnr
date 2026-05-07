@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import { SectionTitle } from './SectionTitle';
+import { Reveal } from './Reveal';
 import { simplemapsIndiaMapinfo } from '@/lib/simplemaps-india';
 import { SUPPORTED_COVERAGE_STATES } from '@/lib/coverage-config';
 
@@ -118,8 +119,9 @@ export function Coverage({
     <section id="coverage" className="container-wide mt-12 space-y-5">
       <SectionTitle title={title} kicker={kicker} />
 
-      <div className="rounded-[1.7rem] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(246,248,250,0.98),rgba(237,245,228,0.82))] p-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)] md:p-6">
-        <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
+      <Reveal>
+        <div className="rounded-[1.7rem] border border-secondary/10 bg-[linear-gradient(135deg,#ffffff,rgba(246,248,250,0.98),rgba(237,245,228,0.82))] p-4 shadow-[0_18px_48px_rgba(15,23,42,0.08)] md:p-6">
+          <div className="grid gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:items-stretch">
           <div className="rounded-[1.25rem] border border-secondary/10 bg-white/95 p-4 shadow-[0_14px_34px_rgba(15,23,42,0.07)] md:p-4">
             <div className="mb-3 flex items-center justify-between gap-4">
               <div>
@@ -218,8 +220,9 @@ export function Coverage({
               )}
             </div>
           </div>
+          </div>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

@@ -3,6 +3,7 @@ import { SectionTitle } from './SectionTitle';
 import { ClientLogoType } from '@/types';
 import { ContentCarousel } from './ContentCarousel';
 import { isDirectUploadAsset, resolveMediaUrl } from '@/lib/media';
+import { Reveal } from './Reveal';
 
 function initials(name: string) {
   return name
@@ -34,7 +35,7 @@ export function ClientLogosSection({
         controlsMode="none"
         viewportClassName="border-transparent bg-transparent p-0 shadow-none"
       >
-        {logos.map((logo) => {
+        {logos.map((logo, index) => {
           const content = logo.logoImage ? (
             <div className="relative h-16 w-full sm:h-18 md:h-20">
               <Image src={resolveMediaUrl(logo.logoImage, '/logo-dnr.png')} alt={logo.name} fill className="object-contain" sizes="(max-width: 1024px) 50vw, 25vw" unoptimized={isDirectUploadAsset(logo.logoImage)} />
@@ -57,12 +58,16 @@ export function ClientLogosSection({
             </div>
           );
 
-          return logo.externalUrl ? (
-            <a key={logo._id || logo.name} href={logo.externalUrl} target="_blank" rel="noopener noreferrer" aria-label={logo.name}>
-              {card}
-            </a>
-          ) : (
-            <div key={logo._id || logo.name}>{card}</div>
+          return (
+            <Reveal key={logo._id || logo.name} delay={index * 0.04} className="h-full">
+              {logo.externalUrl ? (
+                <a href={logo.externalUrl} target="_blank" rel="noopener noreferrer" aria-label={logo.name}>
+                  {card}
+                </a>
+              ) : (
+                <div>{card}</div>
+              )}
+            </Reveal>
           );
         })}
       </ContentCarousel>

@@ -1,5 +1,6 @@
 import { ChevronRight, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import { InquiryForm } from './InquiryForm';
+import { Reveal } from './Reveal';
 
 type InquiryFormConfig = {
   fields?: Partial<Record<'name' | 'company' | 'phone' | 'email' | 'productInterest' | 'message', boolean>>;
@@ -79,8 +80,9 @@ export function InquirySection({
   const contacts = buildQuickLinks(quickLinks, fallbackPhone, fallbackEmail, fallbackWhatsapp);
 
   return (
-    <section id={id} className="mx-auto max-w-[1280px] scroll-mt-28 rounded-[30px] border border-slate-200 bg-white px-4 py-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)] md:px-8 md:py-8">
-      <div className="grid items-start gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:gap-8">
+    <Reveal>
+      <section id={id} className="mx-auto max-w-[1280px] scroll-mt-28 rounded-[30px] border border-slate-200 bg-white px-4 py-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)] md:px-8 md:py-8">
+        <div className="grid items-start gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:gap-8">
         <div className="space-y-5">
           <div className="space-y-3">
             <span className="pill inline-flex">{kicker}</span>
@@ -125,7 +127,8 @@ export function InquirySection({
 
           <InquiryForm config={config} initialValues={{ productInterest: initialProductInterest || '' }} context={formContext} />
         </div>
-      </div>
-    </section>
+        </div>
+      </section>
+    </Reveal>
   );
 }
