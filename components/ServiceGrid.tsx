@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { SectionTitle } from './SectionTitle';
+import { ContentCarousel } from './ContentCarousel';
 import { ManagedImage } from './ManagedImage';
 import { Reveal } from './Reveal';
 import { resolveServiceImage } from '@/lib/media';
@@ -29,7 +30,7 @@ export function ServiceGrid({
   return (
     <section id={id} className="container-wide mt-10 scroll-mt-24 space-y-5 md:mt-12">
       <SectionTitle title={title} kicker={kicker} />
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 4, wide: 4 }} gapRem={1} autoPlayInterval={3000}>
         {services.map((service, index) => {
           const imgSrc = resolveServiceImage(service);
           const href = service.slug ? `/services/${service.slug}` : '/services';
@@ -61,7 +62,7 @@ export function ServiceGrid({
             </Reveal>
           );
         })}
-      </div>
+      </ContentCarousel>
     </section>
   );
 }
