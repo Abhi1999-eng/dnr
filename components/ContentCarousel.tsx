@@ -16,6 +16,7 @@ type ContentCarouselProps = {
   autoPlayInterval?: number;
   advanceBy?: number;
   controlsMode?: 'full' | 'arrows' | 'none';
+  gapRem?: number;
 };
 
 const AUTOPLAY_INTERVAL = 3000;
@@ -30,6 +31,7 @@ export function ContentCarousel({
   autoPlayInterval = AUTOPLAY_INTERVAL,
   advanceBy,
   controlsMode = 'full',
+  gapRem = 1.25,
 }: ContentCarouselProps) {
   const items = useMemo(() => Children.toArray(children), [children]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -37,7 +39,6 @@ export function ContentCarousel({
   const [isPaused, setIsPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const gapRem = 1.25;
   const maxStartIndex = Math.max(0, items.length - cardsPerView);
   const clampedActiveIndex = Math.min(activeIndex, maxStartIndex);
   const step = Math.max(1, advanceBy ?? cardsPerView);
@@ -130,7 +131,7 @@ export function ContentCarousel({
 
   return (
     <div
-      className="space-y-4"
+      className="space-y-3"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => scheduleAutoplayResume()}
       onFocusCapture={() => setIsPaused(true)}
@@ -163,7 +164,7 @@ export function ContentCarousel({
       </div>
 
       {showControls ? (
-        <div className="flex flex-col gap-3 px-2 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="order-2 flex items-center justify-center gap-2 sm:order-1 sm:justify-start">
             {showDots ? Array.from({ length: totalPages }).map((_, pageIndex) => {
               const pageStart = Math.min(pageIndex * step, maxStartIndex);
@@ -177,8 +178,8 @@ export function ContentCarousel({
                     setActiveIndex(pageStart);
                   }}
                   aria-label={`Go to slide group ${pageIndex + 1}`}
-                  className={`touch-target inline-flex items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
-                >
+                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
+              >
                   <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
                 </button>
               );
@@ -191,7 +192,7 @@ export function ContentCarousel({
                 type="button"
                 onClick={() => move(-1)}
                 aria-label="Previous items"
-                className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-secondary/10 bg-white text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
               >
                 <ChevronLeft size={18} />
               </button>
@@ -199,7 +200,7 @@ export function ContentCarousel({
                 type="button"
                 onClick={() => move(1)}
                 aria-label="Next items"
-                className="touch-target rounded-full border border-secondary/10 bg-white p-2 text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-secondary/10 bg-white text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
               >
                 <ChevronRight size={18} />
               </button>
