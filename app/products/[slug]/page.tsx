@@ -6,6 +6,7 @@ import { ManagedImage } from '@/components/ManagedImage';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
+import { ProductDetailGallery } from '@/components/ProductDetailGallery';
 import { ProductEnquiryActions } from '@/components/ProductEnquiryActions';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
@@ -148,27 +149,11 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="flex aspect-[4/3] items-center justify-center overflow-hidden rounded-2xl border border-muted/80 bg-slate-50 p-4 md:aspect-[5/4] md:p-6">
-              <ManagedImage
-                src={resolveProductImage(productData)}
-                alt={productData.title}
-                width={1600}
-                height={1200}
-                className="max-h-full max-w-full object-contain object-center"
-                priority
-              />
-            </div>
-            {productData.gallery?.length ? (
-              <div className="grid grid-cols-3 gap-2">
-                {productData.gallery.map((img: string, index: number) => (
-                  <div key={`${img}-${index}`} className="relative h-28 overflow-hidden rounded-xl border border-muted/80 bg-white p-2">
-                    <ManagedImage src={resolveMediaUrl(img, '/dnr/page_06.png')} alt={`${productData.title} gallery image ${index + 1}`} fill className="object-contain object-center p-2" sizes="(max-width: 768px) 33vw, 160px" />
-                  </div>
-                ))}
-              </div>
-            ) : null}
-          </div>
+          <ProductDetailGallery
+            title={productData.title}
+            heroImage={resolveProductImage(productData)}
+            galleryImages={(productData.gallery || []).map((img: string) => resolveMediaUrl(img, '/dnr/page_06.png'))}
+          />
         </div>
 
         {longDescription ? (
