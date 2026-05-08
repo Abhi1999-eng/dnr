@@ -32,9 +32,21 @@ body {
 }
 
 .container-wide {
-  max-width: 1280px;
+  max-width: 80rem;
   margin: 0 auto;
-  padding-inline: clamp(1rem, 2vw, 2rem);
+  padding-inline: 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-wide {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-wide {
+    padding-inline: 2rem;
+  }
 }
 
 .gradient-text {

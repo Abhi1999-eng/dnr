@@ -106,11 +106,11 @@ export default async function HomePage() {
         headerCtaTarget={headerCtaHref}
         products={products || []}
       />
-      <main className="container-wide space-y-12 pb-14 pt-6 md:pt-8">
+      <main className="space-y-12 pb-14 pt-6 md:pt-8">
         {(sections.hero?.visible ?? true) && (
           <section
             id="hero"
-            className="relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(180deg,#fffefb,rgba(248,250,252,0.98),rgba(237,245,228,0.72))] py-10 shadow-[0_18px_46px_rgba(15,23,42,0.06)] md:py-12 lg:py-14"
+            className="container-wide relative overflow-hidden rounded-[30px] border border-secondary/10 bg-[linear-gradient(180deg,#fffefb,rgba(248,250,252,0.98),rgba(237,245,228,0.72))] py-10 shadow-[0_18px_46px_rgba(15,23,42,0.06)] md:py-12 lg:py-14"
           >
             <div className="absolute -left-10 top-8 h-28 w-28 rounded-full bg-primary/10 blur-3xl" />
             <div className="absolute right-0 top-0 h-40 w-40 rounded-full bg-secondary/5 blur-3xl" />
@@ -170,7 +170,7 @@ export default async function HomePage() {
 
         {about.heading || about.body || about.bullets.length ? (
           <Reveal>
-            <section id="about" className="glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
+            <section id="about" className="container-wide glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
             <div className="space-y-3">
               <p className="pill inline-flex">About</p>
               {about.heading ? <h2 className="text-[1.5rem] font-semibold text-secondary">{about.heading}</h2> : null}
@@ -219,7 +219,7 @@ export default async function HomePage() {
 
         {(sections.whyChoose?.visible ?? true) && whyCards.length > 0 && (
           <Reveal>
-            <section id="why" className="glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
+            <section id="why" className="container-wide glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
             <p className="pill inline-flex">Why choose DNR</p>
             <h2 className="mt-4 text-[1.7rem] font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
             {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
