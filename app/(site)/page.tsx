@@ -9,6 +9,7 @@ import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
 import { ProductGrid } from '@/components/ProductGrid';
 import { Reveal } from '@/components/Reveal';
+import { SectionTitle } from '@/components/SectionTitle';
 import { ServiceGrid } from '@/components/ServiceGrid';
 import { StructuredData } from '@/components/StructuredData';
 import { Testimonials } from '@/components/Testimonials';
@@ -170,11 +171,9 @@ export default async function HomePage() {
 
         {about.heading || about.body || about.bullets.length ? (
           <Reveal>
-            <section id="about" className="container-wide glass grid gap-6 rounded-[24px] border border-secondary/10 bg-white/95 p-7 shadow-md shadow-secondary/10 md:grid-cols-[1fr,1.1fr]">
+            <section id="about" className="container-wide space-y-5 md:space-y-6">
             <div className="space-y-3">
-              <p className="pill inline-flex">About</p>
-              {about.heading ? <h2 className="text-[1.5rem] font-semibold text-secondary">{about.heading}</h2> : null}
-              {about.body ? <p className="text-secondary/80">{about.body}</p> : null}
+              <SectionTitle eyebrow="About" title={about.heading || 'About DNR'} kicker={about.body || undefined} />
             </div>
             {about.bullets.length ? (
               <div className="grid gap-3 text-secondary/90 sm:grid-cols-2">
@@ -219,11 +218,9 @@ export default async function HomePage() {
 
         {(sections.whyChoose?.visible ?? true) && whyCards.length > 0 && (
           <Reveal>
-            <section id="why" className="container-wide glass rounded-[24px] border border-accent/30 bg-white/90 p-7">
-            <p className="pill inline-flex">Why choose DNR</p>
-            <h2 className="mt-4 text-[1.7rem] font-semibold text-secondary">{sections.whyChoose?.title || 'Why teams choose DNR'}</h2>
-            {sections.whyChoose?.kicker ? <p className="mt-2 max-w-3xl text-secondary/75">{sections.whyChoose.kicker}</p> : null}
-            <div className="mt-4 grid gap-3 md:grid-cols-2">
+            <section id="why" className="container-wide space-y-5 md:space-y-6">
+            <SectionTitle title={sections.whyChoose?.title || 'Why teams choose DNR'} kicker={sections.whyChoose?.kicker || undefined} eyebrow="Why choose DNR" />
+            <div className="grid gap-3 md:grid-cols-2">
               {whyCards.map((item: any, index: number) => (
                 <Reveal key={item.title} delay={index * 0.06} className="h-full">
                   <div className="h-full rounded-2xl border border-secondary/10 bg-white p-4 shadow-sm">

@@ -1,6 +1,7 @@
 import { ChevronRight, Mail, MessageCircle, PhoneCall } from 'lucide-react';
 import { InquiryForm } from './InquiryForm';
 import { Reveal } from './Reveal';
+import { SectionTitle } from './SectionTitle';
 
 type InquiryFormConfig = {
   fields?: Partial<Record<'name' | 'company' | 'phone' | 'email' | 'productInterest' | 'message', boolean>>;
@@ -81,17 +82,11 @@ export function InquirySection({
 
   return (
     <Reveal>
-      <section id={id} className="container-wide scroll-mt-28 rounded-[30px] border border-slate-200 bg-white py-5 shadow-[0_10px_28px_rgba(15,23,42,0.05)] md:py-8">
-        <div className="grid items-start gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:gap-8">
-        <div className="space-y-5">
-          <div className="space-y-3">
-            <span className="pill inline-flex">{kicker}</span>
-            <div className="space-y-3">
-              <h2 className="text-[1.95rem] font-semibold text-secondary md:text-[2.1rem]">{heading}</h2>
-              <p className="max-w-lg text-sm leading-relaxed md:text-[0.95rem] text-secondary/78">{description}</p>
-            </div>
-          </div>
+      <section id={id} className="container-wide scroll-mt-28 space-y-5 md:space-y-6">
+        <SectionTitle eyebrow={kicker} title={heading} kicker={description} />
 
+        <div className="grid items-start gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:gap-8">
+          <div className="space-y-5">
           <div className="max-w-[460px] rounded-[24px] border border-slate-200 bg-slate-50/70 p-3.5 md:p-4">
             <p className="text-sm font-semibold uppercase tracking-[0.16em] text-secondary/65">Quick contact</p>
             <div className="mt-3 space-y-2">
