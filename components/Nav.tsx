@@ -72,7 +72,7 @@ export function Nav({
     <header className="sticky top-0 z-[120] border-b border-slate-200 bg-white text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
       <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-4 px-4 py-4 sm:px-6 md:gap-6 md:px-8 md:py-6 lg:grid lg:min-h-[120px] lg:grid-cols-[auto_auto_1fr_auto] lg:items-center lg:gap-x-12 lg:px-10 lg:py-6 xl:px-12">
         <Link href={resolveHref('#hero')} className="group flex items-center text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
-          <div className="relative h-16 w-[180px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-20 sm:w-[220px] lg:h-20 lg:w-[240px] xl:h-22 xl:w-[260px]">
+          <div className="relative h-12 w-[120px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-14 sm:w-[140px] lg:h-[72px] lg:w-[200px] xl:h-[78px] xl:w-[220px]">
             <Image src={logo} alt={`${companyName} logo`} fill className="object-contain object-left" priority />
           </div>
         </Link>
