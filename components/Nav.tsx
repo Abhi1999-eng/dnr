@@ -70,19 +70,19 @@ export function Nav({
 
   return (
     <header className="sticky top-0 z-[120] border-b border-slate-200 bg-white text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
-      <div className="container-wide flex items-center justify-between gap-4 py-4 md:gap-6 md:py-6 lg:grid lg:min-h-[128px] lg:grid-cols-[auto_1fr_auto] lg:items-center lg:gap-10 lg:py-7">
+      <div className="mx-auto flex max-w-[1320px] items-center justify-between gap-4 px-4 py-4 sm:px-6 md:gap-6 md:px-8 md:py-6 lg:grid lg:min-h-[120px] lg:grid-cols-[auto_auto_1fr_auto] lg:items-center lg:gap-x-12 lg:px-10 lg:py-6 xl:px-12">
         <Link href={resolveHref('#hero')} className="group flex items-center text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
-          <div className="relative h-16 w-[180px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-20 sm:w-[240px] lg:h-24 lg:w-[340px] xl:w-[380px]">
+          <div className="relative h-16 w-[180px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-20 sm:w-[220px] lg:h-20 lg:w-[240px] xl:h-22 xl:w-[260px]">
             <Image src={logo} alt={`${companyName} logo`} fill className="object-contain object-left" priority />
           </div>
         </Link>
 
-        <nav className="relative isolate hidden justify-self-start lg:ml-10 lg:flex lg:min-h-[68px] lg:items-center lg:gap-5 rounded-full border border-slate-200 bg-white px-8 py-3 text-[18px] font-medium text-secondary shadow-[0_10px_24px_rgba(15,23,42,0.05)] lg:px-11 xl:ml-14 xl:gap-7 xl:px-14 xl:text-[19px]">
+        <nav className="relative isolate hidden justify-self-start rounded-full border border-slate-200 bg-white px-14 py-3 text-[18px] font-medium text-secondary shadow-[0_10px_24px_rgba(15,23,42,0.05)] lg:flex lg:h-[72px] lg:items-center lg:gap-14">
           <div className="group/products relative overflow-visible">
             <Link
               href={resolveHref('#products')}
               onClick={(event) => handleAnchorClick(event, '#products')}
-              className="touch-target inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="touch-target inline-flex items-center gap-2 rounded-full px-2 py-2 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               <span>Products</span>
               {navProducts.length ? <ChevronDown size={16} className="transition-transform duration-200 group-hover/products:rotate-180 group-focus-within/products:rotate-180" aria-hidden="true" /> : null}
@@ -115,18 +115,20 @@ export function Nav({
               key={link.href}
               href={resolveHref(link.href)}
               onClick={(event) => handleAnchorClick(event, link.href)}
-              className="touch-target rounded-full px-4 py-2.5 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="touch-target rounded-full px-2 py-2 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               {link.label}
             </Link>
           ))}
         </nav>
 
+        <div className="hidden lg:block" aria-hidden="true" />
+
         <div className="flex items-center gap-3">
           {ctaExternal ? (
             <a
               href={headerCtaTarget}
-              className="hidden min-h-[64px] min-w-[190px] whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-10 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)] lg:inline-flex"
+              className="hidden min-h-[64px] min-w-[190px] whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-9 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)] lg:inline-flex lg:items-center lg:justify-center"
               target={headerCtaTarget.startsWith('http') ? '_blank' : undefined}
               rel={headerCtaTarget.startsWith('http') ? 'noopener noreferrer' : undefined}
             >
@@ -135,7 +137,7 @@ export function Nav({
           ) : (
             <Link
               href={resolveHref(headerCtaTarget)}
-              className="hidden min-h-[64px] min-w-[190px] items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-10 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)] lg:inline-flex"
+              className="hidden min-h-[64px] min-w-[190px] items-center justify-center whitespace-nowrap rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-9 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)] lg:inline-flex"
               prefetch={false}
               onClick={(event) => handleAnchorClick(event, headerCtaTarget)}
             >
