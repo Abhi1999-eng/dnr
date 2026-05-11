@@ -28,7 +28,6 @@ function isExternalTarget(target?: string) {
 export function Nav({
   companyName = 'DNR Techno Services',
   logo = '/logo-dnr.png',
-  headerCtaLabel = 'Talk to an Expert',
   headerCtaTarget = '#contact',
   products = [],
 }: NavProps) {
@@ -67,26 +66,23 @@ export function Nav({
 
   const resolveHref = (href: string) => (href.startsWith('#') && pathname !== '/' && href !== '#quote' ? `/${href}` : href);
   const ctaExternal = isExternalTarget(headerCtaTarget);
+  const ctaLabel = 'Get in Touch';
 
   return (
-    <header className="sticky top-0 z-[120] border-b border-slate-200 bg-white text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.08)]">
-      <div className="container-wide flex items-center justify-between gap-6 py-6">
-        <Link href={resolveHref('#hero')} className="group flex items-center gap-4 text-4xl font-bold leading-none tracking-tight text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
-          <div className="relative h-18 w-18 min-h-[72px] min-w-[72px] transition-transform duration-300 group-hover:scale-[1.02]">
-            <Image src={logo} alt={`${companyName} logo`} fill className="object-contain" priority />
-          </div>
-          <div className="space-y-1">
-            <span className="block text-[2.05rem] text-secondary">{companyName}</span>
-            <span className="hidden text-xs font-semibold uppercase tracking-[0.22em] text-secondary/75 lg:block">Industrial machinery and support</span>
+    <header className="sticky top-0 z-[120] border-b border-slate-200 bg-white text-secondary shadow-[0_12px_30px_rgba(15,23,42,0.06)]">
+      <div className="container-wide flex items-center justify-between gap-4 py-4 md:gap-6 md:py-6 lg:min-h-[128px] lg:gap-8 lg:py-7">
+        <Link href={resolveHref('#hero')} className="group flex items-center text-secondary" onClick={(event) => handleAnchorClick(event, '#hero')}>
+          <div className="relative h-16 w-[180px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-20 sm:w-[240px] lg:h-24 lg:w-[340px] xl:w-[380px]">
+            <Image src={logo} alt={`${companyName} logo`} fill className="object-contain object-left" priority />
           </div>
         </Link>
 
-        <nav className="relative isolate hidden items-center gap-3 rounded-full border border-slate-200 bg-white px-3 py-2 text-base font-medium text-secondary shadow-sm md:flex">
+        <nav className="relative isolate hidden items-center gap-5 rounded-full border border-slate-200 bg-white px-8 py-3 text-[18px] font-medium text-secondary shadow-[0_10px_24px_rgba(15,23,42,0.05)] lg:flex lg:min-h-[68px] lg:px-11 xl:gap-7 xl:px-14 xl:text-[19px]">
           <div className="group/products relative overflow-visible">
             <Link
               href={resolveHref('#products')}
               onClick={(event) => handleAnchorClick(event, '#products')}
-              className="touch-target inline-flex items-center gap-2 rounded-full px-4 py-2 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="touch-target inline-flex items-center gap-2 rounded-full px-4 py-2.5 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               <span>Products</span>
               {navProducts.length ? <ChevronDown size={16} className="transition-transform duration-200 group-hover/products:rotate-180 group-focus-within/products:rotate-180" aria-hidden="true" /> : null}
@@ -119,7 +115,7 @@ export function Nav({
               key={link.href}
               href={resolveHref(link.href)}
               onClick={(event) => handleAnchorClick(event, link.href)}
-              className="touch-target rounded-full px-4 py-2 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
+              className="touch-target rounded-full px-4 py-2.5 transition-all hover:bg-primary/10 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/50"
             >
               {link.label}
             </Link>
@@ -130,18 +126,23 @@ export function Nav({
           {ctaExternal ? (
             <a
               href={headerCtaTarget}
-              className="hidden md:inline-flex btn-primary text-base shadow-lg"
+              className="hidden lg:inline-flex min-h-[64px] rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-9 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)]"
               target={headerCtaTarget.startsWith('http') ? '_blank' : undefined}
               rel={headerCtaTarget.startsWith('http') ? 'noopener noreferrer' : undefined}
             >
-              {headerCtaLabel}
+              {ctaLabel}
             </a>
           ) : (
-            <Link href={resolveHref(headerCtaTarget)} className="hidden md:inline-flex btn-primary text-base shadow-lg" prefetch={false} onClick={(event) => handleAnchorClick(event, headerCtaTarget)}>
-              {headerCtaLabel}
+            <Link
+              href={resolveHref(headerCtaTarget)}
+              className="hidden lg:inline-flex min-h-[64px] items-center justify-center rounded-2xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-9 text-[18px] font-semibold text-[#15200d] shadow-[0_18px_40px_rgba(139,197,63,0.24)] transition hover:-translate-y-1 hover:shadow-[0_22px_50px_rgba(139,197,63,0.28)]"
+              prefetch={false}
+              onClick={(event) => handleAnchorClick(event, headerCtaTarget)}
+            >
+              {ctaLabel}
             </Link>
           )}
-          <button className="touch-target md:hidden" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
+          <button className="touch-target lg:hidden" onClick={() => setOpen(!open)} aria-label="Toggle menu" aria-expanded={open}>
             <div className="mb-1 h-0.5 w-6 bg-secondary" />
             <div className="mb-1 h-0.5 w-6 bg-secondary" />
             <div className="h-0.5 w-6 bg-secondary" />
@@ -150,7 +151,7 @@ export function Nav({
       </div>
 
       {open && (
-        <div className="border-t border-slate-200 bg-white shadow-sm md:hidden">
+        <div className="border-t border-slate-200 bg-white shadow-sm lg:hidden">
           <div className="container-wide flex flex-col gap-3 py-4 text-sm text-secondary">
             <Link href={resolveHref('#hero')} className="py-2" onClick={(event) => handleAnchorClick(event, '#hero')}>
               <span className="touch-target inline-flex items-center">Home</span>
@@ -202,11 +203,11 @@ export function Nav({
                 target={headerCtaTarget.startsWith('http') ? '_blank' : undefined}
                 rel={headerCtaTarget.startsWith('http') ? 'noopener noreferrer' : undefined}
               >
-                {headerCtaLabel}
+                {ctaLabel}
               </a>
             ) : (
               <Link href={resolveHref(headerCtaTarget)} className="py-2 font-semibold text-primary" onClick={(event) => handleAnchorClick(event, headerCtaTarget)}>
-                {headerCtaLabel}
+                {ctaLabel}
               </Link>
             )}
           </div>

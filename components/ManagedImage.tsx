@@ -1,7 +1,7 @@
 'use client';
 
 import Image, { type ImageProps } from 'next/image';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { isDirectUploadAsset, resolveMediaUrl } from '@/lib/media';
 
 type ManagedImageProps = Omit<ImageProps, 'src'> & {
@@ -14,10 +14,6 @@ export function ManagedImage({ src, fallbackSrc = '/dnr/page_06.png', alt, ...pr
   const fallbackResolved = useMemo(() => resolveMediaUrl(fallbackSrc, '/dnr/page_06.png'), [fallbackSrc]);
   const [currentSrc, setCurrentSrc] = useState(primarySrc);
   const shouldBypassOptimization = isDirectUploadAsset(currentSrc);
-
-  useEffect(() => {
-    setCurrentSrc(primarySrc);
-  }, [primarySrc]);
 
   return (
     <Image

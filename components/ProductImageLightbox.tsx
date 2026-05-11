@@ -131,6 +131,7 @@ export function ProductImageLightbox({ isOpen, images, title, activeIndex, onClo
 
               <div className="flex h-full w-full items-center justify-center" onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
                 <ManagedImage
+                  key={currentImage}
                   src={currentImage}
                   alt={`${title} image ${normalizedIndex + 1}`}
                   width={1800}
@@ -169,7 +170,7 @@ export function ProductImageLightbox({ isOpen, images, title, activeIndex, onClo
                         isActive ? 'border-primary bg-white/10 shadow-[0_0_0_1px_rgba(139,197,63,0.4)]' : 'border-white/10 bg-white/[0.04] hover:border-white/30'
                       }`}
                     >
-                      <ManagedImage src={image} alt={`${title} thumbnail ${index + 1}`} fill className="object-contain object-center p-2" sizes="120px" />
+                      <ManagedImage key={image} src={image} alt={`${title} thumbnail ${index + 1}`} fill className="object-contain object-center p-2" sizes="120px" />
                     </button>
                   );
                 })}
