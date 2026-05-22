@@ -8,6 +8,7 @@ const ProductSchema = new Schema(
     slug: { type: String, required: true, unique: true },
     shortDescription: { type: String, default: '' },
     description: { type: String, default: '' },
+    youtubeUrl: { type: String, default: '' },
     image: { type: String, default: '' },
     heroImage: { type: String, default: '' },
     gallery: [{ type: String }],

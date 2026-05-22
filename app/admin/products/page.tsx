@@ -15,6 +15,7 @@ type FormState = {
   slug: string;
   shortDescription: string;
   description: string;
+  youtubeUrl: string;
   image: string;
   gallery: string[];
 };
@@ -42,6 +43,7 @@ const emptyForm: FormState = {
   slug: '',
   shortDescription: '',
   description: '',
+  youtubeUrl: '',
   image: '',
   gallery: [],
 };
@@ -161,6 +163,7 @@ export default function AdminProductsPage() {
         slug: currentForm.slug || slugify(currentForm.title),
         heroImage: currentForm.image,
         longDescription: currentForm.description,
+        youtubeUrl: currentForm.youtubeUrl.trim(),
         galleryImages: currentForm.gallery,
       };
 
@@ -243,6 +246,7 @@ export default function AdminProductsPage() {
       slug: product.slug || '',
       shortDescription: product.shortDescription || '',
       description: product.description || '',
+      youtubeUrl: product.youtubeUrl || '',
       image: product.heroImage || product.image || '',
       gallery: Array.isArray(product.gallery) ? product.gallery : [],
     });
@@ -319,6 +323,15 @@ export default function AdminProductsPage() {
             <span className={`block text-xs ${currentForm.description.length > LONG_DESCRIPTION_LIMIT ? 'text-red-300' : 'text-slate-400'}`}>
               {currentForm.description.length} / {LONG_DESCRIPTION_LIMIT} characters
             </span>
+          </label>
+          <label className="space-y-2 text-sm text-slate-200 md:col-span-2">
+            <span>YouTube Video URL</span>
+            <input
+              className="w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+              placeholder="https://www.youtube.com/watch?v=..."
+              value={currentForm.youtubeUrl}
+              onChange={(e) => setCurrentForm((current) => ({ ...current, youtubeUrl: e.target.value }))}
+            />
           </label>
         </div>
 

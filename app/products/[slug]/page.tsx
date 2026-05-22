@@ -12,6 +12,7 @@ import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildProductJsonLd, createPageMetadata } from '@/lib/seo';
+import { getYouTubeEmbedUrl } from '@/lib/youtube';
 
 export const revalidate = 300;
 
@@ -54,6 +55,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
   const shortDescription = String(productData.shortDescription || '').trim();
   const longDescription = String(productData.description || '').trim();
+  const videoEmbedUrl = getYouTubeEmbedUrl(productData.youtubeUrl || '');
   const keyPoints = [
     productData.features?.length ? `${productData.features.length} feature${productData.features.length === 1 ? '' : 's'}` : '',
     productData.applications?.length ? `${productData.applications.length} application${productData.applications.length === 1 ? '' : 's'}` : '',
@@ -161,6 +163,28 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
             galleryImages={(productData.gallery || []).map((img: string) => resolveMediaUrl(img, '/dnr/page_06.png'))}
           />
         </div>
+
+        {videoEmbedUrl ? (
+          <section className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-5 shadow-[0_22px_50px_rgba(0,0,0,0.28)] md:p-6 lg:p-7">
+            <div className="space-y-1 mb-4 md:mb-5">
+              <p className="inline-flex rounded-full border border-[#7ed321]/18 bg-[#7ed321]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d5f4a8]">Product video</p>
+              <h2 className="text-2xl font-semibold text-white">Product Video</h2>
+              <p className="text-sm text-slate-300">Watch this machine video directly on the website.</p>
+            </div>
+            <div className="mx-auto mt-5 w-full max-w-[860px]">
+              <div className="aspect-video overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_18px_45px_rgba(0,0,0,0.28)]">
+                <iframe
+                  src={videoEmbedUrl}
+                  title={`${productData.title} video`}
+                  className="h-full w-full"
+                  loading="lazy"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                />
+              </div>
+            </div>
+          </section>
+        ) : null}
 
         {longDescription ? (
           <section className="space-y-4 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-6 shadow-[0_22px_50px_rgba(0,0,0,0.28)]">

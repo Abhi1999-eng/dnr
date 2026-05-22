@@ -4,6 +4,7 @@ export type ProductType = {
   slug: string;
   shortDescription?: string;
   description?: string;
+  youtubeUrl?: string;
   image?: string;
   heroImage?: string;
   gallery?: string[];

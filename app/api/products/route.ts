@@ -27,6 +27,7 @@ function normalizeProductPayload(body: any) {
     slug: body.slug || slugify(body.title || 'product'),
     shortDescription: body.shortDescription || '',
     description: body.longDescription ?? body.description ?? '',
+    youtubeUrl: String(body.youtubeUrl || '').trim(),
     image: body.image || heroImage,
     heroImage,
     gallery,
