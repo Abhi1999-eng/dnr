@@ -38,29 +38,30 @@ export default async function AboutPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-secondary">
+    <div className="min-h-screen bg-[#071014] text-white">
       <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Get in Touch'}
         headerCtaTarget={headerCtaHref}
         products={products || []}
+        theme="dark"
       />
-      <main className="container-wide max-w-5xl space-y-10 pb-20 pt-16">
-        <div className="space-y-3">
-          <p className="pill inline-flex">About</p>
-          <h1 className="text-4xl font-semibold text-secondary md:text-5xl">{about.heading || companyName}</h1>
-          {about.body ? <p className="max-w-3xl text-lg leading-relaxed text-secondary/80">{about.body}</p> : <p className="max-w-3xl text-lg leading-relaxed text-secondary/80">Company profile content can be managed from the admin panel.</p>}
+      <main className="container-wide max-w-5xl space-y-8 pb-16 pt-12 md:pb-20 md:pt-14">
+        <div className="space-y-3 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-6 shadow-[0_20px_48px_rgba(0,0,0,0.26)] md:p-8">
+          <p className="inline-flex rounded-full border border-[#7ed321]/18 bg-[#7ed321]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#d5f4a8]">About</p>
+          <h1 className="text-4xl font-semibold text-white md:text-5xl">{about.heading || companyName}</h1>
+          {about.body ? <p className="max-w-3xl text-lg leading-relaxed text-slate-300">{about.body}</p> : <p className="max-w-3xl text-lg leading-relaxed text-slate-300">Company profile content can be managed from the admin panel.</p>}
         </div>
 
         {about.bullets?.length ? (
           <div className="grid gap-6 md:grid-cols-2">
             {about.bullets.map((bullet: string) => (
-              <div key={bullet} className="rounded-2xl border border-secondary/10 bg-white p-6 shadow-lg shadow-secondary/10">
+              <div key={bullet} className="rounded-2xl border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-6 shadow-[0_18px_40px_rgba(0,0,0,0.22)]">
                 <div className="flex items-start gap-3">
-                  <span className="mt-2 h-3 w-3 rounded-full bg-primary" />
-                  <p className="text-base leading-relaxed text-secondary/85">{bullet}</p>
+                  <span className="mt-2 h-3 w-3 rounded-full bg-[#7ed321]" />
+                  <p className="text-base leading-relaxed text-slate-300">{bullet}</p>
                 </div>
               </div>
             ))}
@@ -68,18 +69,18 @@ export default async function AboutPage() {
         ) : null}
 
         <div className="grid gap-6 md:grid-cols-2">
-          <div className="rounded-3xl border border-secondary/10 bg-white p-8 shadow-lg shadow-secondary/10">
-            <h2 className="text-2xl font-semibold text-secondary">What we solve</h2>
-            <p className="mt-3 text-secondary/80">
+          <div className="rounded-3xl border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-8 shadow-[0_18px_40px_rgba(0,0,0,0.22)]">
+            <h2 className="text-2xl font-semibold text-white">What we solve</h2>
+            <p className="mt-3 text-slate-300">
               Add your company overview, support approach, and proof points from the admin panel when you are ready.
             </p>
           </div>
-          <div id="contact" className="rounded-3xl border border-secondary/10 bg-secondary p-8 text-white shadow-lg shadow-secondary/20 scroll-mt-28">
+          <div id="contact" className="rounded-3xl border border-[#7ed321]/16 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-8 text-white shadow-[0_18px_40px_rgba(0,0,0,0.26)] scroll-mt-28">
             <h2 className="text-2xl font-semibold">Talk to DNR</h2>
-            <div className="mt-4 space-y-2 text-white/80">
-              {primaryPhone && <a href={`tel:${primaryPhone}`} className="block font-semibold text-primary-foreground hover:underline">{primaryPhone}</a>}
-              {secondaryPhone && <a href={`tel:${secondaryPhone}`} className="block font-semibold text-primary-foreground hover:underline">{secondaryPhone}</a>}
-              <a href={`mailto:${email}`} className="block font-semibold text-primary-foreground hover:underline">
+            <div className="mt-4 space-y-2 text-slate-300">
+              {primaryPhone && <a href={`tel:${primaryPhone}`} className="block font-semibold text-[#d5f4a8] hover:underline">{primaryPhone}</a>}
+              {secondaryPhone && <a href={`tel:${secondaryPhone}`} className="block font-semibold text-[#d5f4a8] hover:underline">{secondaryPhone}</a>}
+              <a href={`mailto:${email}`} className="block font-semibold text-[#d5f4a8] hover:underline">
                 {email}
               </a>
               {siteSettings.address && <p>{siteSettings.address}</p>}
@@ -88,6 +89,7 @@ export default async function AboutPage() {
         </div>
       </main>
       <Footer
+        theme="dark"
         companyName={companyName}
         footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}

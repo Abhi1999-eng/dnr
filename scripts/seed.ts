@@ -47,7 +47,7 @@ async function run() {
     mapLink: '',
     coverageStates: [],
     footerDescription: '',
-    headerCtaLabel: 'Talk to an Expert',
+    headerCtaLabel: 'Get in Touch',
     headerCtaActionType: 'scroll',
     headerCtaValue: '#contact',
     headerCtaTarget: '#contact',
@@ -59,7 +59,7 @@ async function run() {
     footerLinks: [],
     contactQuickLinks: [],
     inquiryForm: {
-      heading: 'Talk to an expert',
+      heading: 'Get in Touch',
       description: '',
       fields: { name: true, company: true, phone: true, email: true, productInterest: true, message: true },
       labels: {
@@ -108,7 +108,7 @@ async function run() {
       industries: { visible: true, title: 'Industries & applications', kicker: '' },
       trust: { visible: true, title: 'Trusted by industry', kicker: '' },
       clients: { visible: true, title: 'Associated Brands', kicker: '' },
-      inquiry: { visible: true, title: 'Talk to an expert', kicker: 'Inquiry' },
+      inquiry: { visible: true, title: 'Get in Touch', kicker: 'Inquiry' },
       testimonials: { visible: true, title: 'Testimonials', kicker: '' },
     },
     stats: {},

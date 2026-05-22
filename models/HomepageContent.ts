@@ -50,7 +50,7 @@ const HomepageContentSchema = new Schema(
         visible: { type: Boolean, default: true },
       },
       inquiry: {
-        title: { type: String, default: 'Talk to an expert' },
+        title: { type: String, default: 'Get in Touch' },
         kicker: { type: String, default: '' },
         visible: { type: Boolean, default: true },
       },

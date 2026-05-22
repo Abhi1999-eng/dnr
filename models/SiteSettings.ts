@@ -16,7 +16,7 @@ const SiteSettingsSchema = new Schema(
     mapLink: String,
     coverageStates: [String],
     footerDescription: { type: String, default: '' },
-    headerCtaLabel: { type: String, default: 'Talk to an Expert' },
+    headerCtaLabel: { type: String, default: 'Get in Touch' },
     headerCtaTarget: { type: String, default: '#contact' },
     headerCtaActionType: {
       type: String,

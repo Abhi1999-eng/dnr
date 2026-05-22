@@ -37,48 +37,56 @@ export default async function ProductsPage() {
   ]);
 
   return (
-    <div className="min-h-screen bg-background text-secondary">
+    <div className="min-h-screen bg-[#071014] text-white">
       <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Get in Touch'}
         headerCtaTarget={headerCtaHref}
         products={products || []}
+        theme="dark"
       />
-      <div className="container-wide space-y-10 py-16">
-        <div className="space-y-3">
-          <p className="pill inline-flex">Products</p>
-          <h1 className="text-4xl font-semibold">Machinery & solutions</h1>
-          <p className="max-w-3xl text-secondary/80">Browse the products DNR has added to the site. Every product in the admin panel appears here automatically.</p>
+      <div className="container-wide space-y-8 py-12 md:py-14">
+        <div className="rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.94),rgba(10,16,20,0.98))] p-6 shadow-[0_20px_48px_rgba(0,0,0,0.26)] md:p-8">
+          <div className="space-y-3">
+            <p className="inline-flex rounded-full border border-[#7ed321]/18 bg-[#7ed321]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#d5f4a8]">Products</p>
+            <h1 className="text-4xl font-semibold text-white md:text-5xl">Machinery &amp; solutions</h1>
+            <p className="max-w-3xl text-slate-300">Browse the products DNR has added to the site. Every product in the admin panel appears here automatically.</p>
+          </div>
         </div>
 
         {products?.length ? (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
             {products.map((product: any) => {
               const imageSrc = resolveProductImage(product);
               return (
-                <Link key={product.slug} href={`/products/${product.slug}`} className="glass flex flex-col gap-4 rounded-2xl border border-accent/30 bg-white p-5 transition hover:-translate-y-1 hover:shadow-lg">
-                  <div className="flex h-[250px] w-full items-center justify-center overflow-hidden rounded-xl border border-muted/80 bg-slate-50 p-4 md:h-[280px]">
-                    <ManagedImage src={imageSrc} alt={product.title} width={1200} height={900} className="h-full w-full object-contain object-center" />
+                <Link
+                  key={product.slug}
+                  href={`/products/${product.slug}`}
+                  className="group flex flex-col gap-4 rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-4 shadow-[0_20px_44px_rgba(0,0,0,0.24)] transition hover:-translate-y-1 hover:border-[#7ed321]/35 hover:shadow-[0_24px_50px_rgba(0,0,0,0.32)]"
+                >
+                  <div className="flex h-[220px] w-full items-center justify-center overflow-hidden rounded-[20px] border border-white/10 bg-[#0b1218] p-4 md:h-[240px]">
+                    <ManagedImage src={imageSrc} alt={product.title} width={1200} height={900} className="h-full w-full object-contain object-center" sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw" />
                   </div>
                   <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-secondary">{product.title}</h3>
-                    <p className="line-clamp-3 text-sm text-secondary/80">{product.shortDescription || product.description}</p>
+                    <h3 className="text-xl font-semibold text-white">{product.title}</h3>
+                    <p className="line-clamp-3 text-sm leading-6 text-slate-300">{product.shortDescription || product.description}</p>
                   </div>
-                  <span className="text-sm font-semibold text-secondary">View details →</span>
+                  <span className="text-sm font-semibold text-[#7ed321] transition group-hover:translate-x-1">View details →</span>
                 </Link>
               );
             })}
           </div>
         ) : (
-          <div className="rounded-3xl border border-dashed border-secondary/20 bg-white/80 px-6 py-14 text-center">
-            <h2 className="text-2xl font-semibold text-secondary">No products added yet</h2>
-            <p className="mt-2 text-sm text-secondary/70">Add products from the admin panel and they will appear here automatically.</p>
+          <div className="rounded-3xl border border-dashed border-white/12 bg-[#111b24] px-6 py-14 text-center shadow-[0_20px_44px_rgba(0,0,0,0.22)]">
+            <h2 className="text-2xl font-semibold text-white">No products added yet</h2>
+            <p className="mt-2 text-sm text-slate-400">Add products from the admin panel and they will appear here automatically.</p>
           </div>
         )}
       </div>
       <Footer
+        theme="dark"
         companyName={companyName}
         footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}

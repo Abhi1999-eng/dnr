@@ -23,7 +23,7 @@ const defaultSettings = {
   mapLink: '',
   coverageStates: [] as string[],
   footerDescription: '',
-  headerCtaLabel: 'Talk to an Expert',
+  headerCtaLabel: 'Get in Touch',
   headerCtaTarget: '#contact',
   contactCtaLabel: 'Send inquiry',
   floatingSupportLabel: 'WhatsApp Support',
@@ -37,7 +37,7 @@ const defaultSettings = {
   ],
   contactQuickLinks: [] as QuickLink[],
   inquiryForm: {
-    heading: 'Talk to an expert',
+    heading: 'Get in Touch',
     description: '',
     fields: { name: true, company: true, phone: true, email: true, productInterest: true, message: true },
     labels: { name: 'Name', company: 'Company', phone: 'Phone', email: 'Email', productInterest: 'Product interest', message: 'Message', submit: 'Send inquiry' },

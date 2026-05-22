@@ -21,6 +21,7 @@ type ProductEnquiryActionsProps = {
   fallbackWhatsapp?: string;
   fallbackEmail?: string;
   className?: string;
+  theme?: 'light' | 'dark';
 };
 
 export function ProductEnquiryActions({
@@ -32,8 +33,10 @@ export function ProductEnquiryActions({
   fallbackWhatsapp = '+919711196735',
   fallbackEmail = 'dnr.techservices@gmail.com',
   className = '',
+  theme = 'light',
 }: ProductEnquiryActionsProps) {
   const [isEnquiryOpen, setIsEnquiryOpen] = useState(false);
+  const isDark = theme === 'dark';
 
   const phoneHref = useMemo(() => {
     const phoneLink = quickLinks?.find((item) => item.type === 'phone' && item.value);
@@ -55,7 +58,14 @@ export function ProductEnquiryActions({
         <button type="button" onClick={() => setIsEnquiryOpen(true)} className="btn-primary text-sm">
           Enquire Now
         </button>
-        <a href={phoneHref} className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-secondary/15 bg-white px-5 text-sm font-semibold text-secondary transition hover:border-primary/35 hover:text-primary">
+        <a
+          href={phoneHref}
+          className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition ${
+            isDark
+              ? 'border border-white/10 bg-white/[0.03] text-slate-100 hover:border-[#7ed321]/35 hover:bg-[#7ed321]/8 hover:text-[#d5f4a8]'
+              : 'border border-secondary/15 bg-white text-secondary hover:border-primary/35 hover:text-primary'
+          }`}
+        >
           <PhoneCall size={16} aria-hidden="true" />
           Call
         </a>
@@ -63,7 +73,11 @@ export function ProductEnquiryActions({
           href={whatsappHref}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-secondary/15 bg-white px-5 text-sm font-semibold text-secondary transition hover:border-primary/35 hover:text-primary"
+          className={`inline-flex h-12 items-center justify-center gap-2 rounded-2xl px-5 text-sm font-semibold transition ${
+            isDark
+              ? 'border border-white/10 bg-white/[0.03] text-slate-100 hover:border-[#7ed321]/35 hover:bg-[#7ed321]/8 hover:text-[#d5f4a8]'
+              : 'border border-secondary/15 bg-white text-secondary hover:border-primary/35 hover:text-primary'
+          }`}
         >
           <MessageCircle size={16} aria-hidden="true" />
           WhatsApp
@@ -80,6 +94,7 @@ export function ProductEnquiryActions({
         fallbackPhone={fallbackPhone}
         fallbackWhatsapp={fallbackWhatsapp}
         fallbackEmail={fallbackEmail}
+        theme={theme}
       />
     </>
   );

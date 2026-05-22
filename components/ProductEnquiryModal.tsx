@@ -22,6 +22,7 @@ type ProductEnquiryModalProps = {
   fallbackPhone?: string;
   fallbackWhatsapp?: string;
   fallbackEmail?: string;
+  theme?: 'light' | 'dark';
 };
 
 function buildQuickLinks(quickLinks: QuickLink[] | undefined, fallbackPhone?: string, fallbackWhatsapp?: string, fallbackEmail?: string) {
@@ -66,7 +67,9 @@ export function ProductEnquiryModal({
   fallbackPhone = '+919711196735',
   fallbackWhatsapp = '+919711196735',
   fallbackEmail = 'dnr.techservices@gmail.com',
+  theme = 'light',
 }: ProductEnquiryModalProps) {
+  const isDark = theme === 'dark';
   useEffect(() => {
     if (!isOpen) return;
 
@@ -92,7 +95,11 @@ export function ProductEnquiryModal({
     <>
       <div className="fixed inset-0 z-[80] bg-slate-950/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="fixed left-1/2 top-[52%] z-[90] flex max-h-[90vh] w-[calc(100%-2rem)] max-w-[1080px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] bg-white shadow-[0_30px_90px_rgba(15,23,42,0.24)] md:max-h-[76vh] md:w-[calc(100%-3rem)]"
+        className={`fixed left-1/2 top-[52%] z-[90] flex max-h-[90vh] w-[calc(100%-2rem)] max-w-[1080px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[28px] md:max-h-[76vh] md:w-[calc(100%-3rem)] ${
+          isDark
+            ? 'border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.98),rgba(10,16,20,0.98))] text-white shadow-[0_30px_90px_rgba(0,0,0,0.42)]'
+            : 'bg-white shadow-[0_30px_90px_rgba(15,23,42,0.24)]'
+        }`}
         onClick={(event) => event.stopPropagation()}
         role="dialog"
         aria-modal="true"
@@ -101,18 +108,24 @@ export function ProductEnquiryModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-secondary/70 transition hover:border-primary/35 hover:bg-slate-50 hover:text-secondary"
+          className={`absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full transition ${
+            isDark
+              ? 'border border-white/10 bg-white/[0.04] text-white/70 hover:border-[#7ed321]/35 hover:bg-white/[0.08] hover:text-white'
+              : 'border border-slate-200 bg-white text-secondary/70 hover:border-primary/35 hover:bg-slate-50 hover:text-secondary'
+          }`}
           aria-label="Close enquiry modal"
         >
           <X size={18} />
         </button>
 
-        <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-6 py-4">
+        <div className={`flex items-start justify-between gap-4 px-6 py-4 ${isDark ? 'border-b border-white/10' : 'border-b border-slate-200'}`}>
           <div className="space-y-1.5">
-            <p className="pill inline-flex">Product enquiry</p>
+            <p className={`inline-flex rounded-full border px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+              isDark ? 'border-[#7ed321]/18 bg-[#7ed321]/10 text-[#d5f4a8]' : 'pill'
+            }`}>Product enquiry</p>
             <div className="space-y-1">
-              <h2 className="pr-14 text-xl font-semibold text-secondary sm:text-2xl">Enquire About This Product</h2>
-              <p className="max-w-2xl text-sm leading-relaxed text-secondary/70">
+              <h2 className={`pr-14 text-xl font-semibold sm:text-2xl ${isDark ? 'text-white' : 'text-secondary'}`}>Enquire About This Product</h2>
+              <p className={`max-w-2xl text-sm leading-relaxed ${isDark ? 'text-slate-300' : 'text-secondary/70'}`}>
                 Share your requirement and our team will contact you with the right product recommendation.
               </p>
             </div>
@@ -121,13 +134,13 @@ export function ProductEnquiryModal({
 
         <div className="overflow-y-auto p-5">
           <div className="grid gap-4 lg:grid-cols-[320px_1fr]">
-          <div className="space-y-3 self-start rounded-[22px] border border-slate-200 bg-slate-50/80 p-4">
+          <div className={`space-y-3 self-start rounded-[22px] p-4 ${isDark ? 'border border-white/10 bg-white/[0.03]' : 'border border-slate-200 bg-slate-50/80'}`}>
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/60">Selected product</p>
-              <p className="text-lg font-semibold text-secondary">{productName}</p>
+              <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${isDark ? 'text-slate-400' : 'text-secondary/60'}`}>Selected product</p>
+              <p className={`text-lg font-semibold ${isDark ? 'text-white' : 'text-secondary'}`}>{productName}</p>
             </div>
             <div className="space-y-2">
-              <p className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/60">Quick contact</p>
+              <p className={`text-xs font-semibold uppercase tracking-[0.18em] ${isDark ? 'text-slate-400' : 'text-secondary/60'}`}>Quick contact</p>
               <div className="space-y-2">
                 {contactItems.map((item) => {
                   const Icon = item.icon;
@@ -137,9 +150,13 @@ export function ProductEnquiryModal({
                       href={item.href}
                       target={item.external ? '_blank' : undefined}
                       rel={item.external ? 'noopener noreferrer' : undefined}
-                      className="flex min-h-[46px] items-center gap-3 rounded-2xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm font-semibold text-secondary transition hover:border-primary/35 hover:bg-primary/5"
+                      className={`flex min-h-[46px] items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition ${
+                        isDark
+                          ? 'border border-white/10 bg-white/[0.04] text-slate-100 hover:border-[#7ed321]/35 hover:bg-[#7ed321]/8'
+                          : 'border border-slate-200 bg-white text-secondary hover:border-primary/35 hover:bg-primary/5'
+                      }`}
                     >
-                      <span className="flex h-9 w-9 items-center justify-center rounded-full bg-primary/12 text-primary">
+                      <span className={`flex h-9 w-9 items-center justify-center rounded-full ${isDark ? 'bg-[#7ed321]/14 text-[#7ed321]' : 'bg-primary/12 text-primary'}`}>
                         <Icon size={16} aria-hidden="true" />
                       </span>
                       <span>{item.label}</span>
@@ -150,8 +167,9 @@ export function ProductEnquiryModal({
             </div>
           </div>
 
-          <div className="rounded-[24px] border border-slate-200 bg-white p-4">
+          <div className={`rounded-[24px] p-4 ${isDark ? 'border border-white/10 bg-[#0b1218]' : 'border border-slate-200 bg-white'}`}>
             <InquiryForm
+              theme={isDark ? 'dark' : 'light'}
               initialValues={{ productInterest: productName }}
               context={{ pageType: 'product', productTitle: productName, productUrl: productUrl || (productSlug ? `/products/${productSlug}` : '') }}
               config={{

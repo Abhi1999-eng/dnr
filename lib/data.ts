@@ -41,16 +41,11 @@ const getPublicData = unstable_cache(
 export async function fetchPublicData(): Promise<any> {
   return getPublicData();
 }
-
-
 export async function fetchLiveClientLogos(): Promise<any[]> {
   noStore();
   await connectDB();
   const logos = await ClientLogo.find({ active: true }).sort({ sortOrder: 1, createdAt: 1 }).lean();
-  const serialized = serialize(logos || []);
-  console.log('[logos] homepage fetched logos count:', serialized.length);
-  console.log('[logos] homepage logo URLs:', serialized.map((logo: any) => ({ name: logo.name, logoImage: logo.logoImage, sortOrder: logo.sortOrder, active: logo.active })));
-  return serialized;
+  return serialize(logos || []);
 }
 
 export async function fetchLiveProducts(): Promise<any[]> {

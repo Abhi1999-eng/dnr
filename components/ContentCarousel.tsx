@@ -17,6 +17,7 @@ type ContentCarouselProps = {
   advanceBy?: number;
   controlsMode?: 'full' | 'arrows' | 'none';
   gapRem?: number;
+  theme?: 'light' | 'dark';
 };
 
 const AUTOPLAY_INTERVAL = 3000;
@@ -32,13 +33,17 @@ export function ContentCarousel({
   advanceBy,
   controlsMode = 'full',
   gapRem = 1.25,
+  theme = 'light',
 }: ContentCarouselProps) {
   const items = useMemo(() => Children.toArray(children), [children]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(itemsPerView.mobile ?? 1);
   const [isPaused, setIsPaused] = useState(false);
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const [isInView, setIsInView] = useState(true);
   const resumeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const isDark = theme === 'dark';
   const maxStartIndex = Math.max(0, items.length - cardsPerView);
   const clampedActiveIndex = Math.min(activeIndex, maxStartIndex);
   const step = Math.max(1, advanceBy ?? cardsPerView);
@@ -78,9 +83,17 @@ export function ContentCarousel({
     return () => mediaQuery.removeEventListener('change', updateMotionPreference);
   }, []);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !('IntersectionObserver' in window) || !rootRef.current) return;
+
+    const observer = new IntersectionObserver(([entry]) => setIsInView(entry.isIntersecting), { threshold: 0.2 });
+
+    observer.observe(rootRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
-    if (!autoPlay || prefersReducedMotion || isPaused || !canNavigate) return;
+    if (!autoPlay || prefersReducedMotion || isPaused || !canNavigate || !isInView) return;
 
     const id = setInterval(() => {
       setActiveIndex((current) => {
@@ -91,7 +104,7 @@ export function ContentCarousel({
     }, autoPlayInterval);
 
     return () => clearInterval(id);
-  }, [autoPlay, autoPlayInterval, canNavigate, isPaused, maxStartIndex, prefersReducedMotion, step]);
+  }, [autoPlay, autoPlayInterval, canNavigate, isInView, isPaused, maxStartIndex, prefersReducedMotion, step]);
 
   useEffect(() => {
     return () => {
@@ -131,6 +144,7 @@ export function ContentCarousel({
 
   return (
     <div
+      ref={rootRef}
       className="space-y-3"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => scheduleAutoplayResume()}
@@ -138,7 +152,13 @@ export function ContentCarousel({
       onBlurCapture={() => scheduleAutoplayResume()}
       onTouchStart={() => pauseForInteraction()}
     >
-      <div className={`overflow-hidden rounded-[28px] border border-secondary/10 bg-white/70 p-2 shadow-[0_14px_36px_rgba(15,23,42,0.06)] ${viewportClassName}`}>
+      <div
+        className={`${
+          isDark
+            ? 'overflow-hidden rounded-[30px] border border-[rgba(126,211,33,0.16)] bg-[linear-gradient(180deg,rgba(17,27,36,0.92),rgba(11,18,24,0.94))] p-2 shadow-[0_24px_54px_rgba(0,0,0,0.28)]'
+            : 'overflow-hidden rounded-[28px] border border-secondary/10 bg-white/70 p-2 shadow-[0_14px_36px_rgba(15,23,42,0.06)]'
+        } ${viewportClassName}`}
+      >
         <div
           className="flex will-change-transform"
           style={{
@@ -166,24 +186,44 @@ export function ContentCarousel({
       {showControls ? (
         <div className="flex flex-col gap-2 px-1 sm:flex-row sm:items-center sm:justify-between">
           <div className="order-2 flex items-center justify-center gap-2 sm:order-1 sm:justify-start">
-            {showDots ? Array.from({ length: totalPages }).map((_, pageIndex) => {
-              const pageStart = Math.min(pageIndex * step, maxStartIndex);
-              const isActive = clampedActiveIndex === pageStart;
-              return (
-                <button
-                  key={pageIndex}
-                  type="button"
-                  onClick={() => {
-                    pauseForInteraction();
-                    setActiveIndex(pageStart);
-                  }}
-                  aria-label={`Go to slide group ${pageIndex + 1}`}
-                className={`inline-flex h-8 min-w-8 items-center justify-center rounded-full transition-all ${isActive ? 'bg-primary/10' : 'bg-transparent hover:bg-secondary/10'}`}
-              >
-                  <span className={`block h-2.5 rounded-full transition-all ${isActive ? 'w-8 bg-primary' : 'w-2.5 bg-secondary/35'}`} />
-                </button>
-              );
-            }) : null}
+            {showDots
+              ? Array.from({ length: totalPages }).map((_, pageIndex) => {
+                  const pageStart = Math.min(pageIndex * step, maxStartIndex);
+                  const isActive = clampedActiveIndex === pageStart;
+                  return (
+                    <button
+                      key={pageIndex}
+                      type="button"
+                      onClick={() => {
+                        pauseForInteraction();
+                        setActiveIndex(pageStart);
+                      }}
+                      aria-label={`Go to slide group ${pageIndex + 1}`}
+                      className={`inline-flex h-8 min-w-8 items-center justify-center rounded-full transition-all ${
+                        isActive
+                          ? isDark
+                            ? 'bg-[#7ed321]/14'
+                            : 'bg-primary/10'
+                          : isDark
+                            ? 'bg-transparent hover:bg-white/8'
+                            : 'bg-transparent hover:bg-secondary/10'
+                      }`}
+                    >
+                      <span
+                        className={`block h-2.5 rounded-full transition-all ${
+                          isActive
+                            ? isDark
+                              ? 'w-8 bg-[#7ed321]'
+                              : 'w-8 bg-primary'
+                            : isDark
+                              ? 'w-2.5 bg-white/25'
+                              : 'w-2.5 bg-secondary/35'
+                        }`}
+                      />
+                    </button>
+                  );
+                })
+              : null}
           </div>
 
           {showArrows ? (
@@ -192,7 +232,11 @@ export function ContentCarousel({
                 type="button"
                 onClick={() => move(-1)}
                 aria-label="Previous items"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-secondary/10 bg-white text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                  isDark
+                    ? 'border-[rgba(126,211,33,0.18)] bg-[#111b24] text-white shadow-[0_12px_24px_rgba(0,0,0,0.22)] hover:border-[#7ed321]/55 hover:text-[#7ed321]'
+                    : 'border-secondary/10 bg-white text-secondary shadow-sm hover:border-primary/40 hover:text-primary'
+                }`}
               >
                 <ChevronLeft size={18} />
               </button>
@@ -200,7 +244,11 @@ export function ContentCarousel({
                 type="button"
                 onClick={() => move(1)}
                 aria-label="Next items"
-                className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-secondary/10 bg-white text-secondary shadow-sm transition hover:border-primary/40 hover:text-primary"
+                className={`inline-flex h-9 w-9 items-center justify-center rounded-full border transition ${
+                  isDark
+                    ? 'border-[rgba(126,211,33,0.18)] bg-[#111b24] text-white shadow-[0_12px_24px_rgba(0,0,0,0.22)] hover:border-[#7ed321]/55 hover:text-[#7ed321]'
+                    : 'border-secondary/10 bg-white text-secondary shadow-sm hover:border-primary/40 hover:text-primary'
+                }`}
               >
                 <ChevronRight size={18} />
               </button>

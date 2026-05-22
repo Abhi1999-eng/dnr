@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { InquirySection } from '@/components/InquirySection';
-import { ManagedImage } from '@/components/ManagedImage';
 import { DescriptionBlock } from '@/components/DescriptionBlock';
 import { Footer } from '@/components/Footer';
 import { Nav } from '@/components/Nav';
@@ -70,30 +69,35 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   ];
 
   return (
-    <div className="min-h-screen bg-background text-secondary">
+    <div className="min-h-screen bg-[#071014] text-white">
       <StructuredData data={structuredData} />
       <Nav
         companyName={companyName}
         logo={logo}
-        headerCtaLabel={siteSettings.headerCtaLabel || 'Talk to an Expert'}
+        headerCtaLabel={siteSettings.headerCtaLabel || 'Get in Touch'}
         headerCtaTarget={headerCtaHref}
         products={products || []}
+        theme="dark"
       />
-      <div className="container-wide space-y-10 py-14">
-        <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.05fr)_minmax(360px,0.95fr)] xl:gap-10">
-          <div className="space-y-6 rounded-[28px] border border-muted/70 bg-white p-6 shadow-sm md:p-8">
+      <div className="container-wide space-y-8 py-12 md:py-14">
+        <Link href="/products" className="inline-flex text-sm font-semibold text-[#7ed321] transition hover:text-[#d5f4a8]">
+          ← Back to products
+        </Link>
+
+        <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1.02fr)_minmax(360px,0.98fr)] xl:gap-10">
+          <div className="space-y-6 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-6 shadow-[0_24px_54px_rgba(0,0,0,0.3)] md:p-8">
             <div className="space-y-4">
-              <p className="pill inline-flex">Product</p>
+              <p className="inline-flex rounded-full border border-[#7ed321]/18 bg-[#7ed321]/10 px-3 py-1.5 text-xs font-semibold uppercase tracking-[0.18em] text-[#d5f4a8]">Product</p>
               <div className="space-y-3">
-                <h1 className="text-4xl font-semibold text-secondary">{productData.title}</h1>
-                <DescriptionBlock content={shortDescription} maxPreview={320} />
+                <h1 className="text-3xl font-semibold text-white md:text-4xl lg:text-5xl">{productData.title}</h1>
+                <DescriptionBlock content={shortDescription} maxPreview={320} theme="dark" />
               </div>
             </div>
 
             {keyPoints.length ? (
               <div className="grid gap-3 sm:grid-cols-3">
                 {keyPoints.map((point) => (
-                  <div key={point} className="rounded-2xl border border-muted/80 bg-slate-50 px-4 py-3 text-sm font-medium text-secondary/80">
+                  <div key={point} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm font-medium text-slate-200">
                     {point}
                   </div>
                 ))}
@@ -108,13 +112,14 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               fallbackPhone={primaryPhone || '+919711196735'}
               fallbackWhatsapp={whatsappNumber}
               fallbackEmail={email}
+              theme="dark"
             />
 
             <div className="grid gap-4">
               {productData.features?.length ? (
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-secondary">Features</h3>
-                  <ul className="list-disc space-y-1 pl-5 text-secondary/80">
+                  <h3 className="font-semibold text-white">Features</h3>
+                  <ul className="list-disc space-y-1 pl-5 text-slate-300">
                     {productData.features.map((feature: string) => (
                       <li key={feature}>{feature}</li>
                     ))}
@@ -123,10 +128,10 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               ) : null}
               {productData.applications?.length ? (
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-secondary">Applications</h3>
+                  <h3 className="font-semibold text-white">Applications</h3>
                   <div className="flex flex-wrap gap-2">
                     {productData.applications.map((application: string) => (
-                      <span key={application} className="rounded-full border border-muted/80 bg-muted/60 px-3 py-2 text-sm">
+                      <span key={application} className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-200">
                         {application}
                       </span>
                     ))}
@@ -135,12 +140,12 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
               ) : null}
               {productData.specs?.length ? (
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-secondary">Specifications</h3>
+                  <h3 className="font-semibold text-white">Specifications</h3>
                   <div className="grid gap-2 md:grid-cols-2">
                     {productData.specs.map((spec: any, idx: number) => (
-                      <div key={`${spec.label}-${idx}`} className="flex justify-between rounded-lg border border-muted/70 bg-white px-3 py-2 text-sm">
+                      <div key={`${spec.label}-${idx}`} className="flex justify-between rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-sm text-slate-300">
                         <span>{spec.label}</span>
-                        <span className="font-semibold text-secondary">{spec.value}</span>
+                        <span className="font-semibold text-white">{spec.value}</span>
                       </div>
                     ))}
                   </div>
@@ -150,6 +155,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </div>
 
           <ProductDetailGallery
+            theme="dark"
             title={productData.title}
             heroImage={resolveProductImage(productData)}
             galleryImages={(productData.gallery || []).map((img: string) => resolveMediaUrl(img, '/dnr/page_06.png'))}
@@ -157,16 +163,17 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
         </div>
 
         {longDescription ? (
-          <section className="space-y-4 rounded-3xl border border-muted/80 bg-white p-6 shadow-sm">
+          <section className="space-y-4 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-6 shadow-[0_22px_50px_rgba(0,0,0,0.28)]">
             <div className="space-y-1">
-              <p className="pill inline-flex">Overview</p>
-              <h2 className="text-2xl font-semibold text-secondary">Product Details</h2>
+              <p className="inline-flex rounded-full border border-[#7ed321]/18 bg-[#7ed321]/10 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#d5f4a8]">Overview</p>
+              <h2 className="text-2xl font-semibold text-white">Product Details</h2>
             </div>
-            <div className="max-w-4xl whitespace-pre-line text-base leading-8 text-secondary/80">{longDescription}</div>
+            <div className="max-w-4xl whitespace-pre-line text-base leading-8 text-slate-300">{longDescription}</div>
           </section>
         ) : null}
 
         <InquirySection
+          theme="dark"
           id="quote"
           kicker="Quote request"
           heading="Request a Quote"
@@ -183,12 +190,16 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
 
         {related.length ? (
           <div className="space-y-4">
-            <h3 className="text-xl font-semibold text-secondary">More products</h3>
+            <h3 className="text-xl font-semibold text-white">More products</h3>
             <div className="grid gap-4 md:grid-cols-3">
               {related.map((item: any) => (
-                <Link key={item.slug} href={`/products/${item.slug}`} className="glass rounded-xl border border-muted/80 bg-white p-4 transition hover:-translate-y-1">
-                  <p className="font-semibold text-secondary">{item.title}</p>
-                  <p className="mt-2 text-sm text-secondary/70">{item.shortDescription || item.description || 'View product details'}</p>
+                <Link
+                  key={item.slug}
+                  href={`/products/${item.slug}`}
+                  className="rounded-[24px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.95),rgba(10,16,20,0.98))] p-4 transition hover:-translate-y-1 hover:border-[#7ed321]/35 hover:shadow-[0_20px_46px_rgba(0,0,0,0.28)]"
+                >
+                  <p className="font-semibold text-white">{item.title}</p>
+                  <p className="mt-2 text-sm text-slate-300">{item.shortDescription || item.description || 'View product details'}</p>
                 </Link>
               ))}
             </div>
@@ -196,6 +207,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
         ) : null}
       </div>
       <Footer
+        theme="dark"
         companyName={companyName}
         footerDescription={siteSettings.footerDescription}
         phoneNumbers={[primaryPhone, secondaryPhone].filter(Boolean)}

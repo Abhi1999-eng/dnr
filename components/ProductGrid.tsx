@@ -27,6 +27,7 @@ export function ProductGrid({
   enableModal = false,
   emptyTitle = 'No products added yet',
   emptyDescription = 'Add products from the admin panel and they will appear here automatically.',
+  theme = 'light',
 }: {
   products: ProductType[];
   quickLinks?: { label: string; value?: string; type?: 'phone' | 'email' | 'whatsapp' | 'custom'; href?: string }[];
@@ -41,25 +42,37 @@ export function ProductGrid({
   enableModal?: boolean;
   emptyTitle?: string;
   emptyDescription?: string;
+  theme?: 'light' | 'dark';
 }) {
   const [selected, setSelected] = useState<ProductType | null>(null);
+  const isDark = theme === 'dark';
 
   const content = (
-    <div className="space-y-6">
-      {showTitle ? <SectionTitle title={title} kicker={kicker} /> : null}
+    <div className="space-y-4">
+      {showTitle ? <SectionTitle title={title} kicker={kicker} theme={theme} eyebrow={isDark ? 'Machinery range' : undefined} /> : null}
       {products.length ? (
-        <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }}>
+        <ContentCarousel itemsPerView={{ mobile: 1, tablet: 2, desktop: 2, wide: 3 }} theme={theme}>
           {products.map((product, index) => {
             const imageSrc = resolveProductImage(product);
             return (
               <Reveal key={product._id || product.slug || product.title} delay={index * 0.06} className="h-full">
-                <article className="glass group flex h-full flex-col gap-3 rounded-[22px] border border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] p-4 shadow-[0_18px_42px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-[0_24px_54px_rgba(15,23,42,0.13)]">
+                <article
+                  className={`group flex h-full flex-col gap-2.5 rounded-[22px] border p-4 shadow-[0_14px_30px_rgba(15,23,42,0.08)] transition duration-300 hover:-translate-y-1.5 ${
+                    isDark
+                      ? 'border-[rgba(126,211,33,0.16)] bg-[linear-gradient(180deg,rgba(23,33,43,0.96),rgba(13,20,28,0.98))] shadow-[0_24px_52px_rgba(0,0,0,0.24)] hover:border-[#7ed321]/45 hover:shadow-[0_28px_64px_rgba(0,0,0,0.34)]'
+                      : 'glass border-secondary/10 bg-[linear-gradient(180deg,#ffffff,rgba(248,250,252,0.96))] hover:border-primary/30 hover:shadow-[0_24px_54px_rgba(15,23,42,0.13)]'
+                  }`}
+                >
                   <button
                     type="button"
                     className={`flex h-full flex-col gap-3 text-left ${enableModal ? 'cursor-pointer' : 'cursor-default'}`}
                     onClick={enableModal ? () => setSelected(product) : undefined}
                   >
-                    <div className="flex h-[220px] w-full items-center justify-center overflow-hidden rounded-[18px] border border-secondary/10 bg-slate-50 p-4 md:h-[250px]">
+                    <div
+                      className={`flex h-[180px] w-full items-center justify-center overflow-hidden rounded-[18px] border p-3 md:h-[200px] lg:h-[210px] ${
+                        isDark ? 'border-[rgba(126,211,33,0.16)] bg-[radial-gradient(circle_at_top,rgba(126,211,33,0.16),transparent_52%),#0b1218]' : 'border-secondary/10 bg-slate-50'
+                      }`}
+                    >
                       <ManagedImage
                         src={imageSrc}
                         alt={product.title}
@@ -70,14 +83,14 @@ export function ProductGrid({
                       />
                     </div>
                     <div className="flex-1 space-y-2">
-                      <h3 className="text-[1.05rem] font-semibold text-secondary">{product.title}</h3>
-                      <p className="line-clamp-3 text-sm leading-relaxed text-secondary/80">
+                      <h3 className={isDark ? 'text-base font-semibold text-white' : 'text-base font-semibold text-secondary'}>{product.title}</h3>
+                      <p className={isDark ? 'line-clamp-3 text-sm leading-6 text-[#aab4bd]' : 'line-clamp-3 text-sm leading-6 text-secondary/80'}>
                         {product.shortDescription || product.description || 'Product details will appear here once added from the admin panel.'}
                       </p>
                     </div>
-                    <div className="flex items-center justify-between border-t border-secondary/10 pt-3">
-                      <span className="text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75">Machinery range</span>
-                      {enableModal ? <span className="text-sm font-semibold text-secondary transition group-hover:translate-x-1 group-hover:text-primary">View details →</span> : null}
+                    <div className={`flex items-center justify-between border-t pt-2.5 ${isDark ? 'border-white/8' : 'border-secondary/10'}`}>
+                      <span className={isDark ? 'text-xs font-semibold uppercase tracking-[0.18em] text-white/65' : 'text-xs font-semibold uppercase tracking-[0.18em] text-secondary/75'}>Machinery range</span>
+                      {enableModal ? <span className={isDark ? 'text-sm font-semibold text-white transition group-hover:translate-x-1 group-hover:text-[#7ed321]' : 'text-sm font-semibold text-secondary transition group-hover:translate-x-1 group-hover:text-primary'}>View details →</span> : null}
                     </div>
                   </button>
                 </article>
@@ -86,9 +99,13 @@ export function ProductGrid({
           })}
         </ContentCarousel>
       ) : (
-        <div className="rounded-3xl border border-dashed border-secondary/20 bg-white/80 px-6 py-12 text-center shadow-sm">
-          <h3 className="text-[1.05rem] font-semibold text-secondary">{emptyTitle}</h3>
-          <p className="mt-2 text-sm text-secondary/70">{emptyDescription}</p>
+        <div
+          className={`rounded-3xl border border-dashed px-6 py-12 text-center ${
+            isDark ? 'border-white/12 bg-[#111b24]/90 text-white shadow-[0_16px_40px_rgba(0,0,0,0.25)]' : 'border-secondary/20 bg-white/80 shadow-sm'
+          }`}
+        >
+          <h3 className={isDark ? 'text-base font-semibold text-white' : 'text-base font-semibold text-secondary'}>{emptyTitle}</h3>
+          <p className={isDark ? 'mt-2 text-sm text-[#aab4bd]' : 'mt-2 text-sm text-secondary/70'}>{emptyDescription}</p>
         </div>
       )}
     </div>
@@ -96,7 +113,7 @@ export function ProductGrid({
 
   return (
     <>
-      {embedded ? content : <section id={id} className="container-wide mt-12 scroll-mt-24 space-y-6">{content}</section>}
+      {embedded ? content : <section id={id} className="container-wide mt-10 scroll-mt-24 space-y-4">{content}</section>}
       {enableModal && selected ? (
         <ProductModal
           product={selected}

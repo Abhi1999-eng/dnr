@@ -22,7 +22,7 @@ export function FloatingSupport({ enabled = true, whatsappNumber = '', label = '
       rel="noopener noreferrer"
     >
       <span className="relative h-6 w-6">
-        <Image src="/whatsapp-svgrepo-com.svg" alt="WhatsApp" fill className="object-contain" />
+        <Image src="/whatsapp-svgrepo-com.svg" alt="WhatsApp" fill className="object-contain" sizes="24px" />
       </span>
       <span className="hidden sm:inline">{label}</span>
     </a>
