@@ -1,58 +1,56 @@
-name: Deploy to EC2
+name: Branch Deploy
 
 on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
-  deploy:
+  deploy-production:
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Deploy over SSH
+      - name: Deploy main to production
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.PROD_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           timeout: 60s
           command_timeout: 30m
           script: |
             set -euxo pipefail
             cd /home/ubuntu/dnr
-            echo "Starting deploy on $(hostname) at $(date)"
             git fetch origin
+            git checkout main
             git reset --hard origin/main
-            echo "Cleaning previous build artifacts"
-            deploy_ok=0
-            for attempt in 1 2 3; do
-              echo "Deploy attempt ${attempt}"
-              rm -rf node_modules .next
-              npm cache clean --force || true
-              echo "Running npm ci"
-              if ! npm ci; then
-                echo "npm ci failed on attempt ${attempt}"
-                sleep 5
-                continue
-              fi
-              if [ ! -x node_modules/.bin/next ]; then
-                echo "next binary missing after npm ci on attempt ${attempt}"
-                sleep 5
-                continue
-              fi
-              echo "Running build"
-              if npm run build; then
-                deploy_ok=1
-                break
-              fi
-              echo "Build failed on attempt ${attempt}"
-              sleep 5
-            done
-            if [ "$deploy_ok" -ne 1 ]; then
-              echo "Deployment build failed after 3 attempts"
-              exit 1
-            fi
-            echo "Restarting PM2"
+            npm ci
+            npm run build
             pm2 restart dnr-modern || pm2 start /home/ubuntu/dnr/ecosystem.config.cjs
             pm2 save
-            echo "Deploy finished at $(date)"
+
+  deploy-staging:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy staging branch to staging server
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.STAGING_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          timeout: 60s
+          command_timeout: 30m
+          script: |
+            set -euxo pipefail
+            cd /home/ubuntu/dnr
+            git fetch origin
+            git checkout staging
+            git reset --hard origin/staging
+            npm ci
+            npm run build
+            pm2 restart dnr-staging || PORT=3000 pm2 start npm --name dnr-staging -- start
+            pm2 save
+            sudo nginx -t
+            sudo systemctl reload nginx
