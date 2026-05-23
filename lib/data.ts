@@ -7,6 +7,7 @@ import { Product } from '@/models/Product';
 import { HomepageContent } from '@/models/HomepageContent';
 import { SiteSettings } from '@/models/SiteSettings';
 import { ClientLogo } from '@/models/ClientLogo';
+import { Blog } from '@/models/Blog';
 
 const serialize = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
@@ -41,6 +42,7 @@ const getPublicData = unstable_cache(
 export async function fetchPublicData(): Promise<any> {
   return getPublicData();
 }
+
 export async function fetchLiveClientLogos(): Promise<any[]> {
   noStore();
   await connectDB();
@@ -98,3 +100,51 @@ export const fetchRelatedServices = unstable_cache(
   ['related-services'],
   { revalidate: 300, tags: ['services'] }
 );
+
+export const fetchPublishedBlogs = unstable_cache(
+  async () => {
+    await connectDB();
+    const blogs = await Blog.find({ status: 'published' }).sort({ publishedAt: -1, createdAt: -1 }).lean();
+    return serialize(blogs || []);
+  },
+  ['published-blogs'],
+  { revalidate: 300, tags: ['blogs'] }
+);
+
+export const fetchBlogBySlug = unstable_cache(
+  async (slug: string) => {
+    await connectDB();
+    const blog = await Blog.findOne({ slug, status: 'published' }).lean();
+    return serialize(blog || null);
+  },
+  ['blog-by-slug'],
+  { revalidate: 300, tags: ['blogs'] }
+);
+
+export const fetchLatestBlogs = unstable_cache(
+  async (excludeSlug?: string, limit = 4) => {
+    await connectDB();
+    const blogs = await Blog.find({
+      status: 'published',
+      ...(excludeSlug ? { slug: { $ne: excludeSlug } } : {}),
+    })
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+    return serialize(blogs || []);
+  },
+  ['latest-blogs'],
+  { revalidate: 300, tags: ['blogs'] }
+);
+
+export async function fetchProductsByIds(ids: string[]) {
+  if (!ids.length) {
+    return [];
+  }
+
+  noStore();
+  await connectDB();
+  const products = await Product.find({ _id: { $in: ids } }).lean();
+  const byId = new Map(products.map((item: any) => [String(item._id), item]));
+  return ids.map((id) => byId.get(id)).filter(Boolean).map((item) => serialize(item));
+}

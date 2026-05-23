@@ -274,3 +274,20 @@ select:focus-visible {
   border: 1px dashed rgba(148, 163, 184, 0.28);
   background: rgba(15, 23, 42, 0.65);
 }
+
+
+.blog-prose h1:first-child,
+.blog-prose h2:first-child,
+.blog-prose h3:first-child,
+.blog-prose p:first-child,
+.blog-prose ul:first-child,
+.blog-prose ol:first-child {
+  margin-top: 0;
+}
+
+.blog-prose blockquote {
+  margin-top: 1.5rem;
+  border-left: 3px solid rgba(126, 211, 33, 0.5);
+  padding-left: 1rem;
+  color: rgb(203 213 225);
+}

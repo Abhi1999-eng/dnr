@@ -21,3 +21,26 @@ export type ClientLogoType = {
   sortOrder?: number;
   active?: boolean;
 };
+
+export type BlogType = {
+  _id?: string;
+  title: string;
+  slug: string;
+  excerpt?: string;
+  content: string;
+  featuredImage?: string;
+  featuredImageAlt?: string;
+  authorName?: string;
+  authorImage?: string;
+  category?: string;
+  tags?: string[];
+  relatedProducts?: string[];
+  seoTitle?: string;
+  seoDescription?: string;
+  seoKeywords?: string[];
+  canonicalUrl?: string;
+  status: 'draft' | 'published';
+  publishedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+};

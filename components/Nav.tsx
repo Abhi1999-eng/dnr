@@ -10,6 +10,7 @@ import type { ProductType } from '@/types';
 const links = [
   { href: '#hero', label: 'Home' },
   { href: '#services', label: 'Services' },
+  { href: '/blog', label: 'Blog' },
   { href: '#contact', label: 'Contact' },
 ] as const;
 
