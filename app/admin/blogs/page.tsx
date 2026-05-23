@@ -1,8 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import useSWR from 'swr';
 import type { ChangeEvent } from 'react';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminEditModal } from '@/components/AdminEditModal';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
@@ -93,11 +94,24 @@ function formatDate(value?: string) {
 
 export default function AdminBlogsPage() {
   const router = useRouter();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') || '' : '';
-  const { data, mutate } = useSWR(token ? ['/api/blogs?scope=admin', token] : null, adminFetcher);
-  const { data: productsData } = useSWR('/api/products', fetcher);
-  const blogs = Array.isArray(data) ? data : [];
-  const products = useMemo(() => (Array.isArray(productsData) ? productsData : []) as ProductOption[], [productsData]);
+  const token = useSyncExternalStore(
+    () => () => {},
+    () => localStorage.getItem('dnr_token') || '',
+    () => ''
+  );
+  const mounted = token !== '';
+  const {
+    data,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR(token ? ['/api/blogs?scope=admin', token] : null, adminFetcher);
+  const { data: productsData, error: productsError } = useSWR('/api/products', fetcher);
+  const blogs = useMemo(() => (Array.isArray(data?.blogs) ? data.blogs : Array.isArray(data) ? data : []), [data]);
+  const products = useMemo(() => {
+    const source = Array.isArray(productsData?.products) ? productsData.products : Array.isArray(productsData) ? productsData : [];
+    return source as ProductOption[];
+  }, [productsData]);
 
   const [form, setForm] = useState<BlogFormState>(emptyForm);
   const [editForm, setEditForm] = useState<BlogFormState>(emptyForm);
@@ -167,8 +181,8 @@ export default function AdminBlogsPage() {
         setCreateField(field, payload.url || '');
       }
       setFeedback({ type: 'success', message: 'Image uploaded successfully.' });
-    } catch (error) {
-      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Upload failed' });
+    } catch (uploadError) {
+      setFeedback({ type: 'error', message: uploadError instanceof Error ? uploadError.message : 'Upload failed' });
     } finally {
       setUploadingField(null);
       event.target.value = '';
@@ -222,8 +236,8 @@ export default function AdminBlogsPage() {
         type: 'success',
         message: mode === 'edit' ? 'Blog updated successfully.' : 'Blog created successfully.',
       });
-    } catch (error) {
-      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to save blog' });
+    } catch (saveError) {
+      setFeedback({ type: 'error', message: saveError instanceof Error ? saveError.message : 'Unable to save blog' });
     } finally {
       setSaving(false);
     }
@@ -251,8 +265,8 @@ export default function AdminBlogsPage() {
       await mutate();
       router.refresh();
       setFeedback({ type: 'success', message: 'Blog deleted successfully.' });
-    } catch (error) {
-      setFeedback({ type: 'error', message: error instanceof Error ? error.message : 'Unable to delete blog' });
+    } catch (deleteError) {
+      setFeedback({ type: 'error', message: deleteError instanceof Error ? deleteError.message : 'Unable to delete blog' });
     } finally {
       setDeletingId(null);
     }
@@ -283,6 +297,8 @@ export default function AdminBlogsPage() {
       publishedAt: blog.publishedAt ? String(blog.publishedAt).slice(0, 10) : '',
     });
   }
+
+
 
   function renderForm(mode: 'create' | 'edit') {
     const currentForm = mode === 'edit' ? editForm : form;
@@ -318,7 +334,7 @@ export default function AdminBlogsPage() {
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Featured image URL</label>
             <input value={currentForm.featuredImage} onChange={(event) => setField('featuredImage', event.target.value)} placeholder="/uploads/blog-image.png" />
-            {currentForm.featuredImage ? <p className="text-xs text-slate-500 break-all">{resolveMediaUrl(currentForm.featuredImage, '')}</p> : null}
+            {currentForm.featuredImage ? <p className="break-all text-xs text-slate-500">{resolveMediaUrl(currentForm.featuredImage, '')}</p> : null}
           </div>
           <div className="space-y-2">
             <label className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Featured image alt</label>
@@ -406,6 +422,7 @@ export default function AdminBlogsPage() {
           ) : (
             <p className="text-sm text-slate-500">No products available yet.</p>
           )}
+          {productsError ? <p className="text-sm text-amber-300">Related products are temporarily unavailable, but the page still works.</p> : null}
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
@@ -430,14 +447,24 @@ export default function AdminBlogsPage() {
   return (
     <AdminShell>
       <div className="space-y-6">
-        <div className="space-y-2">
-          <h1 className="text-2xl font-semibold text-white">Blogs</h1>
-          <p className="text-sm text-slate-400">Create industrial insights, machine guides, and SEO-friendly blog content for the public website.</p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="space-y-2">
+            <h1 className="text-2xl font-semibold text-white">Blogs</h1>
+            <p className="text-sm text-slate-400">Create industrial insights, machine guides, and SEO-friendly blog content for the public website.</p>
+          </div>
+          <Link href="/admin/blogs/new" className="rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/10">
+            Create Blog
+          </Link>
         </div>
 
         {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
+        {error ? <AdminFeedback type="error" message={error.message || 'This page could not load blogs right now.'} /> : null}
 
-        <div className="glass space-y-4 rounded-2xl border border-white/10 p-4">
+        {!mounted ? (
+          <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm text-slate-400">Loading blog manager...</div>
+        ) : null}
+
+        <div id="create-blog" className="glass space-y-4 rounded-2xl border border-white/10 p-4">
           <div className="space-y-1">
             <h2 className="text-lg font-semibold text-white">Create blog</h2>
             <p className="text-sm text-slate-400">Draft now, publish when ready, and connect articles to products for better lead generation.</p>
@@ -445,39 +472,51 @@ export default function AdminBlogsPage() {
           {renderForm('create')}
         </div>
 
-        {!blogs.length ? (
-          <AdminEmptyState title="No blogs yet" description="Add your first blog post from the form above." />
-        ) : (
-          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {blogs.map((blog: any) => (
-              <div key={blog._id} className="rounded-2xl border border-white/10 bg-slate-900/70 p-4">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2 text-xs">
-                      <span className={`rounded-full px-2 py-1 ${blog.status === 'published' ? 'bg-emerald-400/10 text-emerald-300' : 'bg-white/10 text-slate-300'}`}>
-                        {blog.status}
+        <div className="rounded-2xl border border-white/10 bg-slate-950/50 shadow-[0_18px_40px_rgba(0,0,0,0.22)]">
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-left text-sm">
+              <thead className="border-b border-white/10 bg-white/[0.03] text-slate-400">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Title</th>
+                  <th className="px-4 py-3 font-medium">Slug</th>
+                  <th className="px-4 py-3 font-medium">Status</th>
+                  <th className="px-4 py-3 font-medium">Published</th>
+                  <th className="px-4 py-3 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {blogs.map((blog: any) => (
+                  <tr key={blog._id} className="border-b border-white/6 last:border-0">
+                    <td className="px-4 py-4 align-top">
+                      <div className="space-y-1">
+                        <p className="font-semibold text-white">{blog.title || 'Untitled blog'}</p>
+                        <p className="line-clamp-2 max-w-[420px] text-xs leading-5 text-slate-400">{blog.excerpt || blog.content || 'No summary added yet.'}</p>
+                      </div>
+                    </td>
+                    <td className="px-4 py-4 align-top text-slate-300">/{blog.slug || 'draft-slug'}</td>
+                    <td className="px-4 py-4 align-top">
+                      <span className={`rounded-full px-2 py-1 text-xs ${blog.status === 'published' ? 'bg-emerald-400/10 text-emerald-300' : 'bg-white/10 text-slate-300'}`}>
+                        {blog.status || 'draft'}
                       </span>
-                      {blog.category ? <span className="rounded-full bg-[#7ed321]/10 px-2 py-1 text-[#d5f4a8]">{blog.category}</span> : null}
-                    </div>
-                    <h3 className="text-lg font-semibold text-white">{blog.title}</h3>
-                    <p className="line-clamp-3 text-sm text-slate-400">{blog.excerpt || blog.content}</p>
-                  </div>
-                  <div className="flex gap-3 text-sm">
-                    <button onClick={() => startEdit(blog)} className="text-emerald-300 hover:underline">Edit</button>
-                    <button onClick={() => removeBlog(blog._id)} disabled={deletingId === blog._id} className="text-red-300 hover:underline disabled:opacity-60">
-                      {deletingId === blog._id ? 'Deleting...' : 'Delete'}
-                    </button>
-                  </div>
-                </div>
-                <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-500">
-                  <span className="rounded-full bg-white/10 px-2 py-1">/{blog.slug}</span>
-                  <span className="rounded-full bg-white/10 px-2 py-1">{blog.authorName || 'DNR Techno Services'}</span>
-                  <span className="rounded-full bg-white/10 px-2 py-1">{formatDate(blog.publishedAt)}</span>
-                </div>
-              </div>
-            ))}
+                    </td>
+                    <td className="px-4 py-4 align-top text-slate-300">{formatDate(blog.publishedAt)}</td>
+                    <td className="px-4 py-4 align-top">
+                      <div className="flex justify-end gap-3">
+                        <button onClick={() => startEdit(blog)} className="text-emerald-300 hover:underline">
+                          Edit
+                        </button>
+                        <button onClick={() => removeBlog(blog._id)} disabled={deletingId === blog._id} className="text-red-300 hover:underline disabled:opacity-60">
+                          {deletingId === blog._id ? 'Deleting...' : 'Delete'}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
-        )}
+          {mounted && !isLoading && !blogs.length ? <div className="p-4"><AdminEmptyState title="No blogs yet" description="Add your first blog post from the form above." /></div> : null}
+        </div>
       </div>
 
       <AdminEditModal open={Boolean(editingId)} onClose={resetEditForm} title="Edit blog" description="Update content, SEO fields, and product associations.">

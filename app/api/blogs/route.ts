@@ -22,11 +22,11 @@ export async function GET(req: NextRequest) {
     }
 
     const blogs = await Blog.find().sort({ updatedAt: -1, createdAt: -1 }).lean();
-    return NextResponse.json(blogs);
+    return NextResponse.json({ blogs });
   }
 
   const blogs = await Blog.find({ status: 'published' }).sort({ publishedAt: -1, createdAt: -1 }).lean();
-  return NextResponse.json(blogs);
+  return NextResponse.json({ blogs });
 }
 
 export async function POST(req: NextRequest) {
@@ -50,5 +50,5 @@ export async function POST(req: NextRequest) {
   if (created.slug) {
     revalidatePath(`/blog/${created.slug}`);
   }
-  return NextResponse.json(created, { status: 201 });
+  return NextResponse.json({ blog: created }, { status: 201 });
 }
