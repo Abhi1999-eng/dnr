@@ -102,6 +102,15 @@ export function buildBreadcrumbJsonLd(items: Array<{ name: string; url: string }
 export function buildOrganizationJsonLd(settings: any = {}) {
   const phones = [settings?.primaryPhone, settings?.secondaryPhone, ...(settings?.phone || [])].filter(Boolean);
   const sameAs = [settings?.website, settings?.mapLink].filter(Boolean);
+  const contactPoints = phones.length
+    ? phones.map((phone: string) => ({
+        '@type': 'ContactPoint',
+        telephone: phone,
+        contactType: 'customer support',
+        areaServed: 'IN',
+        availableLanguage: ['en', 'hi'],
+      }))
+    : undefined;
 
   return {
     '@context': 'https://schema.org',
@@ -120,8 +129,12 @@ export function buildOrganizationJsonLd(settings: any = {}) {
           addressCountry: 'IN',
         }
       : undefined,
-    areaServed: 'India',
-    sameAs,
+    areaServed: {
+      '@type': 'Country',
+      name: 'India',
+    },
+    sameAs: sameAs.length ? sameAs : undefined,
+    contactPoint: contactPoints,
   };
 }
 
@@ -135,37 +148,91 @@ export function buildWebsiteJsonLd() {
   };
 }
 
-export function buildProductJsonLd(product: any) {
-  const image = resolveMediaUrl(product?.heroImage || product?.image, DEFAULT_OG_IMAGE);
+export function buildWebPageJsonLd(input: {
+  name: string;
+  description?: string | null;
+  path: string;
+  image?: string | null;
+}) {
+  const image = resolveMediaUrl(input.image, DEFAULT_OG_IMAGE);
   return {
     '@context': 'https://schema.org',
-    '@type': 'Product',
+    '@type': 'WebPage',
+    name: input.name,
+    description: trimDescription(input.description),
+    url: absoluteUrl(input.path),
+    image: image.startsWith('http') ? image : absoluteUrl(image),
+  };
+}
+
+export function buildQuoteContactAction(targetPath: string) {
+  return {
+    '@type': 'ContactAction',
+    name: 'Request Quote',
+    target: absoluteUrl(targetPath),
+  };
+}
+
+export function buildProductJsonLd(product: any) {
+  const image = resolveMediaUrl(product?.heroImage || product?.image, DEFAULT_OG_IMAGE);
+  const path = `/products/${product?.slug || ''}`;
+  const description = trimDescription(product?.seo?.description || product?.description || product?.shortDescription, DEFAULT_DESCRIPTION, 220);
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
     name: product?.title,
-    description: trimDescription(product?.seo?.description || product?.description || product?.shortDescription, DEFAULT_DESCRIPTION, 220),
-    image: [image.startsWith('http') ? image : absoluteUrl(image)],
-    sku: product?.slug,
-    brand: {
-      '@type': 'Brand',
-      name: SITE_NAME,
+    description,
+    url: absoluteUrl(path),
+    image: image.startsWith('http') ? image : absoluteUrl(image),
+    mainEntity: {
+      '@type': 'Service',
+      name: product?.title,
+      description,
+      provider: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'India',
+      },
+      serviceType: 'Industrial machinery supply and support',
+      category: product?.category || 'Industrial Machinery',
+      potentialAction: buildQuoteContactAction(path),
     },
-    category: 'Industrial Machinery',
   };
 }
 
 export function buildServiceJsonLd(service: any) {
   const image = resolveServiceImage(service, DEFAULT_OG_IMAGE);
+  const path = `/services/${service?.slug || ''}`;
+  const description = trimDescription(service?.longDescription || service?.description, DEFAULT_DESCRIPTION, 220);
+
   return {
     '@context': 'https://schema.org',
-    '@type': 'Service',
-    serviceType: service?.title,
+    '@type': 'WebPage',
     name: service?.title,
-    description: trimDescription(service?.longDescription || service?.description, DEFAULT_DESCRIPTION, 220),
-    provider: {
-      '@type': 'Organization',
-      name: SITE_NAME,
-      url: SITE_URL,
-    },
-    areaServed: 'India',
+    description,
+    url: absoluteUrl(path),
     image: image.startsWith('http') ? image : absoluteUrl(image),
+    mainEntity: {
+      '@type': 'Service',
+      serviceType: service?.title || 'Industrial machinery support service',
+      name: service?.title,
+      description,
+      provider: {
+        '@type': 'Organization',
+        name: SITE_NAME,
+        url: SITE_URL,
+      },
+      areaServed: {
+        '@type': 'Country',
+        name: 'India',
+      },
+      category: service?.category || 'Industrial Services',
+      potentialAction: buildQuoteContactAction(path),
+    },
   };
 }
