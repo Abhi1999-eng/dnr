@@ -98,10 +98,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
               <p className="max-w-2xl text-lg leading-relaxed text-slate-300">{serviceData.description}</p>
             </div>
             <div className="flex flex-wrap gap-3">
-              <Link href={contactHref} className="btn-primary">
-                {siteSettings.headerCtaLabel || 'Get in Touch'}
-              </Link>
-              <Link href="/contact" className="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-semibold text-white transition hover:border-[#7ed321]/35 hover:bg-[#7ed321]/8 hover:text-[#d5f4a8]">
+              <Link href="/contact" className="inline-flex h-[52px] items-center justify-center rounded-xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-7 text-sm font-semibold text-[#15200d] shadow-[0_14px_30px_rgba(139,197,63,0.22)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(139,197,63,0.26)]">
                 Send Inquiry
               </Link>
             </div>
@@ -144,10 +141,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
                 Share your machine type, plant requirement, or support need and we’ll guide you to the right contact.
               </p>
               <div className="mt-5 flex flex-wrap gap-3">
-                <Link href={contactHref} className="btn-primary">
-                  Get in Touch
-                </Link>
-                <Link href="/contact" className="inline-flex h-12 items-center justify-center rounded-xl border border-white/10 bg-white/[0.03] px-5 text-sm font-semibold text-white transition hover:border-[#7ed321]/35 hover:bg-[#7ed321]/8 hover:text-[#d5f4a8]">
+                <Link href="/contact" className="inline-flex h-[52px] items-center justify-center rounded-xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-7 text-sm font-semibold text-[#15200d] shadow-[0_14px_30px_rgba(139,197,63,0.22)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(139,197,63,0.26)]">
                   Send Inquiry
                 </Link>
               </div>
