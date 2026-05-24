@@ -130,9 +130,13 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         theme="dark"
       />
       <main className="container-wide space-y-8 py-12 md:py-14">
-        <Link href="/blog" className="inline-flex text-sm font-semibold text-[#7ed321] transition hover:text-[#d5f4a8]">
-          ← Back to blog
-        </Link>
+        <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2 text-sm text-slate-400">
+          <Link href="/" className="transition hover:text-[#d5f4a8]">Home</Link>
+          <span aria-hidden="true">/</span>
+          <Link href="/blog" className="transition hover:text-[#d5f4a8]">Blog</Link>
+          <span aria-hidden="true">/</span>
+          <span className="text-slate-200">{blogData.title}</span>
+        </nav>
 
         <section className="grid gap-8 lg:grid-cols-[minmax(0,1.2fr)_340px] lg:items-start">
           <article className="space-y-6 rounded-[28px] border border-white/10 bg-[linear-gradient(180deg,rgba(17,27,36,0.96),rgba(10,16,20,0.98))] p-6 shadow-[0_24px_54px_rgba(0,0,0,0.3)] md:p-8">

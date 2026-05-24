@@ -27,6 +27,7 @@ export function Footer({
     { label: 'About', href: '/about' },
     { label: 'Products', href: '/products' },
     { label: 'Services', href: '/services' },
+    { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/contact' },
   ],
   theme = 'dark',

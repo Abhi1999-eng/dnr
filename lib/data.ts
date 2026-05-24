@@ -137,6 +137,23 @@ export const fetchLatestBlogs = unstable_cache(
   { revalidate: 300, tags: ['blogs'] }
 );
 
+export const fetchRelatedBlogsByProduct = unstable_cache(
+  async (productId: string, limit = 3) => {
+    if (!productId) {
+      return [];
+    }
+
+    await connectDB();
+    const blogs = await Blog.find({ status: 'published', relatedProducts: productId })
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .limit(limit)
+      .lean();
+    return serialize(blogs || []);
+  },
+  ['related-blogs-by-product'],
+  { revalidate: 300, tags: ['blogs', 'products'] }
+);
+
 export async function fetchProductsByIds(ids: string[]) {
   if (!ids.length) {
     return [];
