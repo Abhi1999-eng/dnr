@@ -173,7 +173,7 @@ export function buildQuoteContactAction(targetPath: string) {
   };
 }
 
-export function buildProductJsonLd(product: any) {
+export function buildProductDetailSchema(product: any) {
   const image = resolveMediaUrl(product?.heroImage || product?.image, DEFAULT_OG_IMAGE);
   const path = `/products/${product?.slug || ''}`;
   const description = trimDescription(product?.seo?.description || product?.description || product?.shortDescription, DEFAULT_DESCRIPTION, 220);

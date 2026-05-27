@@ -11,7 +11,7 @@ import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedBlogsByProduct, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildProductJsonLd, createPageMetadata } from '@/lib/seo';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildProductDetailSchema, createPageMetadata } from '@/lib/seo';
 import { getYouTubeEmbedUrl } from '@/lib/youtube';
 
 export const revalidate = 300;
@@ -93,7 +93,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
       { name: 'Products', url: absoluteUrl('/products') },
       { name: productData.title, url: absoluteUrl(`/products/${productData.slug}`) },
     ]),
-    buildProductJsonLd(productData),
+    buildProductDetailSchema(productData),
   ];
 
   return (
