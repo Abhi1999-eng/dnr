@@ -8,6 +8,11 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
+    "search-console:verify": "python3 scripts/check-search-console.py verify",
+    "search-console:submit-sitemap": "python3 scripts/check-search-console.py submit-sitemap",
+    "search-console:inspect": "python3 scripts/check-search-console.py inspect",
+    "search-console:inspect:sitemap": "python3 scripts/check-search-console.py inspect --from-sitemap ${SEARCH_CONSOLE_SITEMAP_URL:-https://dnrtechnoservices.com/sitemap.xml}",
+    "seo:sync-die-casting": "node scripts/sync-die-casting-product-seo.mjs",
     "seed": "node --loader ts-node/esm scripts/seed.ts",
     "reset:cms": "node --loader ts-node/esm scripts/seed.ts"
   },

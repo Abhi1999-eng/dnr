@@ -11,6 +11,7 @@ import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedBlogsByProduct, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
+import { getProductSeoContent } from '@/lib/product-seo-content';
 import { absoluteUrl, buildBreadcrumbJsonLd, buildProductDetailSchema, createPageMetadata } from '@/lib/seo';
 import { getYouTubeEmbedUrl } from '@/lib/youtube';
 
@@ -40,6 +41,7 @@ const faqItems = [
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const product: any = await fetchProductBySlug(slug);
+  const seoContent = getProductSeoContent(product || slug);
 
   if (!product) {
     return createPageMetadata({
@@ -51,10 +53,11 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return createPageMetadata({
-    title: product.seo?.title || product.title,
-    description: product.seo?.description || product.shortDescription || product.description,
+    title: product.seo?.title || seoContent?.metadataTitle || product.title,
+    description: product.seo?.description || seoContent?.metadataDescription || product.shortDescription || product.description,
     path: `/products/${product.slug}`,
     image: resolveMediaUrl(product.seo?.ogImage || product.heroImage || product.image, '/dnr/page_06.png'),
+    keywords: seoContent?.keywords || [],
   });
 }
 
@@ -78,15 +81,25 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const email = siteSettings.email || 'dnr.techservices@gmail.com';
   const quickLinks = (siteSettings.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
-  const shortDescription = String(productData.shortDescription || '').trim();
-  const longDescription = String(productData.description || '').trim();
+  const seoContent = getProductSeoContent(productData);
+  const shortDescription = String(seoContent?.shortDescription || productData.shortDescription || '').trim();
+  const longDescription = String(seoContent?.longDescription || productData.description || '').trim();
   const videoEmbedUrl = getYouTubeEmbedUrl(productData.youtubeUrl || '');
+  const overviewItems = Array.isArray(productData.features) && productData.features.length ? productData.features : seoContent?.overview || [];
   const keyPoints = [
-    productData.features?.length ? `${productData.features.length} feature${productData.features.length === 1 ? '' : 's'}` : '',
+    overviewItems.length ? `${overviewItems.length} feature${overviewItems.length === 1 ? '' : 's'}` : '',
     productData.applications?.length ? `${productData.applications.length} application${productData.applications.length === 1 ? '' : 's'}` : '',
     productData.specs?.length ? `${productData.specs.length} specification${productData.specs.length === 1 ? '' : 's'}` : '',
   ].filter(Boolean);
-  const industries = Array.isArray(productData.applications) ? productData.applications.slice(0, 6) : [];
+  const industries = Array.isArray(productData.applications) && productData.applications.length ? productData.applications.slice(0, 6) : seoContent?.industries || [];
+  const pageFaqItems = seoContent?.faqs?.length ? seoContent.faqs : faqItems;
+  const curatedRelated = seoContent?.relatedSlugs?.length
+    ? seoContent.relatedSlugs
+        .map((relatedSlug) => (products || []).find((entry: any) => entry.slug === relatedSlug))
+        .filter(Boolean)
+        .slice(0, 3)
+    : [];
+  const displayedRelated = curatedRelated.length ? curatedRelated : related;
   const structuredData = [
     buildBreadcrumbJsonLd([
       { name: 'Home', url: absoluteUrl('/') },
@@ -148,11 +161,11 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
             />
 
             <div className="grid gap-4">
-              {productData.features?.length ? (
+              {overviewItems.length ? (
                 <section className="space-y-2">
                   <h2 className="font-semibold text-white">Overview</h2>
                   <ul className="list-disc space-y-1 pl-5 text-slate-300">
-                    {productData.features.map((feature: string) => (
+                    {overviewItems.map((feature: string) => (
                       <li key={feature}>{feature}</li>
                     ))}
                   </ul>
@@ -266,7 +279,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
             <h2 className="text-2xl font-semibold text-white">Common questions</h2>
           </div>
           <div className="mt-5 space-y-4">
-            {faqItems.map((item) => (
+            {pageFaqItems.map((item) => (
               <div key={item.question} className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
                 <h3 className="text-base font-semibold text-white">{item.question}</h3>
                 <p className="mt-2 text-sm leading-7 text-slate-300">{item.answer}</p>
@@ -313,11 +326,11 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
           </section>
         ) : null}
 
-        {related.length ? (
+        {displayedRelated.length ? (
           <section className="space-y-4">
-            <h2 className="text-xl font-semibold text-white">Related Products</h2>
+            <h2 className="text-xl font-semibold text-white">{curatedRelated.length ? 'Related Die Casting Machines' : 'Related Products'}</h2>
             <div className="grid gap-4 md:grid-cols-3">
-              {related.map((item: any) => (
+              {displayedRelated.map((item: any) => (
                 <Link
                   key={item.slug}
                   href={`/products/${item.slug}`}
