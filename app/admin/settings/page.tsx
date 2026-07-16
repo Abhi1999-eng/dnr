@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { ChangeEvent, useState } from 'react';
 import { AdminShell } from '@/components/AdminShell';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -68,7 +69,7 @@ function normalizeSettings(data: any) {
 
 export default function AdminSettingsPage() {
   const { data, mutate } = useSWR('/api/settings', fetcher);
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [draft, setDraft] = useState<typeof defaultSettings | null>(null);
   const [uploading, setUploading] = useState(false);
 

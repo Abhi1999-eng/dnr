@@ -1,9 +1,10 @@
 'use client';
 import { AdminShell } from '@/components/AdminShell';
 import { useState } from 'react';
+import { useAdminToken } from '@/components/useAdminToken';
 
 export default function MediaPage() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [url, setUrl] = useState('');
   const [status, setStatus] = useState('');
 
@@ -43,4 +44,3 @@ export default function MediaPage() {
   );
 
 }
-

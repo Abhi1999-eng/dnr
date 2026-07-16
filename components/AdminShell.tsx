@@ -45,6 +45,34 @@ export function AdminShell({ children }: { children: ReactNode }) {
           </div>
         </aside>
         <main className="flex-1 p-4 md:p-8 xl:p-10">
+          <div className="mb-4 space-y-3 md:hidden">
+            <div className="rounded-2xl border border-white/10 bg-slate-950/70 p-4 shadow-[0_16px_40px_rgba(0,0,0,0.2)]">
+              <p className="text-xs font-semibold uppercase tracking-[0.24em] text-primary/80">DNR CMS</p>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-lg font-semibold text-white">Admin Panel</h2>
+                  <p className="text-sm text-slate-400">Use the quick links below to move between sections.</p>
+                </div>
+              </div>
+            </div>
+            <div className="-mx-1 overflow-x-auto pb-1">
+              <div className="flex min-w-max gap-2 px-1">
+                {nav.map((item) => (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`whitespace-nowrap rounded-xl px-4 py-2.5 text-sm transition ${
+                      pathname === item.href
+                        ? 'bg-primary/15 text-white shadow-[inset_0_0_0_1px_rgba(139,197,63,0.35)]'
+                        : 'border border-white/10 bg-slate-950/60 text-slate-300 hover:bg-white/5 hover:text-white'
+                    }`}
+                  >
+                    {item.label}
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
           <div className="mx-auto max-w-6xl">{children}</div>
         </main>
       </div>

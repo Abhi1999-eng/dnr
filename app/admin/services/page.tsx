@@ -9,6 +9,7 @@ import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminEditModal } from '@/components/AdminEditModal';
 import { resolveMediaUrl } from '@/lib/media';
 import { expectedOutcomesToTextarea } from '@/lib/service-outcomes';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -41,7 +42,7 @@ function slugify(value: string) {
 export default function AdminServicesPage() {
   const { data, mutate } = useSWR('/api/services', fetcher);
   const router = useRouter();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [form, setForm] = useState<ServiceForm>(emptyForm);
   const [editForm, setEditForm] = useState<ServiceForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);

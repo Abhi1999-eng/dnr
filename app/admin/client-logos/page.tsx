@@ -8,6 +8,7 @@ import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminEditModal } from '@/components/AdminEditModal';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url, { cache: 'no-store' }).then((r) => r.json());
 
@@ -30,7 +31,7 @@ const emptyForm: LogoForm = {
 export default function AdminClientLogosPage() {
   const { data, mutate } = useSWR('/api/client-logos', fetcher);
   const router = useRouter();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [form, setForm] = useState<LogoForm>(emptyForm);
   const [editForm, setEditForm] = useState<LogoForm>(emptyForm);
   const [editingId, setEditingId] = useState<string | null>(null);

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { ContactActionType, resolveContactActionHref } from '@/lib/contact-actions';
 import { AdminFeedback } from '@/components/AdminFeedback';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -91,7 +92,7 @@ function addQuickLinkRow(settings: ContactSettings): ContactSettings {
 export default function AdminContactPage() {
   const { data, mutate } = useSWR('/api/settings', fetcher);
   const router = useRouter();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [draft, setDraft] = useState<ContactSettings | null>(null);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);

@@ -6,6 +6,7 @@ import type { ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminShell } from '@/components/AdminShell';
 import { AdminFeedback } from '@/components/AdminFeedback';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -142,7 +143,7 @@ function Toggle({ label, checked, onChange }: { label: string; checked: boolean;
 export default function AdminHomepagePage() {
   const { data, mutate } = useSWR('/api/homepage', fetcher);
   const router = useRouter();
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [draft, setDraft] = useState<typeof defaultHomepage | null>(null);
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);

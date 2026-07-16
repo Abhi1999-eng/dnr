@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -13,7 +14,7 @@ export default function AdminTestimonialsPage() {
   const router = useRouter();
   const testimonials = Array.isArray(data) ? data : [];
   const [form, setForm] = useState({ name: '', feedback: '', rating: 5 });
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -96,7 +97,8 @@ export default function AdminTestimonialsPage() {
         {!testimonials.length ? (
           <AdminEmptyState title="No testimonials yet" description="Add customer feedback here if you want to use a testimonials section later." />
         ) : (
-          <div className="glass rounded-2xl border border-white/10 overflow-hidden">
+          <div className="glass overflow-hidden rounded-2xl border border-white/10">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-slate-400">
                 <tr>
@@ -121,6 +123,7 @@ export default function AdminTestimonialsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

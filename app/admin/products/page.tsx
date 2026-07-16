@@ -7,6 +7,7 @@ import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
 import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminEditModal } from '@/components/AdminEditModal';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -70,7 +71,7 @@ export default function AdminProductsPage() {
   const { data, mutate } = useSWR('/api/products', fetcher);
   const router = useRouter();
   const products = Array.isArray(data) ? data : [];
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
 
   const [form, setForm] = useState<FormState>(emptyForm);
   const [editForm, setEditForm] = useState<FormState>(emptyForm);
@@ -467,6 +468,7 @@ export default function AdminProductsPage() {
 
           {bulkResults.length ? (
             <div className="overflow-hidden rounded-2xl border border-white/10">
+              <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead className="text-left text-slate-400">
                   <tr>
@@ -501,6 +503,7 @@ export default function AdminProductsPage() {
                   ))}
                 </tbody>
               </table>
+              </div>
             </div>
           ) : null}
         </div>
@@ -517,6 +520,7 @@ export default function AdminProductsPage() {
           <AdminEmptyState title="No products yet" description="Add your first product above. It will appear automatically on the homepage and products page." />
         ) : (
           <div className="glass overflow-hidden rounded-2xl border border-white/10">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead className="text-left text-slate-400">
                 <tr>
@@ -554,6 +558,7 @@ export default function AdminProductsPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>

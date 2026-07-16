@@ -11,6 +11,7 @@ import { AdminFeedback } from '@/components/AdminFeedback';
 import { AdminShell } from '@/components/AdminShell';
 import { slugifyBlog } from '@/lib/blog';
 import { resolveMediaUrl } from '@/lib/media';
+import { useAdminToken } from '@/components/useAdminToken';
 
 type BlogFormState = {
   title: string;
@@ -94,12 +95,7 @@ function formatDate(value?: string) {
 
 export default function AdminBlogsPage() {
   const router = useRouter();
-  const token = useSyncExternalStore(
-    () => () => {},
-    () => localStorage.getItem('dnr_token') || '',
-    () => ''
-  );
-  const mounted = token !== '';
+  const token = useAdminToken();
   const {
     data,
     error,
@@ -460,7 +456,7 @@ export default function AdminBlogsPage() {
         {feedback ? <AdminFeedback type={feedback.type} message={feedback.message} /> : null}
         {error ? <AdminFeedback type="error" message={error.message || 'This page could not load blogs right now.'} /> : null}
 
-        {!mounted ? (
+        {!token ? (
           <div className="rounded-2xl border border-white/10 bg-slate-950/50 p-4 text-sm text-slate-400">Loading blog manager...</div>
         ) : null}
 
@@ -515,7 +511,7 @@ export default function AdminBlogsPage() {
               </tbody>
             </table>
           </div>
-          {mounted && !isLoading && !blogs.length ? <div className="p-4"><AdminEmptyState title="No blogs yet" description="Add your first blog post from the form above." /></div> : null}
+          {token && !isLoading && !blogs.length ? <div className="p-4"><AdminEmptyState title="No blogs yet" description="Add your first blog post from the form above." /></div> : null}
         </div>
       </div>
 

@@ -3,6 +3,7 @@
 import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
 import { useState } from 'react';
+import { useAdminToken } from '@/components/useAdminToken';
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -10,7 +11,7 @@ const defaultHero = { title: '', subtitle: '', cta: '' };
 
 export default function AdminContentPage() {
   const { data, mutate } = useSWR('/api/content', fetcher);
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+  const token = useAdminToken();
   const [draft, setDraft] = useState<typeof defaultHero | null>(null);
 
   const hero = draft ?? { ...defaultHero, ...(data?.hero || {}) };

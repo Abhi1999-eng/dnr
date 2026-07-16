@@ -3,9 +3,9 @@
 import useSWR from 'swr';
 import { AdminShell } from '@/components/AdminShell';
 import { AdminEmptyState } from '@/components/AdminEmptyState';
+import { useAdminToken } from '@/components/useAdminToken';
 
-const fetcher = async (url: string) => {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('dnr_token') : '';
+const fetcher = async ([url, token]: [string, string]) => {
   const res = await fetch(url, {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
   });
@@ -14,7 +14,8 @@ const fetcher = async (url: string) => {
 };
 
 export default function AdminInquiriesPage() {
-  const { data, error, isLoading } = useSWR('/api/inquiries', fetcher);
+  const token = useAdminToken();
+  const { data, error, isLoading } = useSWR(token ? ['/api/inquiries', token] : null, fetcher);
   const inquiries = Array.isArray(data) ? data : [];
 
   return (
@@ -33,6 +34,7 @@ export default function AdminInquiriesPage() {
           <AdminEmptyState title="No inquiries yet" description="New website inquiries are delivered directly to your email inbox. No inquiry records are stored here." />
         ) : (
           <div className="glass overflow-hidden rounded-2xl border border-white/10">
+            <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
                 <tr>
@@ -63,6 +65,7 @@ export default function AdminInquiriesPage() {
                 ))}
               </tbody>
             </table>
+            </div>
           </div>
         )}
       </div>
