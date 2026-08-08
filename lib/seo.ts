@@ -3,13 +3,49 @@ import { resolveMediaUrl, resolveServiceImage } from './media';
 
 export const SITE_NAME = 'DNR Techno Services';
 export const SITE_URL = 'https://dnrtechnoservices.com';
+export const HOMEPAGE_META_TITLE = 'Industrial Machinery & Engineering Support';
+export const HOMEPAGE_META_DESCRIPTION =
+  'DNR Techno Services supplies industrial machinery, installation support, commissioning, breakdown maintenance, and spare parts support for manufacturing teams across India.';
 export const DEFAULT_DESCRIPTION =
   'DNR Techno Services supplies industrial machinery, installation support, commissioning, and plant-focused engineering services across India.';
 const DEFAULT_OG_IMAGE = '/logo-dnr.png';
 
+export const HOMEPAGE_FAQS = [
+  {
+    question: 'What does DNR Techno Services provide?',
+    answer:
+      'DNR Techno Services supplies industrial machinery, engineering support, installation assistance, commissioning support, maintenance coordination, and spare parts support for manufacturing plants.',
+  },
+  {
+    question: 'Does DNR support installation and commissioning?',
+    answer:
+      'Yes. DNR supports industrial buyers with installation planning, commissioning coordination, and plant-side execution support depending on the machine and project requirement.',
+  },
+  {
+    question: 'Which industries does DNR serve?',
+    answer:
+      'DNR supports manufacturing teams across casting, machining, foundry, automation, finishing, and other industrial production environments.',
+  },
+  {
+    question: 'Does DNR provide after-sales service and spare parts support?',
+    answer:
+      'Yes. DNR helps with service coordination, breakdown response, technical support, and spare parts continuity for applicable machines and systems.',
+  },
+  {
+    question: 'How can a business request a quote from DNR?',
+    answer:
+      'A business can share its machine requirement, production need, location, and contact details through the enquiry form, phone, email, or WhatsApp support option on the website.',
+  },
+] as const;
+
 export function absoluteUrl(path = '/') {
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return new URL(normalizedPath, SITE_URL).toString();
+
+  if (normalizedPath === '/') {
+    return SITE_URL;
+  }
+
+  return new URL(normalizedPath, `${SITE_URL}/`).toString();
 }
 
 export function trimDescription(value?: string | null, fallback = DEFAULT_DESCRIPTION, max = 160) {
@@ -26,6 +62,28 @@ type MetadataOptions = {
   noIndex?: boolean;
 };
 
+function resolveHomepageTitle(title: string) {
+  const cleanTitle = title.replace(/\s+/g, ' ').trim();
+  const genericTitles = new Set([
+    SITE_NAME,
+    `${SITE_NAME} | ${SITE_NAME}`,
+    'Industrial Machinery and Engineering Support',
+    'Industrial Machinery & Engineering Support',
+  ]);
+
+  return genericTitles.has(cleanTitle) ? HOMEPAGE_META_TITLE : cleanTitle;
+}
+
+function resolveHomepageDescription(description?: string | null) {
+  const cleanDescription = (description || '').replace(/\s+/g, ' ').trim();
+
+  if (!cleanDescription || cleanDescription.length < 90 || cleanDescription === DEFAULT_DESCRIPTION) {
+    return HOMEPAGE_META_DESCRIPTION;
+  }
+
+  return cleanDescription;
+}
+
 export function createPageMetadata({
   title,
   description,
@@ -34,12 +92,14 @@ export function createPageMetadata({
   keywords = [],
   noIndex = false,
 }: MetadataOptions): Metadata {
+  const isHomepage = path === '/' || path === '';
   const canonical = absoluteUrl(path);
-  const resolvedDescription = trimDescription(description);
+  const resolvedTitle = isHomepage ? resolveHomepageTitle(title) : title;
+  const resolvedDescription = trimDescription(isHomepage ? resolveHomepageDescription(description) : description);
   const resolvedImage = image?.startsWith('http') ? image : absoluteUrl(image || DEFAULT_OG_IMAGE);
 
   return {
-    title,
+    title: resolvedTitle,
     description: resolvedDescription,
     keywords,
     alternates: {
@@ -48,7 +108,7 @@ export function createPageMetadata({
     openGraph: {
       type: 'website',
       url: canonical,
-      title,
+      title: resolvedTitle,
       description: resolvedDescription,
       siteName: SITE_NAME,
       images: [
@@ -56,13 +116,13 @@ export function createPageMetadata({
           url: resolvedImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: resolvedTitle,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: resolvedTitle,
       description: resolvedDescription,
       images: [resolvedImage],
     },
@@ -145,6 +205,21 @@ export function buildWebsiteJsonLd() {
     name: SITE_NAME,
     url: SITE_URL,
     inLanguage: 'en-IN',
+  };
+}
+
+export function buildFaqPageJsonLd(items = HOMEPAGE_FAQS) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
   };
 }
 
