@@ -7,14 +7,68 @@ export const DEFAULT_DESCRIPTION =
   'DNR Techno Services supplies industrial machinery, installation support, commissioning, and plant-focused engineering services across India.';
 const DEFAULT_OG_IMAGE = '/logo-dnr.png';
 
+export function isPlaceholderText(value?: string | null) {
+  return /\b(dummy|lorem ipsum|placeholder|sample testimonial|test testimonial)\b/i.test(String(value || ''));
+}
+
+function normalizePublicUrl(value?: string | null) {
+  if (!value) return null;
+  const trimmed = String(value).trim();
+  if (!trimmed) return null;
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    return trimmed;
+  }
+
+  return null;
+}
+
+function normalizeTitle(title: string) {
+  const trimmed = String(title || '').trim();
+  if (!trimmed) return SITE_NAME;
+
+  const lower = trimmed.toLowerCase();
+  const siteLower = SITE_NAME.toLowerCase();
+
+  if (lower === siteLower) {
+    return SITE_NAME;
+  }
+
+  if (lower.endsWith(`| ${siteLower}`) || lower.endsWith(`- ${siteLower}`) || lower.endsWith(`: ${siteLower}`)) {
+    return trimmed.slice(0, Math.max(0, trimmed.length - SITE_NAME.length - 2)).trim();
+  }
+
+  return trimmed;
+}
+
 export function absoluteUrl(path = '/') {
+  if (!path || path === '/') {
+    return SITE_URL;
+  }
+
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
   return new URL(normalizedPath, SITE_URL).toString();
 }
 
 export function trimDescription(value?: string | null, fallback = DEFAULT_DESCRIPTION, max = 160) {
-  const content = (value || fallback).replace(/\s+/g, ' ').trim();
-  return content.length > max ? `${content.slice(0, max - 1).trim()}…` : content;
+  const content = String(value || fallback)
+    .replace(/\.{2,}/g, '.')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  if (content.length <= max) {
+    return content;
+  }
+
+  const candidate = content.slice(0, max + 1);
+  const sentenceEnd = Math.max(candidate.lastIndexOf('. '), candidate.lastIndexOf('! '), candidate.lastIndexOf('? '));
+  if (sentenceEnd >= Math.floor(max * 0.55)) {
+    return candidate.slice(0, sentenceEnd + 1).trim();
+  }
+
+  const wordEnd = candidate.lastIndexOf(' ');
+  const shortened = candidate.slice(0, wordEnd > 0 ? wordEnd : max).replace(/[\s,;:.-]+$/, '').trim();
+  return shortened.endsWith('.') || shortened.endsWith('!') || shortened.endsWith('?') ? shortened : `${shortened}.`;
 }
 
 type MetadataOptions = {
@@ -34,12 +88,21 @@ export function createPageMetadata({
   keywords = [],
   noIndex = false,
 }: MetadataOptions): Metadata {
+  const normalizedTitle = normalizeTitle(title);
+  const fullTitle =
+    normalizedTitle === SITE_NAME
+      ? `${SITE_NAME} | Industrial Machinery and Engineering Support`
+      : normalizedTitle.includes(SITE_NAME)
+        ? normalizedTitle
+        : `${normalizedTitle} | ${SITE_NAME}`;
   const canonical = absoluteUrl(path);
   const resolvedDescription = trimDescription(description);
   const resolvedImage = image?.startsWith('http') ? image : absoluteUrl(image || DEFAULT_OG_IMAGE);
 
   return {
-    title,
+    title: {
+      absolute: fullTitle,
+    },
     description: resolvedDescription,
     keywords,
     alternates: {
@@ -48,7 +111,7 @@ export function createPageMetadata({
     openGraph: {
       type: 'website',
       url: canonical,
-      title,
+      title: fullTitle,
       description: resolvedDescription,
       siteName: SITE_NAME,
       images: [
@@ -56,13 +119,13 @@ export function createPageMetadata({
           url: resolvedImage,
           width: 1200,
           height: 630,
-          alt: title,
+          alt: fullTitle,
         },
       ],
     },
     twitter: {
       card: 'summary_large_image',
-      title,
+      title: fullTitle,
       description: resolvedDescription,
       images: [resolvedImage],
     },
@@ -100,8 +163,10 @@ export function buildBreadcrumbJsonLd(items: Array<{ name: string; url: string }
 }
 
 export function buildOrganizationJsonLd(settings: any = {}) {
-  const phones = [settings?.primaryPhone, settings?.secondaryPhone, ...(settings?.phone || [])].filter(Boolean);
-  const sameAs = [settings?.website, settings?.mapLink].filter(Boolean);
+  const phones = [...new Set([settings?.primaryPhone, settings?.secondaryPhone, ...(settings?.phone || [])].filter(Boolean))];
+  const sameAs = (Array.isArray(settings?.socialLinks) ? settings.socialLinks : [])
+    .map((item: unknown) => normalizePublicUrl(typeof item === 'string' ? item : (item as { url?: string })?.url))
+    .filter(Boolean);
   const contactPoints = phones.length
     ? phones.map((phone: string) => ({
         '@type': 'ContactPoint',
@@ -114,7 +179,8 @@ export function buildOrganizationJsonLd(settings: any = {}) {
 
   return {
     '@context': 'https://schema.org',
-    '@type': ['LocalBusiness', 'Organization'],
+    '@type': 'Organization',
+    '@id': `${SITE_URL}/#organization`,
     name: settings?.companyName || SITE_NAME,
     url: SITE_URL,
     logo: settings?.logo ? absoluteUrl(settings.logo) : absoluteUrl(DEFAULT_OG_IMAGE),
@@ -165,11 +231,64 @@ export function buildWebPageJsonLd(input: {
   };
 }
 
+export function buildCollectionPageJsonLd(input: {
+  name: string;
+  description?: string | null;
+  path: string;
+  image?: string | null;
+}) {
+  const image = resolveMediaUrl(input.image, DEFAULT_OG_IMAGE);
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    name: input.name,
+    description: trimDescription(input.description),
+    url: absoluteUrl(input.path),
+    image: image.startsWith('http') ? image : absoluteUrl(image),
+  };
+}
+
+export function buildItemListJsonLd(input: {
+  name: string;
+  path: string;
+  items: Array<{ name: string; url: string }>;
+}) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: input.name,
+    url: absoluteUrl(input.path),
+    itemListElement: input.items.map((item, index) => ({
+      '@type': 'ListItem',
+      position: index + 1,
+      name: item.name,
+      url: item.url.startsWith('http') ? item.url : absoluteUrl(item.url),
+    })),
+  };
+}
+
 export function buildQuoteContactAction(targetPath: string) {
   return {
     '@type': 'ContactAction',
     name: 'Request Quote',
     target: absoluteUrl(targetPath),
+  };
+}
+
+export function buildFaqJsonLd(items: Array<{ question: string; answer: string }>) {
+  if (!items.length) return null;
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: items.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
   };
 }
 

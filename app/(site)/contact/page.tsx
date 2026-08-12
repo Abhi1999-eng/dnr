@@ -4,8 +4,8 @@ import { InquiryForm } from '@/components/InquiryForm';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchLiveProducts, fetchPublicData } from '@/lib/data';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildOrganizationJsonLd, createPageMetadata } from '@/lib/seo';
+import { fetchPublicData } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildWebPageJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -13,17 +13,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const { settings } = await fetchPublicData();
   const siteSettings: any = settings || {};
   return createPageMetadata({
-    title: 'Contact',
+    title: 'Contact DNR Techno Services | Machine Enquiry & Plant Support',
     description:
       siteSettings.inquiryForm?.description ||
       siteSettings.inquiryIntro ||
       'Contact DNR Techno Services for machinery requirements, commissioning support, and plant engineering assistance.',
     path: '/contact',
+    keywords: ['contact dnr techno services', 'machine enquiry', 'industrial machinery quote', 'plant support contact', 'machinery supplier india'],
   });
 }
 
 export default async function ContactPage() {
-  const [{ settings }, products] = await Promise.all([fetchPublicData(), fetchLiveProducts()]);
+  const { settings, products = [] } = await fetchPublicData();
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const logo = siteSettings.logo || '/logo-dnr.png';
@@ -34,7 +35,15 @@ export default async function ContactPage() {
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget || whatsappNumber, '#contact');
   const quickLinks = (siteSettings.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const structuredData = [
-    buildOrganizationJsonLd(siteSettings),
+    buildWebPageJsonLd({
+      name: 'Contact DNR Techno Services',
+      description:
+        siteSettings.inquiryForm?.description ||
+        siteSettings.inquiryIntro ||
+        'Share your machinery requirement, service need, or plant support request with DNR Techno Services.',
+      path: '/contact',
+      image: siteSettings.logo || '/logo-dnr.png',
+    }),
     buildBreadcrumbJsonLd([
       { name: 'Home', url: absoluteUrl('/') },
       { name: 'Contact', url: absoluteUrl('/contact') },

@@ -9,10 +9,10 @@ import { ProductDetailGallery } from '@/components/ProductDetailGallery';
 import { ProductEnquiryActions } from '@/components/ProductEnquiryActions';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchLiveProducts, fetchProductBySlug, fetchPublicData, fetchRelatedBlogsByProduct, fetchRelatedProducts } from '@/lib/data';
+import { fetchProductBySlug, fetchPublicData, fetchRelatedBlogsByProduct, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { getProductSeoContent } from '@/lib/product-seo-content';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildProductDetailSchema, createPageMetadata } from '@/lib/seo';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildFaqJsonLd, buildProductDetailSchema, createPageMetadata } from '@/lib/seo';
 import { getYouTubeEmbedUrl } from '@/lib/youtube';
 
 export const revalidate = 300;
@@ -66,9 +66,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const productData: any = await fetchProductBySlug(slug);
   if (!productData) return notFound();
 
-  const [{ settings }, products, related, relatedBlogs] = await Promise.all([
+  const [{ settings, products = [] }, related, relatedBlogs] = await Promise.all([
     fetchPublicData(),
-    fetchLiveProducts(),
     fetchRelatedProducts(productData._id, 3),
     fetchRelatedBlogsByProduct(String(productData._id), 3),
   ]);
@@ -107,7 +106,8 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
       { name: productData.title, url: absoluteUrl(`/products/${productData.slug}`) },
     ]),
     buildProductDetailSchema(productData),
-  ];
+    buildFaqJsonLd(pageFaqItems),
+  ].filter(Boolean) as Record<string, unknown>[];
 
   return (
     <div className="min-h-screen bg-[#071014] text-white">

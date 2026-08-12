@@ -5,9 +5,9 @@ import { ManagedImage } from '@/components/ManagedImage';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchLiveProducts, fetchPublicData, fetchPublishedBlogs } from '@/lib/data';
+import { fetchPublicData, fetchPublishedBlogs } from '@/lib/data';
 import { resolveMediaUrl } from '@/lib/media';
-import { absoluteUrl, buildBreadcrumbJsonLd, createPageMetadata } from '@/lib/seo';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildCollectionPageJsonLd, buildItemListJsonLd, createPageMetadata } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -16,6 +16,7 @@ export async function generateMetadata(): Promise<Metadata> {
     title: 'Industrial Insights & Machinery Guides',
     description: 'Read practical machinery guides, maintenance insights, and plant-side engineering articles from DNR Techno Services.',
     path: '/blog',
+    keywords: ['industrial machinery blog', 'machine maintenance guides', 'die casting guides', 'cnc machine insights', 'plant engineering articles'],
   });
 }
 
@@ -31,14 +32,30 @@ function formatDate(value?: string) {
 }
 
 export default async function BlogPage() {
-  const [{ settings }, products, blogs] = await Promise.all([fetchPublicData(), fetchLiveProducts(), fetchPublishedBlogs()]);
+  const [{ settings, products = [] }, blogs] = await Promise.all([fetchPublicData(), fetchPublishedBlogs()]);
   const siteSettings: any = settings || {};
   const companyName = siteSettings.companyName || 'DNR Techno Services';
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
-  const structuredData = buildBreadcrumbJsonLd([
-    { name: 'Home', url: absoluteUrl('/') },
-    { name: 'Blog', url: absoluteUrl('/blog') },
-  ]);
+  const structuredData = [
+    buildBreadcrumbJsonLd([
+      { name: 'Home', url: absoluteUrl('/') },
+      { name: 'Blog', url: absoluteUrl('/blog') },
+    ]),
+    buildCollectionPageJsonLd({
+      name: 'Industrial Insights & Machinery Guides',
+      description: 'Industrial machinery guides, machine selection insights, and maintenance articles from DNR Techno Services.',
+      path: '/blog',
+      image: resolveMediaUrl(blogs?.[0]?.featuredImage, '/dnr/page_06.png'),
+    }),
+    buildItemListJsonLd({
+      name: 'Published Blog Articles',
+      path: '/blog',
+      items: blogs.slice(0, 24).map((blog: any) => ({
+        name: blog.title,
+        url: `/blog/${blog.slug}`,
+      })),
+    }),
+  ];
 
   return (
     <div className="min-h-screen bg-[#071014] text-white">

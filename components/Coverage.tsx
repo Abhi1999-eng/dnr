@@ -64,6 +64,13 @@ function canonicalFromMapName(value: string) {
   return INPUT_NORMALIZATION[normalized] || value;
 }
 
+function cleanCoverageDescription(value: string) {
+  return String(value || '')
+    .replace(/\.{2,}/g, '.')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 type CoverageProps = {
   states: string[];
   title?: string;
@@ -100,7 +107,7 @@ export function Coverage({
         id,
         mapName: item.mapName,
         uiLabel: stateLabels[item.mapName] || item.defaultLabel,
-        description: stateDescriptions[item.mapName] || item.defaultDescription,
+        description: cleanCoverageDescription(stateDescriptions[item.mapName] || item.defaultDescription),
         path: MAP_PATHS[id],
         bbox,
       };

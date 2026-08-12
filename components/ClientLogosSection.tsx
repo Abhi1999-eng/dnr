@@ -2,7 +2,7 @@ import Image from 'next/image';
 import { SectionTitle } from './SectionTitle';
 import { ClientLogoType } from '@/types';
 import { ContentCarousel } from './ContentCarousel';
-import { isDirectUploadAsset, resolveMediaUrl } from '@/lib/media';
+import { resolveMediaUrl } from '@/lib/media';
 import { Reveal } from './Reveal';
 
 function initials(name: string) {
@@ -49,7 +49,6 @@ export function ClientLogosSection({
                 fill
                 className="object-contain"
                 sizes="(max-width: 1024px) 50vw, 25vw"
-                unoptimized={isDirectUploadAsset(logo.logoImage)}
               />
             </div>
           ) : (

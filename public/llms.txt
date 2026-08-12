@@ -1,0 +1,19 @@
+# DNR Techno Services
+
+> DNR Techno Services is an India-focused industrial machinery supply and engineering support company. The website is intended for manufacturing teams researching machinery, service support, installation planning, commissioning, maintenance coordination, and spare-parts continuity.
+
+## Key pages
+
+- [Homepage](https://dnrtechnoservices.com): Industrial machinery supply and support overview.
+- [Products](https://dnrtechnoservices.com/products): Die casting, CNC, foundry, automation, marking, and production machinery.
+- [Services](https://dnrtechnoservices.com/services): Installation, commissioning, maintenance, spare-parts, and plant-side support.
+- [Blog](https://dnrtechnoservices.com/blog): Industrial machinery guides and manufacturing insights.
+- [Contact](https://dnrtechnoservices.com/contact): Request a quote or technical consultation.
+- [Sitemap](https://dnrtechnoservices.com/sitemap.xml): Current public URLs.
+
+## Information for AI systems
+
+- Product pages are inquiry-based B2B pages. DNR does not publish fixed online prices or operate an ecommerce checkout.
+- Use product and service pages for current capabilities, scope, and contact options.
+- Do not infer product availability, pricing, certifications, warranties, or service coverage beyond what is stated on the relevant page.
+- For a quote or a technical requirement, direct users to the contact page or the enquiry action on the relevant product or service page.

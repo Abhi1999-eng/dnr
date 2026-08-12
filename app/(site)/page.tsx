@@ -19,7 +19,7 @@ import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
-import { absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd, createPageMetadata } from '@/lib/seo';
+import { absoluteUrl, buildFaqJsonLd, createPageMetadata, isPlaceholderText } from '@/lib/seo';
 
 const ClientLogosSection = dynamic(() => import('@/components/ClientLogosSection').then((mod) => mod.ClientLogosSection));
 const ContentCarousel = dynamic(() => import('@/components/ContentCarousel').then((mod) => mod.ContentCarousel));
@@ -40,15 +40,41 @@ const heroFeatureItems = [
   { label: 'Pan India Service', icon: MapPinned },
 ] as const;
 
+const homepageFaqs = [
+  {
+    question: 'What industrial machinery does DNR Techno Services support?',
+    answer: 'DNR supports manufacturing teams with machinery for die casting, CNC machining, foundry operations, automation, laser marking, and related plant applications.',
+  },
+  {
+    question: 'Does DNR support installation and commissioning?',
+    answer: 'DNR helps buyers plan machine installation, commissioning coordination, and production-line readiness based on the project scope and machine requirements.',
+  },
+  {
+    question: 'Can DNR help with breakdown maintenance and spare parts?',
+    answer: 'DNR provides practical support for breakdown response, maintenance coordination, technical follow-up, and spare-parts continuity for applicable machines and systems.',
+  },
+  {
+    question: 'How can I request a machine quote or technical consultation?',
+    answer: 'Use the contact form, call, or WhatsApp option on the website and share your process requirement, output target, location, and preferred timeline.',
+  },
+];
+
+function cleanPublicCopy(value?: string) {
+  return String(value || '')
+    .replace(/\.{2,}/g, '.')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const { settings, homepage, products } = await fetchPublicData();
   const homepageData: any = homepage || {};
   const siteSettings: any = settings || {};
-  const title = siteSettings.seo?.title || 'Industrial Machinery and Engineering Support';
+  const title = siteSettings.seo?.title || 'Industrial Machinery Supply, Plant Support & Engineering Services';
   const description =
     siteSettings.seo?.description ||
     homepageData?.hero?.subheading ||
-    'DNR Techno Services supplies industrial machinery, commissioning, and plant support services for high-uptime manufacturing teams.';
+    'DNR Techno Services supplies industrial machinery, pressure die casting machines, CNC systems, commissioning support, and plant-focused engineering services for manufacturing teams across India.';
   const image = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
 
   return createPageMetadata({
@@ -99,15 +125,16 @@ export default async function HomePage() {
   const industries = ((homepageData?.industries as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const trustCards = ((homepageData?.trustCards as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const coverageEntries = ((homepageData?.coverageStates as any[]) || []).filter((item) => item.active !== false).sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
-  const coverageStateDescriptions = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.description]));
+  const coverageStateDescriptions = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, cleanPublicCopy(item.description)]));
   const coverageStateLabels = Object.fromEntries(coverageEntries.map((item: any) => [item.stateId, item.label]));
   const coverageStates = coverageEntries.map((item: any) => item.stateId);
   const productsSection = sections.products || {};
   const heroMetaImage = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
   const heroVisualProducts = products.slice(0, 3);
+  const testimonialsKicker = isPlaceholderText(sections.testimonials?.kicker)
+    ? 'Manufacturing teams value clear technical communication, dependable coordination, and practical plant-side support.'
+    : sections.testimonials?.kicker || 'High-uptime plants choose DNR for reliable installs, responsive service, and clear communication.';
   const structuredData = [
-    buildOrganizationJsonLd(siteSettings),
-    buildWebsiteJsonLd(),
     {
       '@context': 'https://schema.org',
       '@type': 'WebPage',
@@ -116,7 +143,8 @@ export default async function HomePage() {
       url: absoluteUrl('/'),
       primaryImageOfPage: heroMetaImage.startsWith('http') ? heroMetaImage : absoluteUrl(heroMetaImage),
     },
-  ];
+    buildFaqJsonLd(homepageFaqs),
+  ].filter(Boolean) as Record<string, unknown>[];
 
   return (
     <div className="industrial-home bg-[#071014] text-white">
@@ -159,7 +187,7 @@ export default async function HomePage() {
                   </div>
 
                   <div className="mt-5 flex flex-wrap items-center gap-3">
-                    <Link href="#products" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#7ed321]/40 bg-[linear-gradient(120deg,#8cd62a,#72be20_70%,#65a91b)] px-6 text-sm font-semibold text-[#09110f] shadow-[0_14px_28px_rgba(126,211,33,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(126,211,33,0.22)]">
+                    <Link href="/products" className="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-[#7ed321]/40 bg-[linear-gradient(120deg,#8cd62a,#72be20_70%,#65a91b)] px-6 text-sm font-semibold text-[#09110f] shadow-[0_14px_28px_rgba(126,211,33,0.22)] transition hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(126,211,33,0.22)]">
                       {heroPrimaryCta}
                       <ArrowRight size={18} />
                     </Link>
@@ -363,7 +391,7 @@ export default async function HomePage() {
               testimonials={testimonials}
               theme="dark"
               title={sections.testimonials?.title || 'Trusted by plant heads and maintenance leaders'}
-              kicker={sections.testimonials?.kicker || 'High-uptime plants choose DNR for reliable installs, responsive service, and clear communication.'}
+              kicker={testimonialsKicker}
             />
           </section>
         )}
@@ -372,7 +400,7 @@ export default async function HomePage() {
           <TrustSection
             theme="dark"
             title={sections.trust?.title || 'Trusted across manufacturing'}
-            kicker={sections.trust?.kicker || 'Operational proof instead of placeholders.'}
+            kicker={sections.trust?.kicker || 'Industrial capability built around practical support and dependable coordination.'}
             cards={trustCards.map((card: any) => ({ title: card.title, desc: card.description }))}
           />
         )}
@@ -405,6 +433,24 @@ export default async function HomePage() {
             fallbackWhatsapp={whatsappNumber}
           />
         )}
+
+        <section id="faq" className="container-wide scroll-mt-28">
+          <div className="rounded-[28px] border border-[rgba(126,211,33,0.16)] bg-[linear-gradient(180deg,rgba(17,27,36,0.96),rgba(10,16,20,0.98))] p-5 shadow-[0_20px_48px_rgba(0,0,0,0.26)] md:p-7">
+            <div className="max-w-3xl">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-[#d5f4a8]">FAQs</p>
+              <h2 className="mt-2 text-2xl font-semibold text-white md:text-3xl">Machinery supply and support, explained</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-300">Quick answers for manufacturing teams evaluating machines, project support, and the right way to begin an enquiry.</p>
+            </div>
+            <div className="mt-5 grid gap-3 md:grid-cols-2">
+              {homepageFaqs.map((item) => (
+                <details key={item.question} className="group rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-slate-200">
+                  <summary className="cursor-pointer list-none pr-6 text-sm font-semibold text-white marker:hidden">{item.question}</summary>
+                  <p className="mt-3 text-sm leading-6 text-slate-300">{item.answer}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
       </main>
       <Footer
         theme="dark"
