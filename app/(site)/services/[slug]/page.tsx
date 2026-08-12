@@ -6,8 +6,8 @@ import { Footer } from '@/components/Footer';
 import { StructuredData } from '@/components/StructuredData';
 import { ManagedImage } from '@/components/ManagedImage';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchLiveProducts, fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
+import { fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib/data';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildFaqJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
 import { resolveServiceImage } from '@/lib/media';
 import { normalizeExpectedOutcomes } from '@/lib/service-outcomes';
 
@@ -51,11 +51,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ServiceDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [service, related, { settings }, products] = await Promise.all([
+  const [service, related, { settings, products = [] }] = await Promise.all([
     fetchServiceBySlug(slug),
     fetchRelatedServices(slug, 3),
     fetchPublicData(),
-    fetchLiveProducts(),
   ]);
   const siteSettings: any = settings || {};
   const serviceData: any = service;
@@ -72,7 +71,8 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
       { name: serviceData.title, url: absoluteUrl(`/services/${serviceData.slug}`) },
     ]),
     buildServiceJsonLd(serviceData),
-  ];
+    buildFaqJsonLd(serviceFaqs),
+  ].filter(Boolean) as Record<string, unknown>[];
 
   const detailCopy =
     serviceData.longDescription ||

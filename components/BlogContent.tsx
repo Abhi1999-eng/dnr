@@ -87,7 +87,8 @@ export function BlogContent({ content }: { content: string }) {
       const level = headingMatch[1].length;
       const text = headingMatch[2].trim();
       const commonClass = level === 1 ? 'text-3xl md:text-4xl' : level === 2 ? 'text-2xl md:text-3xl' : 'text-xl md:text-2xl';
-      const HeadingTag = level === 1 ? 'h1' : level === 2 ? 'h2' : 'h3';
+      // The page title owns the single H1; markdown headings begin at H2.
+      const HeadingTag = level === 1 ? 'h2' : level === 2 ? 'h3' : 'h4';
       blocks.push(
         <HeadingTag key={`heading-${index}`} className={`mt-8 font-semibold tracking-tight text-white first:mt-0 ${commonClass}`}>
           {renderInline(text)}

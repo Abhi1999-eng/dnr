@@ -11,6 +11,11 @@ import { Blog } from '@/models/Blog';
 
 const serialize = <T,>(value: T): T => JSON.parse(JSON.stringify(value));
 
+function isPlaceholderTestimonial(item: any) {
+  const content = `${item?.name || ''} ${item?.feedback || ''}`;
+  return /\b(dummy|lorem ipsum|placeholder|sample testimonial|test testimonial)\b/i.test(content);
+}
+
 const getPublicData = unstable_cache(
   async () => {
     await connectDB();
@@ -27,7 +32,7 @@ const getPublicData = unstable_cache(
     contents.forEach((c: any) => (contentMap[c.key] = c.data));
     return {
       services: serialize(services),
-      testimonials: serialize(testimonials),
+      testimonials: serialize(testimonials).filter((item: any) => !isPlaceholderTestimonial(item)),
       products: serialize(products),
       homepage: serialize(homepage || {}),
       settings: serialize(settings || {}),

@@ -3,7 +3,9 @@ import type { Metadata, Viewport } from 'next';
 import { Inter } from 'next/font/google';
 import Script from 'next/script';
 import { ReactNode } from 'react';
-import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl } from '@/lib/seo';
+import { StructuredData } from '@/components/StructuredData';
+import { fetchPublicData } from '@/lib/data';
+import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd } from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -53,14 +55,17 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#ffffff',
-  colorScheme: 'light',
+  themeColor: '#071014',
+  colorScheme: 'dark',
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const { settings } = await fetchPublicData();
+
   return (
     <html lang="en">
       <body className={`${inter.variable} bg-background font-sans text-secondary antialiased`}>
+        <StructuredData data={[buildOrganizationJsonLd(settings), buildWebsiteJsonLd()]} />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KVD26XJ4XT" strategy="lazyOnload" />
         <Script id="google-analytics" strategy="lazyOnload">
           {`

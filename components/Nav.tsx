@@ -8,10 +8,10 @@ import { MouseEvent, useMemo, useState } from 'react';
 import type { ProductType } from '@/types';
 
 const links = [
-  { href: '#hero', label: 'Home' },
-  { href: '#services', label: 'Services' },
+  { href: '/', label: 'Home' },
+  { href: '/services', label: 'Services' },
   { href: '/blog', label: 'Blog' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/contact', label: 'Contact' },
 ] as const;
 
 type NavProps = {
@@ -80,7 +80,7 @@ export function Nav({
       }`}
     >
       <div className="container-wide flex items-center justify-between gap-4 py-4 sm:py-5 md:gap-6 md:py-6 lg:grid lg:min-h-[92px] lg:grid-cols-[250px_1fr_170px] lg:items-center lg:gap-4 lg:py-3.5">
-        <Link href={resolveHref('#hero')} className={`group flex items-center ${isDark ? 'text-white' : 'text-secondary'}`} onClick={(event) => handleAnchorClick(event, '#hero')}>
+        <Link href={resolveHref('/')} className={`group flex items-center ${isDark ? 'text-white' : 'text-secondary'}`}>
           <div className="relative h-[70px] w-[220px] transition-transform duration-300 group-hover:scale-[1.01] sm:h-[76px] sm:w-[240px] lg:h-[82px] lg:w-[260px] xl:h-[88px] xl:w-[280px]">
             <Image
               src={logoSrc}
@@ -100,8 +100,7 @@ export function Nav({
         >
           <div className="group/products relative overflow-visible">
             <Link
-              href={resolveHref('#products')}
-              onClick={(event) => handleAnchorClick(event, '#products')}
+              href="/products"
               className={`touch-target inline-flex items-center gap-2 rounded-xl px-5 py-3 text-[15px] transition-all focus-visible:outline-none focus-visible:ring-2 ${
                 isDark ? 'hover:bg-white/[0.07] hover:text-[#7ed321] focus-visible:ring-[#7ed321]/50' : 'hover:bg-primary/10 hover:text-primary focus-visible:ring-primary/50'
               }`}
@@ -136,7 +135,7 @@ export function Nav({
             <Link
               key={link.href}
               href={resolveHref(link.href)}
-              onClick={(event) => handleAnchorClick(event, link.href)}
+              onClick={link.href.startsWith('#') ? (event) => handleAnchorClick(event, link.href) : undefined}
               className={`touch-target rounded-xl px-5 py-3 text-[15px] transition-all focus-visible:outline-none focus-visible:ring-2 ${
                 isDark ? 'hover:bg-white/[0.07] hover:text-[#7ed321] focus-visible:ring-[#7ed321]/50' : 'hover:bg-primary/10 hover:text-primary focus-visible:ring-primary/50'
               }`}
@@ -160,7 +159,6 @@ export function Nav({
             <Link
               href={resolveHref(headerCtaTarget)}
               className="hidden h-[52px] min-w-[168px] items-center justify-center whitespace-nowrap rounded-xl bg-[linear-gradient(120deg,#8bc53f,#79b535_68%,#6aa12f)] px-7 text-[15px] font-semibold text-[#15200d] shadow-[0_14px_30px_rgba(139,197,63,0.22)] transition hover:-translate-y-1 hover:shadow-[0_18px_40px_rgba(139,197,63,0.26)] lg:inline-flex lg:justify-self-end"
-              prefetch={false}
               onClick={(event) => handleAnchorClick(event, headerCtaTarget)}
             >
               {ctaLabel}
@@ -177,13 +175,13 @@ export function Nav({
       {open && (
         <div className={`border-t shadow-sm lg:hidden ${isDark ? 'border-[#7ed321]/12 bg-[#0b1218]' : 'border-slate-200 bg-white'}`}>
           <div className={`container-wide flex flex-col gap-3 py-4 text-sm ${isDark ? 'text-white' : 'text-secondary'}`}>
-            <Link href={resolveHref('#hero')} className="py-2" onClick={(event) => handleAnchorClick(event, '#hero')}>
+            <Link href={resolveHref('/')} className="py-2">
               <span className="touch-target inline-flex items-center">Home</span>
             </Link>
 
             <div className={`rounded-2xl border px-1 py-1 ${isDark ? 'border-[#7ed321]/16 bg-[#111b24]' : 'border-slate-200 bg-white'}`}>
               <div className="flex items-center justify-between gap-3">
-                <Link href={resolveHref('#products')} className="flex-1 py-2 pl-3" onClick={(event) => handleAnchorClick(event, '#products')}>
+                <Link href="/products" className="flex-1 py-2 pl-3" onClick={closeMenu}>
                   <span className="touch-target inline-flex items-center font-medium">Products</span>
                 </Link>
                 {navProducts.length ? (
@@ -215,7 +213,7 @@ export function Nav({
             </div>
 
             {links.map((link) => (
-              <Link key={link.href} href={resolveHref(link.href)} className="py-2" onClick={(event) => handleAnchorClick(event, link.href)}>
+              <Link key={link.href} href={resolveHref(link.href)} className="py-2" onClick={link.href.startsWith('#') ? (event) => handleAnchorClick(event, link.href) : closeMenu}>
                 <span className="touch-target inline-flex items-center">{link.label}</span>
               </Link>
             ))}

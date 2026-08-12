@@ -7,7 +7,7 @@ import { ManagedImage } from '@/components/ManagedImage';
 import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
-import { fetchBlogBySlug, fetchLatestBlogs, fetchLiveProducts, fetchProductsByIds, fetchPublicData } from '@/lib/data';
+import { fetchBlogBySlug, fetchLatestBlogs, fetchProductsByIds, fetchPublicData } from '@/lib/data';
 import { resolveProductImage, resolveMediaUrl } from '@/lib/media';
 import { absoluteUrl, buildBreadcrumbJsonLd, SITE_NAME, trimDescription } from '@/lib/seo';
 
@@ -38,7 +38,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
   const title = blog.seoTitle || blog.title;
   const description = trimDescription(blog.seoDescription || blog.excerpt || blog.content);
-  const canonical = blog.canonicalUrl || absoluteUrl(`/blog/${blog.slug}`);
+  const canonical = absoluteUrl(`/blog/${blog.slug}`);
   const image = resolveMediaUrl(blog.featuredImage, '/dnr/page_06.png');
   const resolvedImage = image.startsWith('http') ? image : absoluteUrl(image);
   const keywords = Array.isArray(blog.seoKeywords) ? blog.seoKeywords : [];
@@ -71,10 +71,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function BlogDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const [blog, { settings }, products, latestBlogs] = await Promise.all([
+  const [blog, { settings, products = [] }, latestBlogs] = await Promise.all([
     fetchBlogBySlug(slug),
     fetchPublicData(),
-    fetchLiveProducts(),
     fetchLatestBlogs(slug, 4),
   ]);
 
@@ -88,7 +87,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#contact');
   const relatedProducts = await fetchProductsByIds(Array.isArray(blogData.relatedProducts) ? blogData.relatedProducts.map((item: any) => String(item)) : []);
   const sidebarProducts = relatedProducts.length ? relatedProducts : (products || []).slice(0, 3);
-  const articleUrl = blogData.canonicalUrl || absoluteUrl(`/blog/${blogData.slug}`);
+  const articleUrl = absoluteUrl(`/blog/${blogData.slug}`);
   const articleImage = resolveMediaUrl(blogData.featuredImage, '/dnr/page_06.png');
   const articleStructuredData = {
     '@context': 'https://schema.org',
