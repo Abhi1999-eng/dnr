@@ -3,6 +3,9 @@ import { resolveMediaUrl, resolveServiceImage } from './media';
 
 export const SITE_NAME = 'DNR Techno Services';
 export const SITE_URL = 'https://dnrtechnoservices.com';
+export const HOMEPAGE_META_TITLE = 'Industrial Machinery & Engineering Support';
+export const HOMEPAGE_META_DESCRIPTION =
+  'DNR Techno Services supplies industrial machinery, installation support, commissioning, breakdown maintenance, and spare parts support for manufacturing teams across India.';
 export const DEFAULT_DESCRIPTION =
   'DNR Techno Services supplies industrial machinery, installation support, commissioning, and plant-focused engineering services across India.';
 const DEFAULT_OG_IMAGE = '/logo-dnr.png';
@@ -80,6 +83,28 @@ type MetadataOptions = {
   noIndex?: boolean;
 };
 
+function resolveHomepageTitle(title: string) {
+  const cleanTitle = title.replace(/\s+/g, ' ').trim();
+  const genericTitles = new Set([
+    SITE_NAME,
+    `${SITE_NAME} | ${SITE_NAME}`,
+    'Industrial Machinery and Engineering Support',
+    'Industrial Machinery & Engineering Support',
+  ]);
+
+  return genericTitles.has(cleanTitle) ? HOMEPAGE_META_TITLE : cleanTitle;
+}
+
+function resolveHomepageDescription(description?: string | null) {
+  const cleanDescription = (description || '').replace(/\s+/g, ' ').trim();
+
+  if (!cleanDescription || cleanDescription.length < 90 || cleanDescription === DEFAULT_DESCRIPTION) {
+    return HOMEPAGE_META_DESCRIPTION;
+  }
+
+  return cleanDescription;
+}
+
 export function createPageMetadata({
   title,
   description,
@@ -88,7 +113,8 @@ export function createPageMetadata({
   keywords = [],
   noIndex = false,
 }: MetadataOptions): Metadata {
-  const normalizedTitle = normalizeTitle(title);
+  const isHomepage = path === '/' || path === '';
+  const normalizedTitle = normalizeTitle(isHomepage ? resolveHomepageTitle(title) : title);
   const fullTitle =
     normalizedTitle === SITE_NAME
       ? `${SITE_NAME} | Industrial Machinery and Engineering Support`
@@ -96,7 +122,7 @@ export function createPageMetadata({
         ? normalizedTitle
         : `${normalizedTitle} | ${SITE_NAME}`;
   const canonical = absoluteUrl(path);
-  const resolvedDescription = trimDescription(description);
+  const resolvedDescription = trimDescription(isHomepage ? resolveHomepageDescription(description) : description);
   const resolvedImage = image?.startsWith('http') ? image : absoluteUrl(image || DEFAULT_OG_IMAGE);
 
   return {
