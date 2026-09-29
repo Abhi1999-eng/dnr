@@ -5,7 +5,7 @@ import { Nav } from '@/components/Nav';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildWebPageJsonLd, createPageMetadata } from '@/lib/seo';
+import { absoluteUrl, buildBreadcrumbJsonLd, buildWebPageJsonLd, createPageMetadata, pickMetaDescription } from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -13,10 +13,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const { homepage } = await fetchPublicData();
   const about = (homepage as any)?.about || {};
   return createPageMetadata({
-    title: 'About DNR Techno Services | Industrial Machinery Supply & Support',
-    description:
-      about.body ||
-      'Learn how DNR Techno Services supports manufacturers with industrial machinery supply, service coordination, installation guidance, and plant-focused engineering support across India.',
+    title: 'About DNR Techno Services | Machinery Supply & Support',
+    description: pickMetaDescription(
+      about.body,
+      'How DNR Techno Services supports manufacturers with machinery supply, service coordination, installation guidance, and plant engineering across India.'
+    ),
     path: '/about',
     keywords: [
       'about dnr techno services',

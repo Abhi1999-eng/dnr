@@ -22,6 +22,17 @@ const defaultSettings = {
   email: '',
   website: '',
   mapLink: '',
+  legalName: '',
+  gstin: '',
+  foundingYear: '',
+  priceRange: '',
+  streetAddress: '',
+  addressLocality: '',
+  addressRegion: '',
+  postalCode: '',
+  googleBusinessProfileUrl: '',
+  socialLinks: [] as string[],
+  geo: { latitude: '' as string | number, longitude: '' as string | number },
   coverageStates: [] as string[],
   footerDescription: '',
   headerCtaLabel: 'Get in Touch',
@@ -55,6 +66,11 @@ function normalizeSettings(data: any) {
     primaryPhone: data.primaryPhone || data.phone?.[0] || '',
     secondaryPhone: data.secondaryPhone || data.phone?.[1] || '',
     coverageStates: data.coverageStates || [],
+    socialLinks: data.socialLinks || [],
+    geo: {
+      latitude: data.geo?.latitude ?? '',
+      longitude: data.geo?.longitude ?? '',
+    },
     footerLinks: data.footerLinks?.length ? data.footerLinks : defaultSettings.footerLinks,
     contactQuickLinks: data.contactQuickLinks || [],
     inquiryForm: {
@@ -76,9 +92,17 @@ export default function AdminSettingsPage() {
   const settings = draft ?? normalizeSettings(data);
 
   async function save() {
+    const latitude = Number(settings.geo?.latitude);
+    const longitude = Number(settings.geo?.longitude);
+    const hasGeo = Number.isFinite(latitude) && Number.isFinite(longitude) && !(latitude === 0 && longitude === 0);
+
     const payload = {
       ...settings,
       phone: [settings.primaryPhone, settings.secondaryPhone].filter(Boolean),
+      socialLinks: (settings.socialLinks || []).map((link: string) => link.trim()).filter(Boolean),
+      // Partial coordinates are worse than none: they would place the business at
+      // the wrong point and conflict with the verified Business Profile listing.
+      geo: hasGeo ? { latitude, longitude } : undefined,
     };
     await fetch('/api/settings', {
       method: 'POST',
@@ -128,6 +152,72 @@ export default function AdminSettingsPage() {
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Website" value={settings.website} onChange={(e) => setDraft({ ...settings, website: e.target.value })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Map link" value={settings.mapLink} onChange={(e) => setDraft({ ...settings, mapLink: e.target.value })} />
             <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="Footer description" value={settings.footerDescription} onChange={(e) => setDraft({ ...settings, footerDescription: e.target.value })} />
+          </div>
+        </div>
+
+        <div className="glass space-y-3 rounded-2xl border border-white/10 p-4">
+          <h3 className="font-semibold text-white">Google Business Profile & local SEO</h3>
+          <p className="text-xs text-slate-400">
+            These values feed the LocalBusiness structured data Google reads when it matches this website to your Google
+            Business Profile listing. Copy them from the live listing so they match exactly. Anything left blank is simply
+            left out of the schema — a wrong value is worse than a missing one.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Google Business Profile URL (e.g. https://maps.app.goo.gl/...)" value={settings.googleBusinessProfileUrl} onChange={(e) => setDraft({ ...settings, googleBusinessProfileUrl: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Latitude (e.g. 28.6328)" value={settings.geo?.latitude ?? ''} onChange={(e) => setDraft({ ...settings, geo: { ...settings.geo, latitude: e.target.value } })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Longitude (e.g. 77.2773)" value={settings.geo?.longitude ?? ''} onChange={(e) => setDraft({ ...settings, geo: { ...settings.geo, longitude: e.target.value } })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Price range (e.g. ₹₹ or On request)" value={settings.priceRange} onChange={(e) => setDraft({ ...settings, priceRange: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Registered legal name" value={settings.legalName} onChange={(e) => setDraft({ ...settings, legalName: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="GSTIN" value={settings.gstin} onChange={(e) => setDraft({ ...settings, gstin: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Founded year (e.g. 2011)" value={settings.foundingYear} onChange={(e) => setDraft({ ...settings, foundingYear: e.target.value })} />
+          </div>
+
+          <p className="pt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Address parts</p>
+          <p className="text-xs text-slate-400">
+            Optional. Left blank, these are derived from the single-line address above. Fill them in to match the Business
+            Profile exactly.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" placeholder="Street address" value={settings.streetAddress} onChange={(e) => setDraft({ ...settings, streetAddress: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="City / locality" value={settings.addressLocality} onChange={(e) => setDraft({ ...settings, addressLocality: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="State / region" value={settings.addressRegion} onChange={(e) => setDraft({ ...settings, addressRegion: e.target.value })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="PIN code" value={settings.postalCode} onChange={(e) => setDraft({ ...settings, postalCode: e.target.value })} />
+          </div>
+
+          <p className="pt-1 text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">Profile links (sameAs)</p>
+          <p className="text-xs text-slate-400">
+            Full URLs to profiles this business owns — LinkedIn, Facebook, YouTube, IndiaMART, JustDial. Google uses these to
+            confirm the website and the Business Profile are the same business.
+          </p>
+          <div className="space-y-2">
+            {(settings.socialLinks || []).map((link: string, index: number) => (
+              <div key={index} className="flex gap-2">
+                <input
+                  className="flex-1 rounded-lg border border-white/10 bg-white/5 px-3 py-2"
+                  placeholder="https://www.linkedin.com/company/..."
+                  value={link}
+                  onChange={(e) => {
+                    const next = [...(settings.socialLinks || [])];
+                    next[index] = e.target.value;
+                    setDraft({ ...settings, socialLinks: next });
+                  }}
+                />
+                <button
+                  type="button"
+                  className="rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300"
+                  onClick={() => setDraft({ ...settings, socialLinks: (settings.socialLinks || []).filter((_: string, i: number) => i !== index) })}
+                >
+                  Remove
+                </button>
+              </div>
+            ))}
+            <button
+              type="button"
+              className="rounded-lg border border-white/10 px-3 py-2 text-xs text-slate-300"
+              onClick={() => setDraft({ ...settings, socialLinks: [...(settings.socialLinks || []), ''] })}
+            >
+              Add profile link
+            </button>
           </div>
         </div>
 

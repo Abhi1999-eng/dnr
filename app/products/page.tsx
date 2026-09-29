@@ -14,10 +14,11 @@ export const revalidate = 300;
 export async function generateMetadata(): Promise<Metadata> {
   const { products = [] } = await fetchPublicData();
   return createPageMetadata({
-    title: 'Industrial Machinery Products | Die Casting, CNC & Foundry Machines',
+    title: 'Die Casting, CNC & Foundry Machines',
+    // The catalogue description is fixed rather than taken from the first product,
+    // so it describes the whole range and does not shift with product ordering.
     description:
-      products?.[0]?.shortDescription ||
-      'Browse industrial machinery from DNR Techno Services covering die casting machines, CNC systems, foundry equipment, automation machinery, and plant support solutions.',
+      'Browse industrial machinery from DNR Techno Services covering die casting machines, CNC systems, foundry equipment, automation machinery, and plant support.',
     path: '/products',
     image: resolveProductImage(products?.[0]),
     keywords: [
