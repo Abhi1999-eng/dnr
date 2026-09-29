@@ -27,6 +27,21 @@ Check that:
 - the live URL is crawlable
 - screenshots show the real public page content
 
+## Local SEO and Google Business Profile
+
+Full runbook: [google-business-profile.md](google-business-profile.md).
+
+- Confirm the Business Profile listing is claimed and verified.
+- Confirm the name, address and phone on the listing match the website exactly, character for
+  character, including on IndiaMART, JustDial and social profiles.
+- Fill the Business Profile URL, latitude/longitude and map link in
+  Admin -> Settings -> Google Business Profile & local SEO.
+- Add every owned profile under "Profile links (sameAs)".
+- Confirm the homepage emits a `LocalBusiness` block with address parts, `areaServed`, and, once
+  configured, `geo`, `openingHoursSpecification` and `sameAs`.
+- Leave any value blank rather than guessing it. Local data that conflicts with the verified
+  listing is worse than missing data.
+
 ## Structured data validation
 Validate representative pages using:
 - Google Rich Results Test

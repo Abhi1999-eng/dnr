@@ -5,7 +5,15 @@ import Script from 'next/script';
 import { ReactNode } from 'react';
 import { StructuredData } from '@/components/StructuredData';
 import { fetchPublicData } from '@/lib/data';
-import { DEFAULT_DESCRIPTION, SITE_NAME, SITE_URL, absoluteUrl, buildOrganizationJsonLd, buildWebsiteJsonLd } from '@/lib/seo';
+import {
+  DEFAULT_DESCRIPTION,
+  SITE_NAME,
+  SITE_URL,
+  absoluteUrl,
+  buildLocalBusinessJsonLd,
+  buildOrganizationJsonLd,
+  buildWebsiteJsonLd,
+} from '@/lib/seo';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -62,10 +70,16 @@ export const viewport: Viewport = {
 export default async function RootLayout({ children }: { children: ReactNode }) {
   const { settings } = await fetchPublicData();
 
+  // Organization, WebSite, and LocalBusiness stay consolidated here so every page
+  // emits exactly one of each and they always agree on the business details.
+  const siteSchemas = [buildOrganizationJsonLd(settings), buildWebsiteJsonLd(), buildLocalBusinessJsonLd(settings)].filter(
+    Boolean
+  ) as Array<Record<string, unknown>>;
+
   return (
-    <html lang="en">
+    <html lang="en-IN">
       <body className={`${inter.variable} bg-background font-sans text-secondary antialiased`}>
-        <StructuredData data={[buildOrganizationJsonLd(settings), buildWebsiteJsonLd()]} />
+        <StructuredData data={siteSchemas} />
         <Script src="https://www.googletagmanager.com/gtag/js?id=G-KVD26XJ4XT" strategy="lazyOnload" />
         <Script id="google-analytics" strategy="lazyOnload">
           {`

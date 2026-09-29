@@ -19,7 +19,7 @@ import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
-import { absoluteUrl, buildFaqJsonLd, createPageMetadata, isPlaceholderText } from '@/lib/seo';
+import { HOMEPAGE_META_TITLE, absoluteUrl, buildFaqJsonLd, createPageMetadata, isPlaceholderText } from '@/lib/seo';
 
 const ClientLogosSection = dynamic(() => import('@/components/ClientLogosSection').then((mod) => mod.ClientLogosSection));
 const ContentCarousel = dynamic(() => import('@/components/ContentCarousel').then((mod) => mod.ContentCarousel));
@@ -70,11 +70,13 @@ export async function generateMetadata(): Promise<Metadata> {
   const { settings, homepage, products } = await fetchPublicData();
   const homepageData: any = homepage || {};
   const siteSettings: any = settings || {};
-  const title = siteSettings.seo?.title || 'Industrial Machinery Supply, Plant Support & Engineering Services';
+  // Falls back to the canonical homepage title so the CMS and the code cannot
+  // drift into two different lengths; the longer variant overran the SERP limit.
+  const title = siteSettings.seo?.title || HOMEPAGE_META_TITLE;
   const description =
     siteSettings.seo?.description ||
     homepageData?.hero?.subheading ||
-    'DNR Techno Services supplies industrial machinery, pressure die casting machines, CNC systems, commissioning support, and plant-focused engineering services for manufacturing teams across India.';
+    'DNR Techno Services supplies pressure die casting machines, CNC systems, foundry equipment, commissioning support, and plant engineering across India.';
   const image = resolveProductImage(products?.[0], resolveMediaUrl(siteSettings.seo?.ogImage || siteSettings.logo, '/logo-dnr.png'));
 
   return createPageMetadata({

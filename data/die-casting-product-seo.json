@@ -1,7 +1,7 @@
 {
   "cold-chamber-die-casting-machine": {
-    "metadataTitle": "Cold Chamber Pressure Die Casting Machine | HPDC Machine for Aluminium Casting | DNR Techno Services",
-    "metadataDescription": "Explore TBC cold chamber pressure die casting machines for aluminium and non-ferrous alloy components. Get HPDC machine guidance, process support, and quote assistance from DNR Techno Services in India.",
+    "metadataTitle": "Cold Chamber Die Casting Machine (HPDC)",
+    "metadataDescription": "High pressure die casting machines for aluminium and non-ferrous components. Get HPDC machine selection, commissioning and spare-parts support from DNR in India.",
     "keywords": [
       "cold chamber die casting machine",
       "pressure die casting machine",
@@ -59,8 +59,8 @@
     ]
   },
   "hot-chamber-zinc-die-casting-machine": {
-    "metadataTitle": "Hot Chamber Zinc Die Casting Machine | Pressure Die Casting Machine for Zinc Components | DNR Techno Services",
-    "metadataDescription": "Hot chamber zinc die casting machines for fast-cycle zinc component production. Explore pressure die casting support, machine guidance, and supply assistance from DNR Techno Services.",
+    "metadataTitle": "Hot Chamber Zinc Die Casting Machine",
+    "metadataDescription": "Hot chamber pressure die casting machines for zinc components and thin-wall parts. Get machine selection, installation and service support from DNR in India.",
     "keywords": [
       "hot chamber die casting machine",
       "hot chamber pressure die casting machine",
@@ -103,8 +103,8 @@
     ]
   },
   "aluminium-gdc-machine": {
-    "metadataTitle": "Aluminium Gravity Die Casting Machine | Aluminium Casting Machine Supplier | DNR Techno Services",
-    "metadataDescription": "Explore aluminium gravity die casting machines for repeatable aluminium component production. DNR supports foundries and engineering manufacturers with machine supply, process guidance, and quote assistance.",
+    "metadataTitle": "Aluminium Gravity Die Casting Machine",
+    "metadataDescription": "Aluminium gravity die casting machines for repeatable, dense aluminium components. Get GDC machine guidance, installation and service support from DNR in India.",
     "keywords": [
       "aluminum die casting machine",
       "aluminium gravity die casting machine",
@@ -143,8 +143,8 @@
     ]
   },
   "vertical-squeeze-casting-machines": {
-    "metadataTitle": "Vertical Squeeze Casting Machines | Aluminium Casting and Precision Casting Technology | DNR Techno Services",
-    "metadataDescription": "Vertical squeeze casting machines for dense, low-porosity aluminium and non-ferrous castings. Explore precision casting support, process guidance, and machine assistance from DNR Techno Services.",
+    "metadataTitle": "Vertical Squeeze Casting Machines",
+    "metadataDescription": "Vertical squeeze casting machines for dense, low-porosity aluminium and non-ferrous castings. Get process guidance and plant support from DNR in India.",
     "keywords": [
       "vertical squeeze casting machine",
       "precision casting technology",
@@ -180,6 +180,33 @@
     "relatedSlugs": [
       "cold-chamber-die-casting-machine",
       "aluminium-gdc-machine"
+    ]
+  },
+  "core-shooter": {
+    "metadataTitle": "Core Shooter Machine for Foundry Sand Cores",
+    "metadataDescription": "Core shooter machines for producing consistent foundry sand cores. Get core shooting machine selection, installation and spare-parts support from DNR in India.",
+    "keywords": [
+      "core shooter machine",
+      "core shooting machine",
+      "foundry core making machine",
+      "sand core making machine",
+      "shell core shooter",
+      "cold box core shooter",
+      "core shooter machine supplier india",
+      "foundry equipment supplier"
+    ]
+  },
+  "brass-gdc-machine": {
+    "metadataTitle": "Brass Gravity Die Casting Machine",
+    "metadataDescription": "Brass gravity die casting machines for sanitaryware, valve and fitting components. Get GDC machine guidance, installation and service support from DNR in India.",
+    "keywords": [
+      "brass gravity die casting machine",
+      "brass gdc machine",
+      "brass casting machine",
+      "gravity die casting machine for brass",
+      "sanitaryware casting machine",
+      "valve body casting machine",
+      "brass die casting machine supplier india"
     ]
   }
 }
