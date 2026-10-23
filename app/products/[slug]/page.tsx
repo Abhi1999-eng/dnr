@@ -353,6 +353,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
     </div>
   );

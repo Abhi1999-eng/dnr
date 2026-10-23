@@ -8,6 +8,8 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint . --max-warnings=0",
+    "seo:audit": "node scripts/seo-audit.mjs",
+    "seo:audit:local": "node scripts/seo-audit.mjs --base http://localhost:3000",
     "blog:check": "node scripts/import-blog-posts.mjs --dry-run",
     "blog:import": "node scripts/import-blog-posts.mjs",
     "search-console:verify": "python3 scripts/check-search-console.py verify",

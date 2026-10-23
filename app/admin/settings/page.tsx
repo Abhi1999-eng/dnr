@@ -33,6 +33,7 @@ const defaultSettings = {
   googleBusinessProfileUrl: '',
   socialLinks: [] as string[],
   geo: { latitude: '' as string | number, longitude: '' as string | number },
+  builtBy: { label: '', url: '', nofollow: false },
   coverageStates: [] as string[],
   footerDescription: '',
   headerCtaLabel: 'Get in Touch',
@@ -66,6 +67,7 @@ function normalizeSettings(data: any) {
     primaryPhone: data.primaryPhone || data.phone?.[0] || '',
     secondaryPhone: data.secondaryPhone || data.phone?.[1] || '',
     coverageStates: data.coverageStates || [],
+    builtBy: { ...defaultSettings.builtBy, ...(data.builtBy || {}) },
     socialLinks: data.socialLinks || [],
     geo: {
       latitude: data.geo?.latitude ?? '',
@@ -152,6 +154,26 @@ export default function AdminSettingsPage() {
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Website" value={settings.website} onChange={(e) => setDraft({ ...settings, website: e.target.value })} />
             <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Map link" value={settings.mapLink} onChange={(e) => setDraft({ ...settings, mapLink: e.target.value })} />
             <textarea className="rounded-lg border border-white/10 bg-white/5 px-3 py-2 md:col-span-2" rows={3} placeholder="Footer description" value={settings.footerDescription} onChange={(e) => setDraft({ ...settings, footerDescription: e.target.value })} />
+          </div>
+        </div>
+
+        <div className="glass space-y-3 rounded-2xl border border-white/10 p-4">
+          <h3 className="font-semibold text-white">Footer build credit</h3>
+          <p className="text-xs text-slate-400">
+            A single credit link at the bottom of every page. Keep the label natural — a keyword-stuffed anchor on every
+            page is treated as a link scheme. Tick nofollow if the same link also appears on other sites&apos; footers.
+          </p>
+          <div className="grid gap-3 md:grid-cols-2">
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="Label (e.g. Built by ScaleQode)" value={settings.builtBy?.label || ''} onChange={(e) => setDraft({ ...settings, builtBy: { ...settings.builtBy, label: e.target.value } })} />
+            <input className="rounded-lg border border-white/10 bg-white/5 px-3 py-2" placeholder="URL (e.g. https://scaleqode.com)" value={settings.builtBy?.url || ''} onChange={(e) => setDraft({ ...settings, builtBy: { ...settings.builtBy, url: e.target.value } })} />
+            <label className="flex items-center gap-2 text-sm text-slate-200 md:col-span-2">
+              <input
+                type="checkbox"
+                checked={Boolean(settings.builtBy?.nofollow)}
+                onChange={(e) => setDraft({ ...settings, builtBy: { ...settings.builtBy, nofollow: e.target.checked } })}
+              />
+              Add rel=&quot;nofollow&quot; to the credit link
+            </label>
           </div>
         </div>
 
