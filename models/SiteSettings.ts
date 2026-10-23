@@ -10,10 +10,35 @@ const SiteSettingsSchema = new Schema(
     secondaryPhone: { type: String, default: '' },
     whatsappNumber: { type: String, default: '' },
     address: String,
+    // Explicit PostalAddress parts. Left blank, these are derived from `address`,
+    // but Google Business matching is more reliable when they are set exactly as
+    // they appear on the verified Business Profile listing.
+    streetAddress: String,
+    addressLocality: String,
+    addressRegion: String,
+    postalCode: String,
     phone: [String],
     email: String,
     website: String,
     mapLink: String,
+    legalName: String,
+    gstin: String,
+    foundingYear: String,
+    priceRange: String,
+    // Public profile URLs used for schema.org `sameAs`. Read by lib/seo.ts.
+    socialLinks: [String],
+    googleBusinessProfileUrl: String,
+    geo: {
+      latitude: Number,
+      longitude: Number,
+    },
+    openingHours: [
+      {
+        days: [String],
+        opens: String,
+        closes: String,
+      },
+    ],
     coverageStates: [String],
     footerDescription: { type: String, default: '' },
     headerCtaLabel: { type: String, default: 'Get in Touch' },

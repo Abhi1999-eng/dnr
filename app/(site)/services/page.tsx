@@ -5,7 +5,15 @@ import { ServiceGrid } from '@/components/ServiceGrid';
 import { StructuredData } from '@/components/StructuredData';
 import { resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
-import { absoluteUrl, buildBreadcrumbJsonLd, buildCollectionPageJsonLd, buildItemListJsonLd, buildWebPageJsonLd, createPageMetadata } from '@/lib/seo';
+import {
+  absoluteUrl,
+  buildBreadcrumbJsonLd,
+  buildCollectionPageJsonLd,
+  buildItemListJsonLd,
+  buildWebPageJsonLd,
+  createPageMetadata,
+  pickMetaDescription,
+} from '@/lib/seo';
 
 export const revalidate = 300;
 
@@ -13,10 +21,11 @@ export async function generateMetadata(): Promise<Metadata> {
   const { homepage, services = [] } = await fetchPublicData();
   const section = (homepage as any)?.sections?.services || {};
   return createPageMetadata({
-    title: 'Industrial Machinery Services, Maintenance & Plant Support',
-    description:
-      section.kicker ||
-      'Explore DNR Techno Services support capabilities for installation, commissioning, breakdown maintenance, AMC support, spare-parts continuity, and plant-side engineering.',
+    title: 'Industrial Machine Service & Maintenance',
+    description: pickMetaDescription(
+      section.kicker,
+      'Installation, commissioning, breakdown maintenance, AMC support, and spare-parts continuity for industrial machinery users and plant teams across India.'
+    ),
     path: '/services',
     keywords: [
       'industrial machinery services',
@@ -52,7 +61,10 @@ export default async function ServicesPage() {
     }),
     buildWebPageJsonLd({
       name: 'Industrial Services & Plant Support',
-      description: section.kicker || 'Plant-side support services for industrial machinery users across India.',
+      description: pickMetaDescription(
+        section.kicker,
+        'Installation, commissioning, breakdown maintenance, AMC support, and spare-parts continuity for industrial machinery users and plant teams across India.'
+      ),
       path: '/services',
       image: services?.[0]?.image || services?.[0]?.imageUrl || services?.[0]?.coverImage,
     }),
