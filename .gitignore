@@ -5,4 +5,7 @@ node_modules
 public/uploads
 id_ed25519_github_dnr
 id_ed25519_github_dnr.pub
+
+# Local database dumps — never commit these, they contain customer data.
+.tmp/
 tsconfig.tsbuildinfo
