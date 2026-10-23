@@ -23,7 +23,7 @@ export default function AdminInquiriesPage() {
       <div className="space-y-6">
         <div className="space-y-2">
           <h1 className="text-2xl font-semibold text-white">Inquiries</h1>
-          <p className="text-sm text-slate-400">Website inquiries are now sent directly by email and are not stored in the admin panel.</p>
+          <p className="text-sm text-slate-400">Every website inquiry is recorded here and also emailed to the team.</p>
         </div>
 
         {isLoading ? (
@@ -31,7 +31,7 @@ export default function AdminInquiriesPage() {
         ) : error ? (
           <div className="glass rounded-2xl border border-red-400/20 p-6 text-sm text-red-200">Unable to load inquiries right now. Please refresh and try again.</div>
         ) : !inquiries.length ? (
-          <AdminEmptyState title="No inquiries yet" description="New website inquiries are delivered directly to your email inbox. No inquiry records are stored here." />
+          <AdminEmptyState title="No inquiries yet" description="New website inquiries will appear here as soon as someone submits the contact or product enquiry form." />
         ) : (
           <div className="glass overflow-hidden rounded-2xl border border-white/10">
             <div className="overflow-x-auto">
