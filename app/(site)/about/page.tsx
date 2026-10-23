@@ -143,6 +143,7 @@ export default async function AboutPage() {
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
     </div>
   );

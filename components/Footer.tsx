@@ -5,6 +5,17 @@ type FooterLink = {
   href: string;
 };
 
+type BuiltBy = {
+  label?: string;
+  url?: string;
+  /**
+   * A credit link repeated in the footer of many client sites is the pattern
+   * Google's link spam guidance calls out. Set this when the same link is
+   * distributed across sites, so it is not treated as an endorsement.
+   */
+  nofollow?: boolean;
+};
+
 type FooterProps = {
   companyName?: string;
   footerDescription?: string;
@@ -13,6 +24,7 @@ type FooterProps = {
   address?: string;
   website?: string;
   footerLinks?: FooterLink[];
+  builtBy?: BuiltBy;
   theme?: 'light' | 'dark';
 };
 
@@ -30,9 +42,13 @@ export function Footer({
     { label: 'Blog', href: '/blog' },
     { label: 'Contact', href: '/contact' },
   ],
+  builtBy,
   theme = 'dark',
 }: FooterProps) {
   const hasCompanyLinks = footerLinks.length > 0;
+  const creditLabel = String(builtBy?.label || '').trim();
+  const rawCreditUrl = String(builtBy?.url || '').trim();
+  const creditUrl = rawCreditUrl ? (rawCreditUrl.startsWith('http') ? rawCreditUrl : `https://${rawCreditUrl}`) : '';
   const hasContact = phoneNumbers.length > 0 || !!email || !!website || !!address;
   const isDark = theme === 'dark';
 
@@ -81,6 +97,19 @@ export function Footer({
               )}
               {address && <p className={isDark ? 'pt-2 text-[#aab4bd]' : 'pt-2 text-white/82'}>{address}</p>}
             </div>
+          </div>
+        ) : null}
+
+        {creditLabel && creditUrl ? (
+          <div className={`mt-8 border-t pt-5 text-xs ${isDark ? 'border-white/10 text-[#aab4bd]' : 'border-white/15 text-white/70'}`}>
+            <a
+              href={creditUrl}
+              target="_blank"
+              rel={builtBy?.nofollow ? 'noopener noreferrer nofollow' : 'noopener noreferrer'}
+              className={isDark ? 'transition hover:text-[#7ed321]' : 'transition hover:text-primary'}
+            >
+              {creditLabel}
+            </a>
           </div>
         ) : null}
       </div>
