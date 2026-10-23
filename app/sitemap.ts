@@ -8,6 +8,13 @@ import { SiteSettings } from '@/models/SiteSettings';
 import { resolveMediaUrl } from '@/lib/media';
 import { absoluteUrl, SITE_URL } from '@/lib/seo';
 
+/**
+ * Without this the sitemap is generated once at build time, so anything added
+ * through the CMS afterwards never appears in it. Matches the revalidate window
+ * the listing and detail pages already use.
+ */
+export const revalidate = 300;
+
 /** Newest `updatedAt` across a set of documents, or undefined when there is none. */
 function newestUpdate(...groups: Array<Array<{ updatedAt?: Date | string } | null | undefined>>) {
   const times = groups
