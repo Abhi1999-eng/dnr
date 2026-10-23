@@ -10,6 +10,7 @@ import { fetchPublicData, fetchRelatedServices, fetchServiceBySlug } from '@/lib
 import { absoluteUrl, buildBreadcrumbJsonLd, buildFaqJsonLd, buildServiceJsonLd, createPageMetadata } from '@/lib/seo';
 import { resolveServiceImage } from '@/lib/media';
 import { normalizeExpectedOutcomes } from '@/lib/service-outcomes';
+import { getServiceSeoContent } from '@/lib/service-seo-content';
 
 export const revalidate = 300;
 
@@ -41,11 +42,17 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     });
   }
 
+  // Curated metadata wins over the CMS heading, which is written to read as a
+  // page title rather than as a search result.
+  const seoContent = getServiceSeoContent(service);
+
   return createPageMetadata({
-    title: service.seoTitle || service.title,
-    description: service.seoDescription || service.longDescription || service.description,
+    title: service.seoTitle || seoContent?.metadataTitle || service.title,
+    description:
+      service.seoDescription || seoContent?.metadataDescription || service.longDescription || service.description,
     path: `/services/${service.slug}`,
     image: resolveServiceImage(service),
+    keywords: seoContent?.keywords || [],
   });
 }
 
