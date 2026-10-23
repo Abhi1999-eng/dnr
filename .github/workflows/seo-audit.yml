@@ -1,0 +1,31 @@
+name: SEO Audit
+
+# Audits the live site rather than a build, so it needs no database or secrets.
+# Catches CMS-side regressions too, which a build-time check cannot see.
+on:
+  schedule:
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    inputs:
+      base:
+        description: 'Base URL to audit'
+        required: false
+        default: 'https://dnrtechnoservices.com'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Audit on-page SEO
+        run: node scripts/seo-audit.mjs --base "${{ inputs.base || 'https://dnrtechnoservices.com' }}" --json seo-report.json
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: seo-report
+          path: seo-report.json
+          retention-days: 30
