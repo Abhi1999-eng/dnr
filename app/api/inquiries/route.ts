@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectDB } from '@/lib/db';
 import { Inquiry } from '@/models/Inquiry';
 import { verifyToken } from '@/lib/auth';
-import { sendInquiryConfirmationEmail, sendInquiryEmail } from '@/lib/mailer';
+import { sendInquiryEmail } from '@/lib/mailer';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -72,13 +72,6 @@ export async function POST(req: Request) {
     notified = true;
   } catch (error) {
     console.error('[inquiry] notification email failed:', error instanceof Error ? error.message : error);
-  }
-
-  // Best effort: the submitter's acknowledgement must never decide the outcome.
-  try {
-    await sendInquiryConfirmationEmail(payload);
-  } catch (error) {
-    console.error('[inquiry] confirmation email failed:', error instanceof Error ? error.message : error);
   }
 
   if (!stored && !notified) {
