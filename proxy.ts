@@ -3,12 +3,21 @@ import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
 
 const PUBLIC_ADMIN_PATHS = ['/admin/login'];
-const secret = new TextEncoder().encode(process.env.JWT_SECRET || 'dev-secret-change-me');
+function getSecret() {
+  const value = String(process.env.JWT_SECRET || '').trim();
+  if (!value) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('JWT_SECRET is not set. Refusing to verify admin sessions with a default secret.');
+    }
+    return new TextEncoder().encode('insecure-development-only-secret');
+  }
+  return new TextEncoder().encode(value);
+}
 
 async function isValid(token?: string) {
   if (!token) return false;
   try {
-    await jwtVerify(token, secret);
+    await jwtVerify(token, getSecret());
     return true;
   } catch {
     return false;

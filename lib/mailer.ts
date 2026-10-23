@@ -14,26 +14,78 @@ type InquiryEmailPayload = {
   submittedAt: string;
 };
 
-const SMTP_CONFIG = {
-  host: 'smtp.gmail.com',
-  port: 465,
-  secure: true,
-  user: 'dnrenquiry@gmail.com',
-  pass: 'aiso ytph bhoe mcwm',
-  from: 'dnrenquiry@gmail.com',
-  to: 'dnr.techservices@gmail.com',
-} as const;
+type MailConfig = {
+  host: string;
+  port: number;
+  secure: boolean;
+  user: string;
+  pass: string;
+  from: string;
+  to: string;
+};
 
-const transporter = nodemailer.createTransport({
-  service: 'gmail',
-  host: SMTP_CONFIG.host,
-  port: SMTP_CONFIG.port,
-  secure: SMTP_CONFIG.secure,
-  auth: {
-    user: SMTP_CONFIG.user,
-    pass: SMTP_CONFIG.pass,
-  },
-});
+function env(name: string) {
+  return String(process.env[name] || '').trim();
+}
+
+/**
+ * Reads SMTP settings from the environment.
+ *
+ * These were previously hardcoded here, which put a live mailbox password in the
+ * source tree. Credentials now come from the environment only, and a missing one
+ * raises a named error instead of failing later inside the SMTP handshake.
+ */
+function getMailConfig(): MailConfig {
+  const user = env('SMTP_USER');
+  const pass = env('SMTP_PASS');
+  const to = env('MAIL_TO');
+
+  const missing = [
+    !user && 'SMTP_USER',
+    !pass && 'SMTP_PASS',
+    !to && 'MAIL_TO',
+  ].filter(Boolean);
+
+  if (missing.length) {
+    throw new Error(`Inquiry email is not configured: missing ${missing.join(', ')}.`);
+  }
+
+  const port = Number(env('SMTP_PORT') || 465);
+
+  return {
+    host: env('SMTP_HOST') || 'smtp.gmail.com',
+    port: Number.isFinite(port) ? port : 465,
+    // Implicit TLS on 465; STARTTLS on 587 and anything else.
+    secure: env('SMTP_SECURE') ? env('SMTP_SECURE').toLowerCase() === 'true' : port === 465,
+    user,
+    pass,
+    from: env('MAIL_FROM') || user,
+    to,
+  };
+}
+
+let cachedTransporter: nodemailer.Transporter | null = null;
+let cachedKey = '';
+
+/**
+ * Built on first use rather than at import time, so a build or a request that
+ * never sends mail does not need SMTP credentials present.
+ */
+function getTransporter(config: MailConfig) {
+  const key = `${config.host}:${config.port}:${config.secure}:${config.user}`;
+  if (cachedTransporter && cachedKey === key) {
+    return cachedTransporter;
+  }
+
+  cachedTransporter = nodemailer.createTransport({
+    host: config.host,
+    port: config.port,
+    secure: config.secure,
+    auth: { user: config.user, pass: config.pass },
+  });
+  cachedKey = key;
+  return cachedTransporter;
+}
 
 function escapeHtml(value: string) {
   return value
@@ -45,6 +97,8 @@ function escapeHtml(value: string) {
 }
 
 export async function sendInquiryEmail(payload: InquiryEmailPayload) {
+  const mailConfig = getMailConfig();
+  const transporter = getTransporter(mailConfig);
   const subject = payload.productTitle
     ? `New DNR Product Inquiry - ${payload.productTitle}`
     : 'New DNR Website Inquiry';
@@ -93,19 +147,19 @@ export async function sendInquiryEmail(payload: InquiryEmailPayload) {
 
   console.log('[inquiry] preparing email', {
     subject,
-    from: SMTP_CONFIG.from,
-    to: SMTP_CONFIG.to,
+    from: mailConfig.from,
+    to: mailConfig.to,
     replyTo: payload.email || null,
   });
 
   await transporter.verify();
 
   const info = await transporter.sendMail({
-    from: SMTP_CONFIG.from,
-    to: SMTP_CONFIG.to,
+    from: mailConfig.from,
+    to: mailConfig.to,
     envelope: {
-      from: SMTP_CONFIG.from,
-      to: [SMTP_CONFIG.to],
+      from: mailConfig.from,
+      to: [mailConfig.to],
     },
     subject,
     replyTo: payload.email || undefined,
