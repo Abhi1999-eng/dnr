@@ -16,7 +16,7 @@ import { Nav } from '@/components/Nav';
 import { Reveal } from '@/components/Reveal';
 import { SectionTitle } from '@/components/SectionTitle';
 import { StructuredData } from '@/components/StructuredData';
-import { resolveContactActionHref } from '@/lib/contact-actions';
+import { DEFAULT_CONTACT_EMAIL, resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchPublicData } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { HOMEPAGE_META_TITLE, absoluteUrl, buildFaqJsonLd, createPageMetadata, isPlaceholderText } from '@/lib/seo';
@@ -307,7 +307,7 @@ export default async function HomePage() {
             quickLinks={quickLinks}
             fallbackPhone={primaryPhone || '+919711196735'}
             fallbackWhatsapp={whatsappNumber || '+919711196735'}
-            fallbackEmail={email || 'dnr.techservices@gmail.com'}
+            fallbackEmail={email || DEFAULT_CONTACT_EMAIL}
             enableModal
             theme="dark"
             title={productsSection.title || 'Machine portfolio'}

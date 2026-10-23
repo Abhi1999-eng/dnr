@@ -3,7 +3,7 @@
 import { MessageCircle, PhoneCall } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { ProductEnquiryModal } from '@/components/ProductEnquiryModal';
-import { normalizeWhatsappNumber } from '@/lib/contact-actions';
+import { DEFAULT_CONTACT_EMAIL, normalizeWhatsappNumber } from '@/lib/contact-actions';
 
 type QuickLink = {
   label: string;
@@ -31,7 +31,7 @@ export function ProductEnquiryActions({
   quickLinks,
   fallbackPhone = '+919711196735',
   fallbackWhatsapp = '+919711196735',
-  fallbackEmail = 'dnr.techservices@gmail.com',
+  fallbackEmail = DEFAULT_CONTACT_EMAIL,
   className = '',
   theme = 'light',
 }: ProductEnquiryActionsProps) {

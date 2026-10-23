@@ -1,3 +1,12 @@
+/**
+ * Shown when the CMS has no contact email configured.
+ *
+ * Four components previously each hardcoded a private Gmail address here, so that
+ * mailbox surfaced in the UI whenever the setting was blank, even though the
+ * business publishes its own domain address.
+ */
+export const DEFAULT_CONTACT_EMAIL = 'info@dnrtechnoservices.com';
+
 export type ContactActionType = 'scroll' | 'whatsapp' | 'phone' | 'email' | 'custom';
 
 export function normalizeWhatsappNumber(value?: string) {

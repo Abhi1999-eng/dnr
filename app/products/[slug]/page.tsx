@@ -8,7 +8,7 @@ import { Nav } from '@/components/Nav';
 import { ProductDetailGallery } from '@/components/ProductDetailGallery';
 import { ProductEnquiryActions } from '@/components/ProductEnquiryActions';
 import { StructuredData } from '@/components/StructuredData';
-import { resolveContactActionHref } from '@/lib/contact-actions';
+import { DEFAULT_CONTACT_EMAIL, resolveContactActionHref } from '@/lib/contact-actions';
 import { fetchProductBySlug, fetchPublicData, fetchRelatedBlogsByProduct, fetchRelatedProducts } from '@/lib/data';
 import { resolveMediaUrl, resolveProductImage } from '@/lib/media';
 import { getProductSeoContent } from '@/lib/product-seo-content';
@@ -77,7 +77,7 @@ export default async function ProductDetail({ params }: { params: Promise<{ slug
   const primaryPhone = siteSettings.primaryPhone || siteSettings.phone?.[0] || '';
   const secondaryPhone = siteSettings.secondaryPhone || siteSettings.phone?.[1] || '';
   const whatsappNumber = siteSettings.whatsappNumber || primaryPhone || '+919711196735';
-  const email = siteSettings.email || 'dnr.techservices@gmail.com';
+  const email = siteSettings.email || DEFAULT_CONTACT_EMAIL;
   const quickLinks = (siteSettings.contactQuickLinks || []).filter((item: any) => item.active !== false).sort((a: any, b: any) => (a.sortOrder || 0) - (b.sortOrder || 0));
   const headerCtaHref = resolveContactActionHref(siteSettings.headerCtaActionType, siteSettings.headerCtaValue || siteSettings.headerCtaTarget, '#quote');
   const seoContent = getProductSeoContent(productData);
