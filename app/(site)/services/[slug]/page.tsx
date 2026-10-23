@@ -234,6 +234,7 @@ export default async function ServiceDetailPage({ params }: { params: Promise<{ 
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
     </div>
   );

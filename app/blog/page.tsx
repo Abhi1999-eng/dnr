@@ -129,6 +129,7 @@ export default async function BlogPage() {
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
     </div>
   );

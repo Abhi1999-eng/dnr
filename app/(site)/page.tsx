@@ -463,6 +463,7 @@ export default async function HomePage() {
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
       <FloatingSupport enabled={siteSettings.floatingSupportEnabled !== false} whatsappNumber={whatsappNumber} label={siteSettings.floatingSupportLabel || 'WhatsApp Support'} />
     </div>

@@ -39,6 +39,13 @@ const SiteSettingsSchema = new Schema(
         closes: String,
       },
     ],
+    // Footer build credit. Kept in settings rather than hardcoded so the label,
+    // target and rel can be changed without a deploy.
+    builtBy: {
+      label: { type: String, default: '' },
+      url: { type: String, default: '' },
+      nofollow: { type: Boolean, default: false },
+    },
     coverageStates: [String],
     footerDescription: { type: String, default: '' },
     headerCtaLabel: { type: String, default: 'Get in Touch' },

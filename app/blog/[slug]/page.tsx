@@ -249,6 +249,7 @@ export default async function BlogDetailPage({ params }: { params: Promise<{ slu
         address={siteSettings.address}
         website={siteSettings.website}
         footerLinks={siteSettings.footerLinks}
+        builtBy={siteSettings.builtBy}
       />
     </div>
   );
